@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-7qp1oas%6r_wo%xl+ihcy8i+$1a4a0ql@56awh4)4o#2rx@=c#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['casino-m6q2.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
