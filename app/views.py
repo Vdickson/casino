@@ -9,6 +9,7 @@ import time
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
+
 def home(request):
     context = {
         'live_wins': LiveWin.objects.filter(visible=True).order_by('-timestamp')[:10],
@@ -20,6 +21,7 @@ def home(request):
 
     }
     return render(request, 'casino/index.html', context)
+
 
 def contact_submit(request):
     if request.method == 'POST':
@@ -35,6 +37,7 @@ def contact_submit(request):
             return redirect('home')
     return redirect('home')
 
+
 def updates(request):
     def event_stream():
         last_win_id = LiveWin.objects.last().id if LiveWin.objects.exists() else 0
@@ -43,7 +46,7 @@ def updates(request):
             # Send new live wins
             new_wins = LiveWin.objects.filter(id__gt=last_win_id)
             for win in new_wins:
-                yield f"data: {json.dumps({ 'type': 'win', 'username': win.username, 'amount': str(win.amount) })}\n\n"
+                yield f"data: {json.dumps({'type': 'win', 'username': win.username, 'amount': str(win.amount)})}\n\n"
                 last_win_id = win.id
 
             # Send updated offers countdown
@@ -63,6 +66,7 @@ def updates(request):
     response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
     response['Cache-Control'] = 'no-cache'
     return response
+
 
 def subscribe(request):
     if request.method == 'POST':
