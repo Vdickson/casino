@@ -1,0 +1,331 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireKirin Gameroom 13 - Premium Fish Casino</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --ocean-blue: #0A1931;
+            --coral: #FF6B6B;
+            --gold-fish: #FFD93D;
+            --sea-green: #6BCB77;
+            --deep-purple: #3B185F;
+            --neon-teal: #00FFD1;
+        }
+
+        body {
+            background: linear-gradient(45deg, var(--ocean-blue), var(--deep-purple));
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .title-glitter {
+            text-shadow: 0 0 15px var(--neon-teal);
+            background: linear-gradient(45deg, var(--gold-fish), var(--coral));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s infinite alternate;
+        }
+
+        .offer-card {
+            background: rgba(0,0,0,0.5);
+            border: 2px solid var(--neon-teal);
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+        .alert-messages {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    min-width: 300px;
+}
+
+.alert {
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    border: 1px solid var(--neon-teal);
+}
+
+        .offer-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 25px var(--neon-teal);
+        }
+
+        .game-bubble {
+            background: rgba(107,203,119,0.1);
+            border: 1px solid var(--sea-green);
+            border-radius: 25px;
+            padding: 10px 20px;
+            margin: 5px;
+        }
+
+        .countdown-flash {
+            animation: pulse 1s infinite;
+            background: var(--coral);
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px var(--neon-teal); }
+            to { text-shadow: 0 0 30px var(--neon-teal); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Header -->
+    <header class="text-center py-5">
+        <div class="container">
+            <h1 class="title-glitter display-3 fw-bold animate__animated animate__rubberBand">
+                🐠 FireKirin Gameroom 13 🎣
+            </h1>
+            <p class="lead text-teal mb-0">Dive into Winning!</p>
+            <h2 class="lead text-teal mb-2">Instant cashouts, No scams, 24/7 customer service!</h2>
+
+        </div>
+    </header>
+
+    <!-- Live Wins Ticker -->
+    <div class="container mt-4">
+        <div class="live-wins p-3" style="background: rgba(0,0,0,0.3); border-radius:15px;">
+            <marquee class="text-sea-green">
+                {% for win in live_wins %}
+                    {% if win.username and win.amount %}
+                    🎉 {{ win.username }} caught ${{ win.amount }}! 🎉
+                    {% endif %}
+                {% empty %}
+                    🎉 New wins coming soon! 🎉
+                {% endfor %}
+            </marquee>
+        </div>
+    </div>
+
+   <!-- Limited Offer Countdown -->
+<!-- Limited Offer Countdown -->
+<div class="container text-center mt-4">
+    {% if active_offer %}
+    <div class="countdown-flash p-3 rounded" style="background-color: #fff4e5; border: 2px solid #ffa500;">
+        <div style="color: #d9534f; font-weight: 700; font-size: 1.5rem; margin-bottom: 0.5rem;">
+            ⚡ FLASH OFFER: {{ active_offer.title }} ⚡
+        </div>
+        <div style="color: #0275d8; font-style: italic; font-size: 1.2rem; margin-bottom: 0.75rem;">
+            {{ active_offer.description }}
+        </div>
+        <span id="countdown-timer" class="fw-bold fs-2" style="color: #5cb85c;"></span>
+    </div>
+    {% else %}
+    <div class="text-muted">
+        No active offers at the moment
+    </div>
+    {% endif %}
+</div>
+
+    <!-- Static Offers Cards -->
+    <div class="container mt-5">
+        <h3 class="text-center mb-4">🎁 Special Offers</h3>
+        <div class="row justify-content-center">
+            <div class="col-md-4 mb-3">
+                <div class="offer-card p-4 text-center">
+                    <h5>✅ 100% Signup Bonus</h5>
+                    <p>Start with double credits!</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="offer-card p-4 text-center">
+                    <h5>✅ 15% Cashback</h5>
+                    <p>Even if you lose!</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="offer-card p-4 text-center">
+                    <h5>✅ 50% Referral Bonus</h5>
+                    <p>Earn while friends play!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Methods -->
+    <div class="container mt-5">
+        <h3 class="text-center mb-4">💳 Payment Methods</h3>
+        <div class="row justify-content-center">
+            {% for method in payment_methods %}
+            <div class="col-md-3 mb-3">
+                <div class="offer-card p-3 text-center">
+                    <h6>{{ method.name }}</h6>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Game Selection -->
+    <div class="container mt-5">
+        <h3 class="text-center mb-4">🎮 Featured Fish Games</h3>
+        <div class="d-flex flex-wrap justify-content-center">
+            <span class="game-bubble">Orion Stars</span>
+            <span class="game-bubble">FireKirin</span>
+            <span class="game-bubble">Vegas</span>
+            <span class="game-bubble">Juwa</span>
+            <span class="game-bubble">PandaMaster</span>
+            <span class="game-bubble">Ultra Panda</span>
+            <span class="game-bubble">GameVault</span>
+            <span class="game-bubble">VBlink</span>
+        </div>
+    </div>
+
+    <!-- How to Play & Contact Agent -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="offer-card p-4">
+                    <h3 class="text-sea-green">📝 How to Play</h3>
+                    <ol class="steps-list">
+                        <li class="mb-3">Follow our social channels</li>
+                        <li class="mb-3">Contact agent for setup</li>
+                        <li class="mb-3">Deposit & start fishing!</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="col-md-6 mt-4 mt-md-0">
+                <div class="offer-card p-4">
+                    <h3 class="text-sea-green">📲 Contact Agent</h3>
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <a href="{{ social.facebook }}" class="btn btn-primary">Facebook</a>
+                        <a href="{{ social.whatsapp }}" class="btn btn-success">WhatsApp</a>
+                        <a href="{{ social.telegram }}" class="btn btn-info">Telegram</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Contact Form -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="offer-card p-4">
+                <h3 class="text-center text-sea-green">📨 Get Hooked on Rewards!</h3>
+
+                <!-- Messages -->
+                {% if messages %}
+                <div class="alert-messages">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'contact_submit' %}" class="mt-4">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ contact_form.name }}
+                    </div>
+                    <div class="mb-3">
+                        {{ contact_form.email }}
+                    </div>
+                    <div class="mb-3">
+                        {{ contact_form.message }}
+                    </div>
+                    <button type="submit" class="btn btn-sea-green w-100">Cast Your Message 🎣</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+   <script>
+    function updateCountdown(offer) {
+        const now = new Date().getTime();
+        const startTime = new Date("{{ active_offer.scheduled_start|date:'U' }}" * 1000);
+        const endTime = new Date("{{ active_offer.countdown_end|date:'U' }}" * 1000);
+
+        let targetTime = endTime;
+        let status = "ENDS IN:";
+
+        // If offer hasn't started yet
+        if (now < startTime) {
+            targetTime = startTime;
+            status = "STARTS IN:";
+        }
+
+        const timer = setInterval(() => {
+            const now = new Date().getTime();
+            let distance = targetTime - now;
+
+            if (distance < 0) {
+                clearInterval(timer);
+                if (targetTime === endTime) {
+                    document.getElementById("countdown-timer").innerHTML = "OFFER EXPIRED!";
+                    // Reload page to check for new offers
+                    setTimeout(() => location.reload(), 5000);
+                } else {
+                    // Offer start time reached, switch to end countdown
+                    updateCountdown(offer);
+                }
+                return;
+            }
+
+            const hours = Math.floor(distance / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown-timer").innerHTML =
+                `${status} ${hours}h ${minutes}m ${seconds}s`;
+        }, 1000);
+    }
+
+    {% if active_offer %}
+        updateCountdown({
+            start: "{{ active_offer.scheduled_start|date:'Y-m-d H:i:s' }}",
+            end: "{{ active_offer.countdown_end|date:'Y-m-d H:i.s' }}"
+        });
+    {% endif %}
+
+    // Modified SSE handler with data validation
+    const eventSource = new EventSource('/updates/');
+    eventSource.onmessage = function(e) {
+        try {
+            const win = JSON.parse(e.data);
+            if (win.username && win.amount) {
+                const marquee = document.querySelector('marquee');
+                marquee.innerHTML += ` 🎣 ${win.username} Won $${win.amount}!`;
+
+                // Limit the number of displayed wins
+                const maxWins = 10;
+                const wins = marquee.innerHTML.split('🎣');
+                if (wins.length > maxWins) {
+                    marquee.innerHTML = wins.slice(-maxWins).join('🎣');
+                }
+            }
+        } catch (error) {
+            console.error('Error processing win:', error);
+        }
+    };
+
+    // Add error handling for SSE
+    eventSource.onerror = function(e) {
+        console.error('EventSource failed:', e);
+        eventSource.close();
+        setTimeout(() => {
+            // Reconnect after 5 seconds
+            new EventSource('/updates/');
+        }, 5000);
+    };
+</script>
+<footer style="background: #0a0a0a; color: var(--gold); text-align: center; padding: 15px 0; font-size: 0.9rem; border-top: 2px solid var(--gold); margin-top: 40px;">
+    &copy; {{ now.year }} FireKirin Gameroom. All rights reserved.
+</footer>
+</body>
+</html>
