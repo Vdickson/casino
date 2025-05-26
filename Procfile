@@ -1,1 +1,1 @@
-web: gunicorn casino.wsgi:application
+web: gunicorn app.wsgi:application
