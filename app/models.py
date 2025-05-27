@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.db.models import Q
 
+from django.core.exceptions import ValidationError
 
 class LiveWin(models.Model):
     username = models.CharField(max_length=50)
@@ -18,13 +19,18 @@ class Offer(models.Model):
     countdown_end = models.DateTimeField(blank=True, null=True)
     is_active = models.BooleanField(default=False)
 
+    # def save(self, *args, **kwargs):
+    #     # Calculate countdown_end based on duration
+    #     if self.scheduled_start and self.duration_hours:
+    #         self.countdown_end = self.scheduled_start + timezone.timedelta(hours=self.duration_hours)
+    #         # Automatically activate if within scheduled time
+    #         now = timezone.now()
+    #         self.is_active = self.scheduled_start <= now <= self.countdown_end
+    #     super().save(*args, **kwargs)
+
     def save(self, *args, **kwargs):
-        # Calculate countdown_end based on duration
         if self.scheduled_start and self.duration_hours:
             self.countdown_end = self.scheduled_start + timezone.timedelta(hours=self.duration_hours)
-            # Automatically activate if within scheduled time
-            now = timezone.now()
-            self.is_active = self.scheduled_start <= now <= self.countdown_end
         super().save(*args, **kwargs)
 
     @property
@@ -43,9 +49,25 @@ class Offer(models.Model):
     def get_upcoming_offer(cls):
         now = timezone.now()
         return cls.objects.filter(
-            Q(countdown_end__gt=now) |
-            Q(scheduled_start__gt=now)
-        ).order_by('scheduled_start').first()
+            scheduled_start__lte=now,
+            countdown_end__gt=now
+        ).first()
+
+    @classmethod
+    def get_future_offer(cls):
+        now = timezone.now()
+        return cls.objects.filter(scheduled_start__gt=now).order_by('scheduled_start').first()
+
+    def clean(self):
+        # Prevent overlapping offers
+        if self.scheduled_start and self.countdown_end:
+            overlapping = Offer.objects.filter(
+                models.Q(scheduled_start__lt=self.countdown_end) &
+                models.Q(countdown_end__gt=self.scheduled_start)
+            ).exclude(pk=self.pk)
+
+            if overlapping.exists():
+                raise ValidationError("Offers cannot overlap in time")
 
 
 class PaymentMethod(models.Model):

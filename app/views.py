@@ -2,6 +2,7 @@ import json
 
 from django.shortcuts import render
 from django.http import StreamingHttpResponse, JsonResponse
+from django.utils import timezone
 
 from .forms import ContactForm
 from .models import LiveWin, Offer, PaymentMethod, SocialLink
@@ -11,17 +12,25 @@ from django.contrib import messages
 
 
 def home(request):
+    now = timezone.now()
+    active_offer = Offer.objects.filter(
+        scheduled_start__lte=now,
+        countdown_end__gt=now
+    ).first()
+
+    future_offer = Offer.objects.filter(
+        scheduled_start__gt=now
+    ).exclude(pk=active_offer.pk if active_offer else None).order_by('scheduled_start').first()
+
     context = {
         'live_wins': LiveWin.objects.filter(visible=True).order_by('-timestamp')[:10],
-        'active_offers': Offer.objects.filter(is_active=True),
         'payment_methods': PaymentMethod.objects.filter(is_active=True),
         'social': SocialLink.objects.first(),
-        'active_offer': Offer.get_upcoming_offer(),
-        'contact_form': ContactForm(),  # Add form to context
-
+        'active_offer': active_offer,
+        'future_offer': future_offer,
+        'contact_form': ContactForm(),
     }
     return render(request, 'casino/index.html', context)
-
 
 def contact_submit(request):
     if request.method == 'POST':

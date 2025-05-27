@@ -114,6 +114,7 @@
 <!-- Limited Offer Countdown -->
 <div class="container text-center mt-4">
     {% if active_offer %}
+    <!-- Active Offer -->
     <div class="countdown-flash p-3 rounded" style="background-color: #fff4e5; border: 2px solid #ffa500;">
         <div style="color: #d9534f; font-weight: 700; font-size: 1.5rem; margin-bottom: 0.5rem;">
             ⚡ FLASH OFFER: {{ active_offer.title }} ⚡
@@ -123,9 +124,23 @@
         </div>
         <span id="countdown-timer" class="fw-bold fs-2" style="color: #5cb85c;"></span>
     </div>
+
+    {% elif future_offer %}
+    <!-- Upcoming Offer -->
+    <div class="countdown-upcoming p-3 rounded" style="background-color: #e3f2fd; border: 2px solid #2196f3;">
+        <div style="color: #1976d2; font-weight: 700; font-size: 1.5rem; margin-bottom: 0.5rem;">
+            🕒 UPCOMING OFFER: {{ future_offer.title }} 🕒
+        </div>
+        <div style="color: #0d47a1; font-style: italic; font-size: 1.2rem; margin-bottom: 0.75rem;">
+            {{ future_offer.description }}
+        </div>
+        <span id="countdown-timer" class="fw-bold fs-2" style="color: #5cb85c;"></span>
+    </div>
+
     {% else %}
-    <div class="text-muted">
-        No active offers at the moment
+    <!-- No Offers -->
+    <div class="p-3 rounded" style="background-color: #ffebee; border: 2px solid #ff1744; color: #d32f2f; font-weight: 700;">
+        📢 NO ACTIVE OFFERS! CHECK BACK SOON! 📢
     </div>
     {% endif %}
 </div>
@@ -250,35 +265,48 @@
         </div>
     </div>
 </div>
+<script>
+     function updateCountdown(offerData) {
+        // Parse dates as UTC explicitly
+        const parseUTCDate = (dateString) => {
+            const date = new Date(dateString);
+            return Date.UTC(
+                date.getUTCFullYear(),
+                date.getUTCMonth(),
+                date.getUTCDate(),
+                date.getUTCHours(),
+                date.getUTCMinutes(),
+                date.getUTCSeconds()
+            );
+        };
 
-   <script>
-    function updateCountdown(offer) {
-        const now = new Date().getTime();
-        const startTime = new Date("{{ active_offer.scheduled_start|date:'U' }}" * 1000);
-        const endTime = new Date("{{ active_offer.countdown_end|date:'U' }}" * 1000);
+        const now = Date.now();
+        const startTime = parseUTCDate(offerData.start);
+        const endTime = parseUTCDate(offerData.end);
 
         let targetTime = endTime;
         let status = "ENDS IN:";
+        let isActiveOffer = true;
 
-        // If offer hasn't started yet
+        // For offers not yet started
         if (now < startTime) {
             targetTime = startTime;
             status = "STARTS IN:";
+            isActiveOffer = false;
         }
 
         const timer = setInterval(() => {
-            const now = new Date().getTime();
+            const now = Date.now();
             let distance = targetTime - now;
 
             if (distance < 0) {
                 clearInterval(timer);
-                if (targetTime === endTime) {
+                if (isActiveOffer) {
                     document.getElementById("countdown-timer").innerHTML = "OFFER EXPIRED!";
-                    // Reload page to check for new offers
                     setTimeout(() => location.reload(), 5000);
                 } else {
-                    // Offer start time reached, switch to end countdown
-                    updateCountdown(offer);
+                    document.getElementById("countdown-timer").innerHTML = "OFFER STARTED!";
+                    setTimeout(() => location.reload(), 5000);
                 }
                 return;
             }
@@ -293,15 +321,20 @@
     }
 
     {% if active_offer %}
-        updateCountdown({
-            start: "{{ active_offer.scheduled_start|date:'Y-m-d H:i:s' }}",
-            end: "{{ active_offer.countdown_end|date:'Y-m-d H:i.s' }}"
-        });
+    updateCountdown({
+        start: "{{ active_offer.scheduled_start|date:'Y-m-d\TH:i:s\Z' }}",
+        end: "{{ active_offer.countdown_end|date:'Y-m-d\TH:i:s\Z' }}"
+    });
+    {% elif future_offer %}
+    updateCountdown({
+        start: "{{ future_offer.scheduled_start|date:'Y-m-d\TH:i:s\Z' }}",
+        end: "{{ future_offer.countdown_end|date:'Y-m-d\TH:i:s\Z' }}"
+    });
     {% endif %}
 
     // Modified SSE handler with data validation
     const eventSource = new EventSource('/updates/');
-    eventSource.onmessage = function(e) {
+    eventSource.onmessage = function (e) {
         try {
             const win = JSON.parse(e.data);
             if (win.username && win.amount) {
@@ -321,7 +354,7 @@
     };
 
     // Add error handling for SSE
-    eventSource.onerror = function(e) {
+    eventSource.onerror = function (e) {
         console.error('EventSource failed:', e);
         eventSource.close();
         setTimeout(() => {
@@ -330,6 +363,7 @@
         }, 5000);
     };
 </script>
+
 <footer style="background: #0a0a0a; color: var(--gold); text-align: center; padding: 15px 0; font-size: 0.9rem; border-top: 2px solid var(--gold); margin-top: 40px;">
     &copy; {{ now.year }} FireKirin Gameroom. All rights reserved.
 </footer>

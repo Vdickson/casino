@@ -29,6 +29,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['casino-m6q2.onrender.com','https://firekirin.pythonanywhere.com/', 'localhost', '127.0.0.1']
 
 
+# Ensure these settings are present
+USE_TZ = True  # Enable timezone support
+TIME_ZONE = 'America/New_York'  # Your local timezone (adjust accordingly)
 # Application definition
 
 INSTALLED_APPS = [
