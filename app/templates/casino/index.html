@@ -15,12 +15,26 @@
             --sea-green: #6BCB77;
             --deep-purple: #3B185F;
             --neon-teal: #00FFD1;
+            --dark-bg: #080C18;
+            --light-bg: #121B33;
+        }
+
+        @media (max-width: 768px) {
+            .display-3 {
+                font-size: 2.5rem;
+            }
+            .lead {
+                font-size: 1rem;
+            }
         }
 
         body {
-            background: linear-gradient(45deg, var(--ocean-blue), var(--deep-purple));
+            background: linear-gradient(180deg, var(--dark-bg), var(--ocean-blue));
             color: white;
             font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .title-glitter {
@@ -83,8 +97,47 @@
     </style>
 </head>
 <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background: linear-gradient(45deg, var(--deep-purple), var(--ocean-blue)); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <span class="title-glitter fw-bold me-2">FireKirin 13</span>
+                <span class="badge bg-danger">TRUSTED</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#games">Games</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#promotions">Promotions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item d-lg-none mt-2">
+                        <div class="d-flex gap-2">
+                            <a href="{{ social.facebook }}" class="btn btn-sm btn-primary w-100">Facebook</a>
+                            <a href="{{ social.whatsapp }}" class="btn btn-sm btn-success w-100">WhatsApp</a>
+                        </div>
+                    </li>
+                </ul>
+                <div class="d-none d-lg-flex ms-3 gap-2">
+                    <a href="{{ social.facebook }}" class="btn btn-sm btn-primary">Facebook</a>
+                    <a href="{{ social.whatsapp }}" class="btn btn-sm btn-success">WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <!-- Animated Header -->
-    <header class="text-center py-5">
+    <header id="home" class="text-center py-5 mt-3">
         <div class="container">
             <h1 class="title-glitter display-3 fw-bold animate__animated animate__rubberBand">
                 🐠 FireKirin Gameroom 13 🎣
@@ -146,31 +199,34 @@
 </div>
 
     <!-- Static Offers Cards -->
-    <div class="container mt-5">
+    <div id="promotions" class="container mt-5">
         <h3 class="text-center mb-4">🎁 Special Offers</h3>
-        <div class="row justify-content-center">
-            <div class="col-md-4 mb-3">
-                <div class="offer-card p-4 text-center">
+        <div class="row justify-content-center gy-3">
+            <div class="col-lg-3 col-md-6">
+                <div class="offer-card p-4 text-center h-100">
+                    <div class="badge bg-warning mb-2">LIMITED</div>
                     <h5>✅ 100% Signup Bonus</h5>
-                    <p>Start with double credits!</p>
+                    <p class="mb-0">Start with double credits!</p>
                 </div>
             </div>
-            <div class="col-md-4 mb-3">
-                <div class="offer-card p-4 text-center">
-                    <h5>✅ 20%% Regular Bonus</h5>
-                    <p>Earn bonus in every deposit you make!</p>
+            <div class="col-lg-3 col-md-6">
+                <div class="offer-card p-4 text-center h-100">
+                    <h5>✅ 20% Regular Bonus</h5>
+                    <p class="mb-0">Earn bonus in every deposit!</p>
                 </div>
             </div>
-            <div class="col-md-4 mb-3">
-                <div class="offer-card p-4 text-center">
+            <div class="col-lg-3 col-md-6">
+                <div class="offer-card p-4 text-center h-100">
+                    <div class="badge bg-danger mb-2">HOT</div>
                     <h5>✅ 15% Cashback</h5>
-                    <p>Even if you lose!</p>
+                    <p class="mb-0">Even if you lose!</p>
                 </div>
             </div>
-            <div class="col-md-4 mb-3">
-                <div class="offer-card p-4 text-center">
+            <div class="col-lg-3 col-md-6">
+                <div class="offer-card p-4 text-center h-100">
                     <h5>✅ 50% Referral Bonus</h5>
-                    <p>Earn while friends play!</p>
+                    <p class="mb-0">Earn while friends play!</p>
+                    <div class="badge bg-success mt-2">POPULAR</div>
                 </div>
             </div>
         </div>
@@ -191,17 +247,49 @@
     </div>
 
     <!-- Game Selection -->
-    <div class="container mt-5">
+    <div id="games" class="container mt-5">
         <h3 class="text-center mb-4">🎮 Featured Fish Games</h3>
-        <div class="d-flex flex-wrap justify-content-center">
-            <span class="game-bubble">Orion Stars</span>
-            <span class="game-bubble">FireKirin</span>
-            <span class="game-bubble">Vegas</span>
-            <span class="game-bubble">Juwa</span>
-            <span class="game-bubble">PandaMaster</span>
-            <span class="game-bubble">Ultra Panda</span>
-            <span class="game-bubble">GameVault</span>
-            <span class="game-bubble">VBlink</span>
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3 justify-content-center">
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    Orion Stars
+                </div>
+            </div>
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    FireKirin
+                </div>
+            </div>
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    Vegas
+                </div>
+            </div>
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    Juwa
+                </div>
+            </div>
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    PandaMaster
+                </div>
+            </div>
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    Ultra Panda
+                </div>
+            </div>
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    GameVault
+                </div>
+            </div>
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    VBlink
+                </div>
+            </div>
         </div>
     </div>
 
@@ -231,7 +319,7 @@
         </div>
     </div>
 <!-- Contact Form -->
-<div class="container mt-5">
+<div id="contact" class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="offer-card p-4">
