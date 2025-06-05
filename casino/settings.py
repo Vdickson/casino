@@ -29,6 +29,10 @@ DEBUG = True
 ALLOWED_HOSTS = ['casino-m6q2.onrender.com','firekirin.up.railway.app','https://firekirin.pythonanywhere.com/', 'localhost', '127.0.0.1']
 
 
+
+# ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "firekirin.up.railway.app").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "https://firekirin.up.railway.app").split(",")
+
 # Ensure these settings are present
 USE_TZ = True  # Enable timezone support
 TIME_ZONE = 'America/New_York'  # Your local timezone (adjust accordingly)
