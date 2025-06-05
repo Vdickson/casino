@@ -10,7 +10,7 @@ from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from .forms import ContactForm
 from django.views.decorators.cache import cache_page
-from django.views.decorators.http import require_GE, require_GET
+from django.views.decorators.http import require_GET
 from .models import LiveWin, Offer, PaymentMethod, SocialLink, UserInteraction, PageVisit
 from django.contrib.admin.views.decorators import staff_member_required
 
