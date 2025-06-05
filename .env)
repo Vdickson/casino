@@ -7,6 +7,7 @@ EMAIL_USE_TLS=True
 EMAIL_HOST_USER=your-email
 EMAIL_HOST_PASSWORD=your-password
 
+REDIS_URL=redis://default:Y5yNT6oIVGyWO7YlVI1GIYseYUTNFL6S@redis.railway.internal:6379
 
 # Email settings
 EMAIL_HOST=smtp.yourservice.com
