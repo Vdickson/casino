@@ -149,7 +149,9 @@ def updates(request):
         })
 
     # Get latest win ID for next request
-    latest_win_id = new_wins.last()['id'] if new_wins else last_win_id
+    # latest_win_id = new_wins.last()['id'] if new_wins else last_win_id
+    new_wins_list = list(new_wins)
+    latest_win_id = new_wins_list[-1]['id'] if new_wins_list else last_win_id
 
     return JsonResponse({
         'wins': list(new_wins),
