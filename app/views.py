@@ -23,12 +23,14 @@ def home(request):
     now = timezone.now()
 
     # Get offers with caching
+           # Get offers with caching - clear cache after save in admin
     offers = cache.get(OFFERS_CACHE_KEY)
     if not offers:
         offers = Offer.objects.filter(
-            Q(countdown_end__gt=now) | Q(scheduled_start__gt=now)
+            Q(countdown_end__gt=now) | Q(scheduled_start__gt=now),
+            is_active=True  # Add this filter
         )
-        cache.set(OFFERS_CACHE_KEY, offers, 300)  # Cache for 5 minutes
+        cache.set(OFFERS_CACHE_KEY, offers, 300)
 
     # Find active and future offers
     active_offer = next((o for o in offers if o.scheduled_start <= now <= o.countdown_end), None)
@@ -159,7 +161,21 @@ def analytics_dashboard(request):
     }
     return render(request, 'admin/analytics.html', context)
 
-
+# Add to views.py
+@csrf_exempt
+def track_page_visit(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            visit = PageVisit(
+                path=data.get('path', '/'),
+                country=data.get('country', 'Unknown')
+            )
+            visit.save()
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'invalid method'}, status=405)
 def subscribe(request):
     if request.method != 'POST':
         return JsonResponse({'success': False}, status=400)

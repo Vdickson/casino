@@ -1,7 +1,7 @@
 # casino/urls.py
 from django.urls import path
 from . import views
-from .views import contact_submit
+from .views import contact_submit, track_page_visit
 from .views import track_interaction, analytics_dashboard
 
 
@@ -14,6 +14,6 @@ urlpatterns = [
     # ... existing paths ...
     path('track-interaction/', track_interaction, name='track_interaction'),
     path('admin/analytics/', analytics_dashboard, name='analytics_dashboard'),
-
+    path('track-visit/', track_page_visit, name='track_page_visit'),
 
 ]

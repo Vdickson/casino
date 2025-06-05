@@ -55,9 +55,6 @@
                 padding-left: 15px;
                 padding-right: 15px;
             }
-            .navbar-brand img {
-                height: 35px; /* Slightly smaller on mobile */
-            }
         }
 
         @media (max-width: 480px) {
@@ -99,19 +96,18 @@
             border-radius: 15px;
             transition: all 0.3s;
         }
-
         .alert-messages {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            min-width: 300px;
-        }
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    min-width: 300px;
+}
 
-        .alert {
-            box-shadow: 0 0 15px rgba(0,0,0,0.3);
-            border: 1px solid var(--neon-teal);
-        }
+.alert {
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    border: 1px solid var(--neon-teal);
+}
 
         .offer-card:hover {
             transform: scale(1.03);
@@ -133,17 +129,6 @@
             padding: 15px;
         }
 
-        .navbar-brand img {
-            height: 40px; /* Logo height */
-            margin-right: 10px;
-            filter: drop-shadow(0 0 5px var(--neon-teal));
-            transition: transform 0.3s ease;
-        }
-
-        .navbar-brand:hover img {
-            transform: rotate(15deg);
-        }
-
         @keyframes glow {
             from { text-shadow: 0 0 10px var(--neon-teal); }
             to { text-shadow: 0 0 30px var(--neon-teal); }
@@ -157,12 +142,10 @@
     </style>
 </head>
 <body>
-    <!-- Navigation Bar with Logo -->
+    <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background: linear-gradient(45deg, var(--deep-purple), var(--ocean-blue)); box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative; z-index: 1001;">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
-                <!-- FireKirin Logo -->
-                <img src="{% static 'images/fk2.jpeg' %}" alt="FireKirin Logo" class="d-inline-block align-top">
                 <span class="title-glitter fw-bold me-2">FireKirin 13</span>
                 <span class="badge bg-danger">TRUSTED</span>
             </a>
@@ -209,6 +192,7 @@
             </h1>
             <p class="lead text-teal mb-0">Trusted Online Casino with Instant Cashouts & 24/7 Support</p>
             <p class="lead text-teal mb-2">Play popular fish games like Orion Stars, Juwa, and Ultra Panda</p>
+
         </div>
     </header>
 
@@ -227,39 +211,40 @@
         </div>
     </div>
 
-    <!-- Limited Offer Countdown -->
-    <div class="container text-center mt-4">
-        {% if active_offer %}
-        <!-- Active Offer -->
-        <div class="countdown-flash p-3 rounded" style="background-color: #fff4e5; border: 2px solid #ffa500;">
-            <div style="color: #d9534f; font-weight: 700; font-size: 1.5rem; margin-bottom: 0.5rem;">
-                ⚡ FLASH OFFER: {{ active_offer.title }} ⚡
-            </div>
-            <div style="color: #0275d8; font-style: italic; font-size: 1.2rem; margin-bottom: 0.75rem;">
-                {{ active_offer.description }}
-            </div>
-            <span id="countdown-timer" class="fw-bold fs-2" style="color: #5cb85c;"></span>
+   <!-- Limited Offer Countdown -->
+<!-- Limited Offer Countdown -->
+<div class="container text-center mt-4">
+    {% if active_offer %}
+    <!-- Active Offer -->
+    <div class="countdown-flash p-3 rounded" style="background-color: #fff4e5; border: 2px solid #ffa500;">
+        <div style="color: #d9534f; font-weight: 700; font-size: 1.5rem; margin-bottom: 0.5rem;">
+            ⚡ FLASH OFFER: {{ active_offer.title }} ⚡
         </div>
-
-        {% elif future_offer %}
-        <!-- Upcoming Offer -->
-        <div class="countdown-upcoming p-3 rounded" style="background-color: #e3f2fd; border: 2px solid #2196f3;">
-            <div style="color: #1976d2; font-weight: 700; font-size: 1.5rem; margin-bottom: 0.5rem;">
-                🕒 UPCOMING OFFER: {{ future_offer.title }} 🕒
-            </div>
-            <div style="color: #0d47a1; font-style: italic; font-size: 1.2rem; margin-bottom: 0.75rem;">
-                {{ future_offer.description }}
-            </div>
-            <span id="countdown-timer" class="fw-bold fs-2" style="color: #5cb85c;"></span>
+        <div style="color: #0275d8; font-style: italic; font-size: 1.2rem; margin-bottom: 0.75rem;">
+            {{ active_offer.description }}
         </div>
-
-        {% else %}
-        <!-- No Offers -->
-        <div class="p-3 rounded" style="background-color: #ffebee; border: 2px solid #ff1744; color: #d32f2f; font-weight: 700;">
-            📢 NO ACTIVE OFFERS! CHECK BACK SOON! 📢
-        </div>
-        {% endif %}
+        <span id="countdown-timer" class="fw-bold fs-2" style="color: #5cb85c;"></span>
     </div>
+
+    {% elif future_offer %}
+    <!-- Upcoming Offer -->
+    <div class="countdown-upcoming p-3 rounded" style="background-color: #e3f2fd; border: 2px solid #2196f3;">
+        <div style="color: #1976d2; font-weight: 700; font-size: 1.5rem; margin-bottom: 0.5rem;">
+            🕒 UPCOMING OFFER: {{ future_offer.title }} 🕒
+        </div>
+        <div style="color: #0d47a1; font-style: italic; font-size: 1.2rem; margin-bottom: 0.75rem;">
+            {{ future_offer.description }}
+        </div>
+        <span id="countdown-timer" class="fw-bold fs-2" style="color: #5cb85c;"></span>
+    </div>
+
+    {% else %}
+    <!-- No Offers -->
+    <div class="p-3 rounded" style="background-color: #ffebee; border: 2px solid #ff1744; color: #d32f2f; font-weight: 700;">
+        📢 NO ACTIVE OFFERS! CHECK BACK SOON! 📢
+    </div>
+    {% endif %}
+</div>
 
     <!-- Promotions Section with Semantic Tag -->
     <section id="promotions" class="container mt-5" aria-label="Current promotions">
@@ -293,7 +278,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Payment Methods -->
     <div class="container mt-5">
@@ -310,6 +295,7 @@
     </div>
 
     <!-- Game Selection -->
+    <!-- Games Section with Improved Heading Structure -->
     <section id="games" class="container mt-5">
         <h2 class="text-center mb-4">🎮 Premium Fish Game Collection</h2>
         <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3 justify-content-center">
@@ -354,7 +340,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Instructions Section with Semantic Tag -->
     <section id="play-instructions" class="container mt-5" aria-label="How to play instructions">
@@ -380,143 +366,141 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+<!-- Contact Form -->
+<div id="contact" class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="offer-card p-4">
+                <h3 class="text-center text-sea-green">📨 Contact Us!</h3>
 
-    <!-- Contact Form -->
-    <div id="contact" class="container mt-5 mb-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="offer-card p-4">
-                    <h3 class="text-center text-sea-green">📨 Contact Us!</h3>
-
-                    <!-- Messages -->
-                    {% if messages %}
-                    <div class="alert-messages">
-                        {% for message in messages %}
-                        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
-                            {{ message }}
-                        </div>
-                        {% endfor %}
+                <!-- Messages -->
+                {% if messages %}
+                <div class="alert-messages">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
+                        {{ message }}
                     </div>
-                    {% endif %}
-
-                    <form method="post" action="{% url 'contact_submit' %}" class="mt-4">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            {{ contact_form.name }}
-                        </div>
-                        <div class="mb-3">
-                            {{ contact_form.email }}
-                        </div>
-                        <div class="mb-3" >
-                            {{ contact_form.message }}
-                        </div>
-                        <button type="submit" class="btn btn-sea-green w-100">Cast Your Message 🎣</button>
-                    </form>
+                    {% endfor %}
                 </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'contact_submit' %}" class="mt-4">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ contact_form.name }}
+                    </div>
+                    <div class="mb-3">
+                        {{ contact_form.email }}
+                    </div>
+                    <div class="mb-3" >
+                        {{ contact_form.message }}
+                    </div>
+                    <button type="submit" class="btn btn-sea-green w-100">Cast Your Message 🎣</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
+<script>
+     function updateCountdown(offerData) {
+        // Parse dates as UTC explicitly
+        const parseUTCDate = (dateString) => {
+            const date = new Date(dateString);
+            return Date.UTC(
+                date.getUTCFullYear(),
+                date.getUTCMonth(),
+                date.getUTCDate(),
+                date.getUTCHours(),
+                date.getUTCMinutes(),
+                date.getUTCSeconds()
+            );
+        };
 
-    <script>
-        function updateCountdown(offerData) {
-            // Parse dates as UTC explicitly
-            const parseUTCDate = (dateString) => {
-                const date = new Date(dateString);
-                return Date.UTC(
-                    date.getUTCFullYear(),
-                    date.getUTCMonth(),
-                    date.getUTCDate(),
-                    date.getUTCHours(),
-                    date.getUTCMinutes(),
-                    date.getUTCSeconds()
-                );
-            };
+        const now = Date.now();
+        const startTime = parseUTCDate(offerData.start);
+        const endTime = parseUTCDate(offerData.end);
 
-            const now = Date.now();
-            const startTime = parseUTCDate(offerData.start);
-            const endTime = parseUTCDate(offerData.end);
+        let targetTime = endTime;
+        let status = "ENDS IN:";
+        let isActiveOffer = true;
 
-            let targetTime = endTime;
-            let status = "ENDS IN:";
-            let isActiveOffer = true;
-
-            // For offers not yet started
-            if (now < startTime) {
-                targetTime = startTime;
-                status = "STARTS IN:";
-                isActiveOffer = false;
-            }
-
-            const timer = setInterval(() => {
-                const now = Date.now();
-                let distance = targetTime - now;
-
-                if (distance < 0) {
-                    clearInterval(timer);
-                    if (isActiveOffer) {
-                        document.getElementById("countdown-timer").innerHTML = "OFFER EXPIRED!";
-                        setTimeout(() => location.reload(), 5000);
-                    } else {
-                        document.getElementById("countdown-timer").innerHTML = "OFFER STARTED!";
-                        setTimeout(() => location.reload(), 5000);
-                    }
-                    return;
-                }
-
-                const hours = Math.floor(distance / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                document.getElementById("countdown-timer").innerHTML =
-                    `${status} ${hours}h ${minutes}m ${seconds}s`;
-            }, 1000);
+        // For offers not yet started
+        if (now < startTime) {
+            targetTime = startTime;
+            status = "STARTS IN:";
+            isActiveOffer = false;
         }
 
-        {% if active_offer %}
-        updateCountdown({
-            start: "{{ active_offer.scheduled_start|date:'Y-m-d\TH:i:s\Z' }}",
-            end: "{{ active_offer.countdown_end|date:'Y-m-d\TH:i:s\Z' }}"
-        });
-        {% elif future_offer %}
-        updateCountdown({
-            start: "{{ future_offer.scheduled_start|date:'Y-m-d\TH:i:s\Z' }}",
-            end: "{{ future_offer.countdown_end|date:'Y-m-d\TH:i:s\Z' }}"
-        });
-        {% endif %}
+        const timer = setInterval(() => {
+            const now = Date.now();
+            let distance = targetTime - now;
 
-        // Modified SSE handler with data validation
-        const eventSource = new EventSource('/updates/');
-        eventSource.onmessage = function (e) {
-            try {
-                const win = JSON.parse(e.data);
-                if (win.username && win.amount) {
-                    const marquee = document.querySelector('marquee');
-                    marquee.innerHTML += ` 🎣 ${win.username} Won $${win.amount}!`;
-
-                    // Limit the number of displayed wins
-                    const maxWins = 10;
-                    const wins = marquee.innerHTML.split('🎣');
-                    if (wins.length > maxWins) {
-                        marquee.innerHTML = wins.slice(-maxWins).join('🎣');
-                    }
+            if (distance < 0) {
+                clearInterval(timer);
+                if (isActiveOffer) {
+                    document.getElementById("countdown-timer").innerHTML = "OFFER EXPIRED!";
+                    setTimeout(() => location.reload(), 5000);
+                } else {
+                    document.getElementById("countdown-timer").innerHTML = "OFFER STARTED!";
+                    setTimeout(() => location.reload(), 5000);
                 }
-            } catch (error) {
-                console.error('Error processing win:', error);
+                return;
             }
-        };
 
-        // Add error handling for SSE
-        eventSource.onerror = function (e) {
-            console.error('EventSource failed:', e);
-            eventSource.close();
-            setTimeout(() => {
-                // Reconnect after 5 seconds
-                new EventSource('/updates/');
-            }, 5000);
-        };
+            const hours = Math.floor(distance / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        // Add to your base template (e.g., casino/base.html)
+            document.getElementById("countdown-timer").innerHTML =
+                `${status} ${hours}h ${minutes}m ${seconds}s`;
+        }, 1000);
+    }
+
+    {% if active_offer %}
+    updateCountdown({
+        start: "{{ active_offer.scheduled_start|date:'Y-m-d\TH:i:s\Z' }}",
+        end: "{{ active_offer.countdown_end|date:'Y-m-d\TH:i:s\Z' }}"
+    });
+    {% elif future_offer %}
+    updateCountdown({
+        start: "{{ future_offer.scheduled_start|date:'Y-m-d\TH:i:s\Z' }}",
+        end: "{{ future_offer.countdown_end|date:'Y-m-d\TH:i:s\Z' }}"
+    });
+    {% endif %}
+
+    // Modified SSE handler with data validation
+    const eventSource = new EventSource('/updates/');
+    eventSource.onmessage = function (e) {
+        try {
+            const win = JSON.parse(e.data);
+            if (win.username && win.amount) {
+                const marquee = document.querySelector('marquee');
+                marquee.innerHTML += ` 🎣 ${win.username} Won $${win.amount}!`;
+
+                // Limit the number of displayed wins
+                const maxWins = 10;
+                const wins = marquee.innerHTML.split('🎣');
+                if (wins.length > maxWins) {
+                    marquee.innerHTML = wins.slice(-maxWins).join('🎣');
+                }
+            }
+        } catch (error) {
+            console.error('Error processing win:', error);
+        }
+    };
+
+    // Add error handling for SSE
+    eventSource.onerror = function (e) {
+        console.error('EventSource failed:', e);
+        eventSource.close();
+        setTimeout(() => {
+            // Reconnect after 5 seconds
+            new EventSource('/updates/');
+        }, 5000);
+    };
+    <!-- Add to your base template (e.g., casino/base.html) -->
+<script>
 document.addEventListener('DOMContentLoaded', function() {
     // Track all button clicks
     document.body.addEventListener('click', function(e) {
@@ -525,16 +509,12 @@ document.addEventListener('DOMContentLoaded', function() {
             let type = 'button_click';
             if (target.tagName === 'A') type = 'link_click';
 
-            // Get the element text
-            let text = target.innerText || target.textContent;
-            text = text.substring(0, 100); // Limit length
-
             trackInteraction({
                 type: type,
-                element_id: target.id || '',
+                element_id: target.id,
                 page_path: window.location.pathname,
                 data: {
-                    text: text.trim(),
+                    text: target.innerText.trim(),
                     classes: target.className
                 }
             });
@@ -544,15 +524,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Special offer interest tracking
     document.querySelectorAll('.offer-card').forEach(card => {
         card.addEventListener('click', () => {
-            // Get offer title if available
-            const titleElement = card.querySelector('h5, h6');
-            const title = titleElement ? titleElement.innerText : 'Unknown Offer';
-
             trackInteraction({
                 type: 'offer_interest',
                 page_path: window.location.pathname,
                 data: {
-                    offer_title: title.substring(0, 100)
+                    offer_id: card.dataset.offerId
                 }
             });
         });
@@ -561,80 +537,35 @@ document.addEventListener('DOMContentLoaded', function() {
     function trackInteraction(data) {
         if (!{{ tracking_enabled|yesno:"true,false" }}) return;
 
-        // Add CSRF token for security
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
-
         fetch("{% url 'track_interaction' %}", {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken || ''
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
-        }).catch(error => console.error('Tracking error:', error));
+        });
     }
-
-    // Initialize country detection for page visits
-    trackPageVisit();
 });
+</script>
+</script>
 
-// Add this new function to track page visits with country
-function trackPageVisit() {
-    fetch("https://ipapi.co/json/")
-        .then(response => response.json())
-        .then(data => {
-            const country = data.country_name || 'Unknown';
-
-            // Send visit data to server
-            fetch("{% url 'track_page_visit' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
-                },
-                body: JSON.stringify({
-                    path: window.location.pathname,
-                    country: country
-                })
-            });
-        })
-        .catch(() => {
-            // Fallback if IP detection fails
-            fetch("{% url 'track_page_visit' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
-                },
-                body: JSON.stringify({
-                    path: window.location.pathname,
-                    country: 'Unknown'
-                })
-            });
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+</style>
+<script>
+    // Close mobile menu when clicking a nav link
+    document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            if (navbarCollapse.classList.contains('show')) {
+                // Bootstrap way to close the collapse
+                bootstrap.Collapse.getOrCreateInstance(navbarCollapse).hide();
+            }
         });
-}    </script>
-
-    <style>
-        html {
-            scroll-behavior: smooth;
-        }
-    </style>
-
-    <script>
-        // Close mobile menu when clicking a nav link
-        document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                const navbarCollapse = document.querySelector('.navbar-collapse');
-                if (navbarCollapse.classList.contains('show')) {
-                    // Bootstrap way to close the collapse
-                    bootstrap.Collapse.getOrCreateInstance(navbarCollapse).hide();
-                }
-            });
-        });
-    </script>
-
-    <footer style="background: #0a0a0a; color: var(--gold); text-align: center; padding: 15px 0; font-size: 0.9rem; border-top: 2px solid var(--gold); margin-top: 40px;">
-        &copy; {{ now.year }} FireKirin Gameroom. All rights reserved.
-    </footer>
+    });
+</script>
+<footer style="background: #0a0a0a; color: var(--gold); text-align: center; padding: 15px 0; font-size: 0.9rem; border-top: 2px solid var(--gold); margin-top: 40px;">
+    &copy; {{ now.year }} FireKirin Gameroom. All rights reserved.
+</footer>
 </body>
 </html>
