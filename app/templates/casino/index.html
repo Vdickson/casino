@@ -4,9 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FireKirin Gameroom 13 - Premium Fish Casino</title>
+    <meta name="description" content="Play premium fish games at FireKirin Gameroom 13. Instant cashouts, 24/7 support, and generous bonuses on all deposits. Join now for exciting online casino action!">
+    <meta name="keywords" content="FireKirin, Orion Stars, fish games, online casino, cash games, instant withdrawal, slots, gambling">
+    <title>FireKirin Gameroom 13 | Premium Online Fish Casino Games</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         :root {
             --ocean-blue: #0A1931;
@@ -21,9 +24,51 @@
 
         @media (max-width: 768px) {
             .display-3 {
-                font-size: 2.5rem;
+                font-size: 2rem;
+                line-height: 1.2;
             }
             .lead {
+                font-size: 1rem;
+            }
+            .navbar-collapse {
+                position: fixed;
+                width: 300px;
+                height: 100vh;
+                right: -300px;
+                top: 56px;
+                background: linear-gradient(45deg, var(--deep-purple), var(--ocean-blue));
+                padding: 20px;
+                transition: right 0.3s ease;
+                z-index: 1000;
+            }
+            .navbar-collapse.show {
+                right: 0;
+            }
+            .game-bubble {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+            .offer-card {
+                margin-bottom: 15px;
+            }
+            .container {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .display-3 {
+                font-size: 1.8rem;
+            }
+            .lead {
+                font-size: 0.9rem;
+            }
+            .navbar-brand {
+                font-size: 1rem;
+            }
+            .countdown-flash {
+                padding: 10px;
                 font-size: 1rem;
             }
         }
@@ -98,13 +143,13 @@
 </head>
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background: linear-gradient(45deg, var(--deep-purple), var(--ocean-blue)); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background: linear-gradient(45deg, var(--deep-purple), var(--ocean-blue)); box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative; z-index: 1001;">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
                 <span class="title-glitter fw-bold me-2">FireKirin 13</span>
                 <span class="badge bg-danger">TRUSTED</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -117,6 +162,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#promotions">Promotions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#play-instructions">How to Play</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#contact">Contact</a>
@@ -136,14 +184,14 @@
         </div>
     </nav>
 
-    <!-- Animated Header -->
-    <header id="home" class="text-center py-5 mt-3">
+    <!-- Main Header with Semantic Improvement -->
+    <header id="home" class="text-center py-5 mt-3" role="banner">
         <div class="container">
             <h1 class="title-glitter display-3 fw-bold animate__animated animate__rubberBand">
-                🐠 FireKirin Gameroom 13 🎣
+                FireKirin Gameroom 13 - Premium Online Fish Games
             </h1>
-            <p class="lead text-teal mb-0">Trusted Gameroom, where winnings are transformed into $$$!</p>
-            <h2 class="lead text-teal mb-2">Instant cashouts, No scams, 24/7 customer service!</h2>
+            <p class="lead text-teal mb-0">Trusted Online Casino with Instant Cashouts & 24/7 Support</p>
+            <p class="lead text-teal mb-2">Play popular fish games like Orion Stars, Juwa, and Ultra Panda</p>
 
         </div>
     </header>
@@ -198,9 +246,9 @@
     {% endif %}
 </div>
 
-    <!-- Static Offers Cards -->
-    <div id="promotions" class="container mt-5">
-        <h3 class="text-center mb-4">🎁 Special Offers</h3>
+    <!-- Promotions Section with Semantic Tag -->
+    <section id="promotions" class="container mt-5" aria-label="Current promotions">
+        <h2 class="text-center mb-4">🎁 Exclusive Casino Bonuses & Promotions</h2>
         <div class="row justify-content-center gy-3">
             <div class="col-lg-3 col-md-6">
                 <div class="offer-card p-4 text-center h-100">
@@ -247,8 +295,9 @@
     </div>
 
     <!-- Game Selection -->
-    <div id="games" class="container mt-5">
-        <h3 class="text-center mb-4">🎮 Featured Fish Games</h3>
+    <!-- Games Section with Improved Heading Structure -->
+    <section id="games" class="container mt-5">
+        <h2 class="text-center mb-4">🎮 Premium Fish Game Collection</h2>
         <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3 justify-content-center">
             <div class="col">
                 <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
@@ -293,8 +342,8 @@
         </div>
     </div>
 
-    <!-- How to Play & Contact Agent -->
-    <div class="container mt-5">
+    <!-- Instructions Section with Semantic Tag -->
+    <section id="play-instructions" class="container mt-5" aria-label="How to play instructions">
         <div class="row">
             <div class="col-md-6">
                 <div class="offer-card p-4">
@@ -450,8 +499,71 @@
             new EventSource('/updates/');
         }, 5000);
     };
+    <!-- Add to your base template (e.g., casino/base.html) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Track all button clicks
+    document.body.addEventListener('click', function(e) {
+        const target = e.target.closest('button, a');
+        if (target) {
+            let type = 'button_click';
+            if (target.tagName === 'A') type = 'link_click';
+
+            trackInteraction({
+                type: type,
+                element_id: target.id,
+                page_path: window.location.pathname,
+                data: {
+                    text: target.innerText.trim(),
+                    classes: target.className
+                }
+            });
+        }
+    });
+
+    // Special offer interest tracking
+    document.querySelectorAll('.offer-card').forEach(card => {
+        card.addEventListener('click', () => {
+            trackInteraction({
+                type: 'offer_interest',
+                page_path: window.location.pathname,
+                data: {
+                    offer_id: card.dataset.offerId
+                }
+            });
+        });
+    });
+
+    function trackInteraction(data) {
+        if (!{{ tracking_enabled|yesno:"true,false" }}) return;
+
+        fetch("{% url 'track_interaction' %}", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+    }
+});
+</script>
 </script>
 
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+</style>
+<script>
+    // Close mobile menu when clicking a nav link
+    document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            if (navbarCollapse.classList.contains('show')) {
+                // Bootstrap way to close the collapse
+                bootstrap.Collapse.getOrCreateInstance(navbarCollapse).hide();
+            }
+        });
+    });
+</script>
 <footer style="background: #0a0a0a; color: var(--gold); text-align: center; padding: 15px 0; font-size: 0.9rem; border-top: 2px solid var(--gold); margin-top: 40px;">
     &copy; {{ now.year }} FireKirin Gameroom. All rights reserved.
 </footer>

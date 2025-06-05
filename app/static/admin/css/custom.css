@@ -1,0 +1,91 @@
+/* Custom Admin Styles */
+#content {
+    padding: 20px 30px;
+}
+
+.dashboard table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.dashboard table th {
+    background: #f5f7fa;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #2d3748;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.dashboard table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #edf2f7;
+    color: #4a5568;
+}
+
+.dashboard table tr:hover td {
+    background-color: #f7fafc;
+}
+
+.button {
+    display: inline-block;
+    padding: 6px 12px;
+    background: #4a86e8;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.button:hover {
+    background: #3a76d8;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.delete-button {
+    background: #e53e3e;
+}
+
+.delete-button:hover {
+    background: #c53030;
+}
+
+.status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.object-tools {
+    margin-bottom: 15px;
+}
+
+.object-tools a {
+    background: #48bb78;
+}
+
+.object-tools a:hover {
+    background: #38a169;
+}
+
+/* Dashboard cards */
+.dashboard .card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.dashboard .card h2 {
+    margin-top: 0;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #edf2f7;
+    color: #2d3748;
+}
