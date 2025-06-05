@@ -57,6 +57,8 @@ class Offer(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=['scheduled_start', 'countdown_end']),
+            models.Index(fields=['is_active', 'scheduled_start']),
+            models.Index(fields=['is_active', 'countdown_end']),
         ]
 
 
@@ -98,6 +100,9 @@ class PageVisit(models.Model):
         verbose_name = "Page Visit"
         verbose_name_plural = "Page Visits"
         ordering = ['-timestamp']
+        indexes = [
+            models.Index(fields=['-timestamp', 'path']),
+        ]
 
 
 class UserInteraction(models.Model):
@@ -121,6 +126,9 @@ class UserInteraction(models.Model):
         verbose_name = "User Interaction"
         verbose_name_plural = "User Interactions"
         ordering = ['-timestamp']
+        indexes = [
+            models.Index(fields=['-timestamp', 'type']),
+        ]
 
     @property
     def offer_id(self):

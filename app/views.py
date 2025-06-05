@@ -9,6 +9,8 @@ from django.core.cache import cache
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from .forms import ContactForm
+from django.views.decorators.cache import cache_page
+from django.views.decorators.http import require_GE, require_GET
 from .models import LiveWin, Offer, PaymentMethod, SocialLink, UserInteraction, PageVisit
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -31,6 +33,7 @@ def home(request):
             is_active=True  # Add this filter
         )
         cache.set(OFFERS_CACHE_KEY, offers, 300)
+
 
     # Find active and future offers
     active_offer = next((o for o in offers if o.scheduled_start <= now <= o.countdown_end), None)
@@ -76,46 +79,83 @@ def contact_submit(request):
     return redirect('home')
 
 
+# def updates(request):
+#     def event_stream():
+#         last_win_id = cache.get('last_win_id', 0)
+#
+#         while True:
+#             # Get new wins using efficient filtering
+#             new_wins = LiveWin.objects.filter(
+#                 id__gt=last_win_id,
+#                 visible=True
+#             ).only('username', 'amount')
+#
+#             for win in new_wins:
+#                 yield f"data: {json.dumps({'type': 'win', 'username': win.username, 'amount': str(win.amount)})}\n\n"
+#                 last_win_id = win.id
+#                 cache.set('last_win_id', last_win_id, 86400)  # Persist for 1 day
+#
+#             # Only process active offers
+#             now = timezone.now()
+#             active_offers = Offer.objects.filter(
+#                 scheduled_start__lte=now,
+#                 countdown_end__gt=now
+#             ).only('id', 'countdown_end')
+#
+#             if active_offers:
+#                 offers_data = [{
+#                     'id': o.id,
+#                     'countdown': int((o.countdown_end - now).total_seconds())
+#                 } for o in active_offers]
+#
+#                 yield f"data: {json.dumps({'type': 'offers', 'offers': offers_data})}\n\n"
+#
+#             time.sleep(15)  # Update interval
+#
+#     return StreamingHttpResponse(
+#         event_stream(),
+#         content_type='text/event-stream',
+#         headers={'Cache-Control': 'no-cache'}
+#     )
+
+@require_GET
+@cache_page(15)  # Cache results for 15 seconds
 def updates(request):
-    def event_stream():
-        last_win_id = cache.get('last_win_id', 0)
+    now = timezone.now()
 
-        while True:
-            # Get new wins using efficient filtering
-            new_wins = LiveWin.objects.filter(
-                id__gt=last_win_id,
-                visible=True
-            ).only('username', 'amount')
+    # Get last_win_id from request parameter
+    last_win_id = int(request.GET.get('last_win_id', 0))
 
-            for win in new_wins:
-                yield f"data: {json.dumps({'type': 'win', 'username': win.username, 'amount': str(win.amount)})}\n\n"
-                last_win_id = win.id
-                cache.set('last_win_id', last_win_id, 86400)  # Persist for 1 day
+    # Fetch new wins since last_win_id
+    new_wins = LiveWin.objects.filter(
+        id__gt=last_win_id,
+        visible=True
+    ).order_by('id').values('id', 'username', 'amount')[:100]  # Limit to 100 wins
 
-            # Only process active offers
-            now = timezone.now()
-            active_offers = Offer.objects.filter(
-                scheduled_start__lte=now,
-                countdown_end__gt=now
-            ).only('id', 'countdown_end')
+    # Get active offers (countdown in progress)
+    active_offers = Offer.objects.filter(
+        scheduled_start__lte=now,
+        countdown_end__gt=now,
+        is_active=True
+    ).values('id', 'countdown_end')
 
-            if active_offers:
-                offers_data = [{
-                    'id': o.id,
-                    'countdown': int((o.countdown_end - now).total_seconds())
-                } for o in active_offers]
+    # Calculate remaining seconds for each offer
+    offers_data = []
+    for offer in active_offers:
+        time_remaining = (offer['countdown_end'] - now).total_seconds()
+        offers_data.append({
+            'id': offer['id'],
+            'countdown': int(time_remaining)
+        })
 
-                yield f"data: {json.dumps({'type': 'offers', 'offers': offers_data})}\n\n"
+    # Get latest win ID for next request
+    latest_win_id = new_wins.last()['id'] if new_wins else last_win_id
 
-            time.sleep(15)  # Update interval
-
-    return StreamingHttpResponse(
-        event_stream(),
-        content_type='text/event-stream',
-        headers={'Cache-Control': 'no-cache'}
-    )
-
-
+    return JsonResponse({
+        'wins': list(new_wins),
+        'offers': offers_data,
+        'last_win_id': latest_win_id
+    })
 # New view for recording interactions
 @csrf_exempt
 def track_interaction(request):

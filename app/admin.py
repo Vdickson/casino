@@ -6,6 +6,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 from django.db.models import Count
 from django.utils import timezone
+from django.views.decorators.cache import cache_page
+
 from .models import LiveWin, Offer, PaymentMethod, SocialLink, ContactMessage, PageVisit, UserInteraction
 
 

@@ -62,6 +62,13 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'casino.urls'
 
+# settings.py
+# Increase WSGI timeout (for Gunicorn/Uvicorn)
+if not DEBUG:
+    WSGI_APPLICATION = 'casino.wsgi.application'
+
+    # For Gunicorn
+    GUNICORN_TIMEOUT = 120
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -134,9 +141,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Update settings.py
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-snowflake",
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ.get("REDIS_URL", "redis://localhost:6379/1"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
