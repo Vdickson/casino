@@ -419,18 +419,25 @@
     </div>
 
 <script>
-    // Initialize variables for polling
+    // Initialize variables
     let lastWinId = {% if live_wins.0.id %}{{ live_wins.0.id }}{% else %}0{% endif %};
     let currentOfferId = {% if active_offer %}{{ active_offer.id }}{% elif future_offer %}{{ future_offer.id }}{% else %}null{% endif %};
     let isPollingActive = true;
+    let lastServerUpdate = Date.now();
+    let serverCountdownSeconds = {% if active_offer %}{{ active_offer.time_remaining.total_seconds|default:0|floatformat:0 }}{% elif future_offer %}{{ future_offer.time_until_start.total_seconds|default:0|floatformat:0 }}{% else %}0{% endif %};
     let countdownInterval;
+    let hiddenStartTime;
 
     // Function to update countdown display
-    function updateCountdownDisplay(seconds) {
-        // Clear any existing interval to prevent duplicates
+    function updateCountdownDisplay() {
+        // Clear any existing interval
         clearInterval(countdownInterval);
 
-        if (seconds <= 0) {
+        // Calculate elapsed time since last server sync
+        const elapsedSeconds = Math.floor((Date.now() - lastServerUpdate) / 1000);
+        let remainingSeconds = Math.max(0, serverCountdownSeconds - elapsedSeconds);
+
+        if (remainingSeconds <= 0) {
             document.getElementById("countdown-timer").innerHTML = "OFFER EXPIRED!";
             setTimeout(() => location.reload(), 5000);
             return;
@@ -438,22 +445,22 @@
 
         // Start a new interval for smooth countdown
         countdownInterval = setInterval(() => {
-            if (seconds <= 0) {
+            remainingSeconds--;
+
+            if (remainingSeconds <= 0) {
                 clearInterval(countdownInterval);
                 document.getElementById("countdown-timer").innerHTML = "OFFER EXPIRED!";
                 setTimeout(() => location.reload(), 5000);
                 return;
             }
 
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const secondsRemaining = seconds % 60;
+            const hours = Math.floor(remainingSeconds / 3600);
+            const minutes = Math.floor((remainingSeconds % 3600) / 60);
+            const secondsRemaining = remainingSeconds % 60;
 
             const status = "{% if active_offer %}ENDS IN:{% else %}STARTS IN:{% endif %}";
             document.getElementById("countdown-timer").innerHTML =
                 `${status} ${hours}h ${minutes}m ${secondsRemaining}s`;
-
-            seconds--;
         }, 1000);
     }
 
@@ -467,6 +474,9 @@
                 return response.json();
             })
             .then(data => {
+                // Update last server sync time
+                lastServerUpdate = Date.now();
+
                 // Process new wins
                 if (data.wins && data.wins.length > 0) {
                     const marquee = document.querySelector('marquee');
@@ -499,7 +509,8 @@
                         // Update countdown timers
                         data.offers.forEach(offer => {
                             if (offer.id === currentOfferId) {
-                                updateCountdownDisplay(offer.countdown);
+                                serverCountdownSeconds = offer.countdown;
+                                updateCountdownDisplay();
                             }
                         });
                     }
@@ -515,17 +526,15 @@
             });
     }
 
-    // Add to your base template (e.g., casino/base.html)
+    // Add to your base template
     document.addEventListener('DOMContentLoaded', function() {
         // Start polling when page loads
         pollUpdates();
 
         // Initialize countdown if offer exists
-        {% if active_offer %}
-        updateCountdownDisplay({{ active_offer.time_remaining.total_seconds|default:0|floatformat:0 }});
-        {% elif future_offer %}
-        updateCountdownDisplay({{ future_offer.time_until_start.total_seconds|default:0|floatformat:0 }});
-        {% endif %}
+        if (serverCountdownSeconds > 0) {
+            updateCountdownDisplay();
+        }
 
         // Track all button clicks
         document.body.addEventListener('click', function(e) {
@@ -598,7 +607,7 @@
         trackPageVisit();
     });
 
-    // Add this new function to track page visits with country
+    // Track page visits with country
     function trackPageVisit() {
         fetch("https://ipapi.co/json/")
             .then(response => response.json())
@@ -634,24 +643,28 @@
             });
     }
 
-    // Stop polling when page is hidden
+    // Handle visibility changes
     document.addEventListener('visibilitychange', function() {
         if (document.visibilityState === 'hidden') {
+            // Save the time when the page was hidden
+            hiddenStartTime = Date.now();
             isPollingActive = false;
-            clearInterval(countdownInterval);
         } else {
+            // Calculate how long the page was hidden
+            const hiddenDuration = Date.now() - hiddenStartTime;
+            // Adjust the server update time to account for hidden period
+            lastServerUpdate += hiddenDuration;
             isPollingActive = true;
             pollUpdates();
         }
     });
 
-    // Stop polling when navigating away
+    // Clean up when navigating away
     window.addEventListener('beforeunload', function() {
         isPollingActive = false;
         clearInterval(countdownInterval);
     });
-</script>
-    <style>
+</script>    <style>
         html {
             scroll-behavior: smooth;
         }
