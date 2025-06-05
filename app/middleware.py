@@ -1,7 +1,7 @@
-# middleware.py (create new file)
+# middleware.py
 import geoip2.database
 from django.conf import settings
-from .models import PageVisit
+from django.utils import timezone
 
 
 class PageVisitMiddleware:
@@ -15,6 +15,9 @@ class PageVisitMiddleware:
                 pass
 
     def __call__(self, request):
+        # Defer model import to avoid circular dependencies
+        from .models import PageVisit
+
         if not request.path.startswith('/admin') and not request.path.startswith('/static'):
             ip = self.get_client_ip(request)
             country = None
