@@ -143,15 +143,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Update settings.py
 
-# redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+
+if not redis_url.startswith(("redis://", "rediss://", "unix://")):
+    raise ValueError("Invalid Redis URL scheme")
 
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.environ.get("REDIS_URL", "redis://localhost:6379/0"),
+        "LOCATION": redis_url + "/0" if redis_url.count("/") == 2 else redis_url,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
-}
 }
