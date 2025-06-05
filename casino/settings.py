@@ -143,7 +143,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Update settings.py
 
-redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+redis_url = os.environ.get("REDIS_URL", "redis://default:Y5yNT6oIVGyWO7YlVI1GIYseYUTNFL6S@redis.railway.internal:6379")
 
 if not redis_url.startswith(("redis://", "rediss://", "unix://")):
     raise ValueError("Invalid Redis URL scheme")
