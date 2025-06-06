@@ -1,19 +1,28 @@
 # views.py
 import json
 import time
+from django.db.models import F
+
 from django.shortcuts import render, redirect
 from django.http import StreamingHttpResponse, JsonResponse
 from django.utils import timezone
 from django.contrib import messages
 from django.core.cache import cache
+# views.py
+from django.utils import timezone
+from django.db import transaction
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from .forms import ContactForm
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_GET
+from django.contrib.sessions.models import Session
+from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
+import json
+
 from .models import LiveWin, Offer, PaymentMethod, SocialLink, UserInteraction, PageVisit
 from django.contrib.admin.views.decorators import staff_member_required
-
 
 # Cache keys
 PAYMENT_METHODS_CACHE_KEY = 'payment_methods_cache'
@@ -25,7 +34,7 @@ def home(request):
     now = timezone.now()
 
     # Get offers with caching
-           # Get offers with caching - clear cache after save in admin
+    # Get offers with caching - clear cache after save in admin
     offers = cache.get(OFFERS_CACHE_KEY)
     if not offers:
         offers = Offer.objects.filter(
@@ -33,7 +42,6 @@ def home(request):
             is_active=True  # Add this filter
         )
         cache.set(OFFERS_CACHE_KEY, offers, 300)
-
 
     # Find active and future offers
     active_offer = next((o for o in offers if o.scheduled_start <= now <= o.countdown_end), None)
@@ -158,6 +166,8 @@ def updates(request):
         'offers': offers_data,
         'last_win_id': latest_win_id
     })
+
+
 # New view for recording interactions
 @csrf_exempt
 def track_interaction(request):
@@ -203,21 +213,114 @@ def analytics_dashboard(request):
     }
     return render(request, 'admin/analytics.html', context)
 
-# Add to views.py
+
+# tracks user page vists
+# @csrf_exempt
+# def track_page_visit(request):
+#     if request.method != 'POST':
+#         return JsonResponse({'status': 'invalid method'}, status=405)
+#
+#     try:
+#         data = json.loads(request.body)
+#         ip = request.META.get('REMOTE_ADDR')
+#         country = data.get('country', 'Unknown')
+#         session_key = request.session.session_key
+#
+#         # Check if we have an existing active session for this IP
+#         existing_visit = None
+#         try:
+#             existing_visit = PageVisit.objects.get(
+#                 ip_address=ip,
+#                 is_active=True
+#             )
+#         except ObjectDoesNotExist:
+#             pass
+#         except PageVisit.MultipleObjectsReturned:
+#             # Handle rare case of multiple active sessions
+#             PageVisit.objects.filter(ip_address=ip, is_active=True).update(is_active=False)
+#             existing_visit = None
+#
+#         if existing_visit:
+#             # Update duration for existing session
+#             duration = (timezone.now() - existing_visit.timestamp).total_seconds()
+#             existing_visit.duration = int(duration)
+#             existing_visit.save()
+#         else:
+#             # Create new session record
+#             PageVisit.objects.create(
+#                 ip_address=ip,
+#                 country=country,
+#                 session_key=session_key
+#             )
+#
+#         return JsonResponse({'status': 'success'})
+#
+#     except Exception as e:
+#         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+# views.py
+
+
+
 @csrf_exempt
 def track_page_visit(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            visit = PageVisit(
-                path=data.get('path', '/'),
-                country=data.get('country', 'Unknown')
+    if request.method != 'POST':
+        return JsonResponse({'status': 'invalid method'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        ip = request.META.get('REMOTE_ADDR', 'Unknown')
+
+        # Ensure country is never empty
+        country = data.get('country', '').strip()
+        if not country:
+            country = 'Unknown'
+
+        # Ensure session exists
+        if not request.session.session_key:
+            request.session.create()
+        session_key = request.session.session_key
+
+        now = timezone.now()
+
+        with transaction.atomic():
+            # Get or create session record
+            visit, created = PageVisit.objects.select_for_update().get_or_create(
+                session_key=session_key,
+                defaults={
+                    'ip_address': ip,
+                    'country': country,
+                    'timestamp': now,
+                    'last_activity': now
+                }
             )
-            visit.save()
-            return JsonResponse({'status': 'success'})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
-    return JsonResponse({'status': 'invalid method'}, status=405)
+
+            # Update existing record
+            if not created:
+                # Calculate time since last activity
+                time_since_last = (now - visit.last_activity).total_seconds()
+
+                # Only add to duration if user was active in last 5 minutes
+                if time_since_last < 300:  # 5 minutes
+                    visit.duration += int(time_since_last)
+
+                # Update IP if changed
+                if visit.ip_address != ip:
+                    visit.ip_address = ip
+
+                # Update country if previously unknown
+                if visit.country == 'Unknown' and country != 'Unknown':
+                    visit.country = country
+
+                # Update last activity time
+                visit.last_activity = now
+                visit.save()
+
+        return JsonResponse({'status': 'success'})
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
 def subscribe(request):
     if request.method != 'POST':
         return JsonResponse({'success': False}, status=400)

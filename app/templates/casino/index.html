@@ -608,13 +608,88 @@
     });
 
     // Track page visits with country
+// Global variable to store detected country
+  // In your base template
+  // Global variable to store detected country
+let detectedCountry = null;
+let lastPingTime = Date.now();
+
+function trackPageVisit(useBeacon = false) {
+    const now = Date.now();
+    const timeSinceLast = (now - lastPingTime) / 1000; // in seconds
+    lastPingTime = now;
+
+    // Only send ping if user was active recently
+    if (timeSinceLast < 300) {
+        sendVisitData(detectedCountry, useBeacon);
+    }
+}
+
+function sendVisitData(country, useBeacon) {
+    const data = { country: country || 'Unknown' };
+
+    if (useBeacon && navigator.sendBeacon) {
+        const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+        navigator.sendBeacon("{% url 'track_page_visit' %}", blob);
+    } else {
+        fetch("{% url 'track_page_visit' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': "{{ csrf_token }}"
+            },
+            body: JSON.stringify(data)
+        }).catch(error => console.error('Tracking error:', error));
+    }
+}
+
+// Detect country first
+function detectCountry() {
+    fetch("https://ipapi.co/json/")
+        .then(response => response.json())
+        .then(data => {
+            detectedCountry = data.country_name || 'Unknown';
+            // Send initial visit with country
+            trackPageVisit();
+        })
+        .catch(() => {
+            detectedCountry = 'Unknown';
+            trackPageVisit();
+        });
+}
+
+// Initialize tracking
+document.addEventListener('DOMContentLoaded', () => {
+    detectCountry();
+
+    // Set up periodic pings every 30 seconds
+    setInterval(() => trackPageVisit(), 30000);
+});
+
+// Final ping when user leaves
+window.addEventListener('beforeunload', () => trackPageVisit(true));
+
+// Track user activity to reset idle timer
+document.addEventListener('mousemove', () => lastPingTime = Date.now());
+document.addEventListener('keypress', () => lastPingTime = Date.now());
+    // Handle visibility changes
+// Track page visibility changes
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'hidden') {
+            // Send final ping when user leaves
+            trackPageVisit();
+        }
+    });
+
+    // Send periodic updates every 30 seconds
+    setInterval(trackPageVisit, 30000);
+
     function trackPageVisit() {
         fetch("https://ipapi.co/json/")
             .then(response => response.json())
             .then(data => {
                 const country = data.country_name || 'Unknown';
 
-                // Send visit data to server
                 fetch("{% url 'track_page_visit' %}", {
                     method: 'POST',
                     headers: {
@@ -622,7 +697,6 @@
                         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
                     },
                     body: JSON.stringify({
-                        path: window.location.pathname,
                         country: country
                     })
                 });
@@ -636,29 +710,14 @@
                         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
                     },
                     body: JSON.stringify({
-                        path: window.location.pathname,
                         country: 'Unknown'
                     })
                 });
             });
     }
 
-    // Handle visibility changes
-    document.addEventListener('visibilitychange', function() {
-        if (document.visibilityState === 'hidden') {
-            // Save the time when the page was hidden
-            hiddenStartTime = Date.now();
-            isPollingActive = false;
-        } else {
-            // Calculate how long the page was hidden
-            const hiddenDuration = Date.now() - hiddenStartTime;
-            // Adjust the server update time to account for hidden period
-            lastServerUpdate += hiddenDuration;
-            isPollingActive = true;
-            pollUpdates();
-        }
-    });
-
+    // Initial page visit tracking
+    document.addEventListener('DOMContentLoaded', trackPageVisit);
     // Clean up when navigating away
     window.addEventListener('beforeunload', function() {
         isPollingActive = false;

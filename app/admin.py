@@ -152,11 +152,11 @@ class ContactMessageAdmin(BaseModelAdmin):
 
 @admin.register(PageVisit)
 class PageVisitAdmin(admin.ModelAdmin):
-    list_display = ('path', 'ip_address', 'country', 'timestamp', 'view_button')
-    list_filter = ('path', 'country', 'timestamp')
-    search_fields = ('path', 'ip_address')
+    list_display = ('ip_address', 'country', 'timestamp', 'duration','last_activity', 'view_button')
+    list_filter = ('country', 'timestamp', 'is_active')
+    list_filter = ('country',)
     date_hierarchy = 'timestamp'
-    readonly_fields = ('path', 'ip_address', 'country', 'timestamp')
+    readonly_fields = ('ip_address', 'country', 'timestamp', 'duration', 'session_key')
     list_per_page = 15
 
     def view_button(self, obj):
@@ -173,7 +173,6 @@ class PageVisitAdmin(admin.ModelAdmin):
 
     class Media:
         css = {'all': ('admin/css/custom.css',)}
-
 
 @admin.register(UserInteraction)
 class UserInteractionAdmin(admin.ModelAdmin):

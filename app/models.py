@@ -87,23 +87,47 @@ class ContactMessage(models.Model):
 
 
 # models.py - Add to existing models
+# models.py - Update PageVisit model
+# class PageVisit(models.Model):
+#     ip_address = models.CharField(max_length=45, blank=True, null=True)
+#     country = models.CharField(max_length=100, blank=True, null=True)
+#     path = models.CharField(max_length=2048, blank=True, null=True)  # <-- Add this line
+#     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
+#     duration = models.PositiveIntegerField(default=0)  # Duration in seconds
+#     session_key = models.CharField(max_length=40, blank=True, null=True)  # For session tracking
+#     is_active = models.BooleanField(default=True)  # Track active sessions
+#
+#     def __str__(self):
+#         return f"{self.ip_address} ({self.country}) - {self.duration}s"
+#
+#     class Meta:
+#         verbose_name = "Page Visit"
+#         verbose_name_plural = "Page Visits"
+#         ordering = ['-timestamp']
+#         indexes = [
+#             models.Index(fields=['-timestamp', 'ip_address']),
+#             models.Index(fields=['session_key', 'is_active']),  # For session lookup
+#         ]
+
+# models.py
+# models.py
+# models.py
 class PageVisit(models.Model):
-    path = models.CharField(max_length=255)
-    ip_address = models.CharField(max_length=45, blank=True, null=True)
-    country = models.CharField(max_length=100, blank=True, null=True)
+    ip_address = models.CharField(max_length=45, default='Unknown')
+    country = models.CharField(max_length=100, default='Unknown')
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
+    last_activity = models.DateTimeField(auto_now=True)  # Track last update
+    duration = models.PositiveIntegerField(default=0)  # Total active seconds
+    session_key = models.CharField(max_length=40, unique=True)
 
     def __str__(self):
-        return f"{self.path} - {self.timestamp.strftime('%Y-%m-%d %H:%M')}"
+        return f"{self.ip_address} ({self.country}) - {self.duration}s"
 
     class Meta:
-        verbose_name = "Page Visit"
-        verbose_name_plural = "Page Visits"
-        ordering = ['-timestamp']
         indexes = [
-            models.Index(fields=['-timestamp', 'path']),
+            models.Index(fields=['-timestamp']),
+            models.Index(fields=['session_key']),
         ]
-
 
 class UserInteraction(models.Model):
     INTERACTION_TYPES = (

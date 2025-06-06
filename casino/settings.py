@@ -57,7 +57,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'app.middleware.PageVisitMiddleware',
+    # 'app.middleware.PageVisitMiddleware',
+    # 'app.middleware.SessionDurationMiddleware',
+
 ]
 
 ROOT_URLCONF = 'casino.urls'
