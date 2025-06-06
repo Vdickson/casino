@@ -86,32 +86,7 @@ class ContactMessage(models.Model):
     is_processed = models.BooleanField(default=False)
 
 
-# models.py - Add to existing models
-# models.py - Update PageVisit model
-# class PageVisit(models.Model):
-#     ip_address = models.CharField(max_length=45, blank=True, null=True)
-#     country = models.CharField(max_length=100, blank=True, null=True)
-#     path = models.CharField(max_length=2048, blank=True, null=True)  # <-- Add this line
-#     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
-#     duration = models.PositiveIntegerField(default=0)  # Duration in seconds
-#     session_key = models.CharField(max_length=40, blank=True, null=True)  # For session tracking
-#     is_active = models.BooleanField(default=True)  # Track active sessions
-#
-#     def __str__(self):
-#         return f"{self.ip_address} ({self.country}) - {self.duration}s"
-#
-#     class Meta:
-#         verbose_name = "Page Visit"
-#         verbose_name_plural = "Page Visits"
-#         ordering = ['-timestamp']
-#         indexes = [
-#             models.Index(fields=['-timestamp', 'ip_address']),
-#             models.Index(fields=['session_key', 'is_active']),  # For session lookup
-#         ]
 
-# models.py
-# models.py
-# models.py
 class PageVisit(models.Model):
     ip_address = models.CharField(max_length=45, default='Unknown')
     country = models.CharField(max_length=100, default='Unknown')
@@ -159,3 +134,13 @@ class UserInteraction(models.Model):
         if self.type == 'offer_interest':
             return self.additional_data.get('offer_id', 'N/A')
         return 'N/A'
+
+
+class Testimonial(models.Model):
+    name = models.CharField(max_length=100)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_approved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Testimonial by {self.name}"

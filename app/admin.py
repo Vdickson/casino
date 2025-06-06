@@ -8,11 +8,12 @@ from django.db.models import Count
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
 
-from .models import LiveWin, Offer, PaymentMethod, SocialLink, ContactMessage, PageVisit, UserInteraction
+from .models import LiveWin, Offer, PaymentMethod, SocialLink, ContactMessage, PageVisit, UserInteraction, Testimonial
 
 
 class BaseModelAdmin(admin.ModelAdmin):
     list_per_page = 10
+
     def edit_button(self, obj):
         url = reverse(f'admin:{obj._meta.app_label}_{obj._meta.model_name}_change', args=[obj.id])
         return format_html('<a class="button" href="{}">Edit</a>', url)
@@ -54,7 +55,8 @@ class LiveWinAdmin(BaseModelAdmin):
 
 @admin.register(Offer)
 class OfferAdmin(BaseModelAdmin):
-    list_display = ['title', 'scheduled_start', 'duration_hours', 'active_status_display', 'time_remaining', 'action_buttons']
+    list_display = ['title', 'scheduled_start', 'duration_hours', 'active_status_display', 'time_remaining',
+                    'action_buttons']
     list_editable = ['scheduled_start', 'duration_hours']
     list_filter = ['is_active']
     search_fields = ['title', 'description']
@@ -152,7 +154,7 @@ class ContactMessageAdmin(BaseModelAdmin):
 
 @admin.register(PageVisit)
 class PageVisitAdmin(admin.ModelAdmin):
-    list_display = ('ip_address', 'country', 'timestamp', 'duration','last_activity', 'view_button')
+    list_display = ('ip_address', 'country', 'timestamp', 'duration', 'last_activity', 'view_button')
     list_filter = ('country', 'timestamp', 'is_active')
     list_filter = ('country',)
     date_hierarchy = 'timestamp'
@@ -173,6 +175,7 @@ class PageVisitAdmin(admin.ModelAdmin):
 
     class Media:
         css = {'all': ('admin/css/custom.css',)}
+
 
 @admin.register(UserInteraction)
 class UserInteractionAdmin(admin.ModelAdmin):
@@ -269,6 +272,25 @@ class CustomAdminSite(admin.AdminSite):
         extra_context = extra_context or {}
         extra_context['show_analytics_link'] = True
         return super().index(request, extra_context)
+
+
+@admin.register(Testimonial)
+class TestimonialAdmin(BaseModelAdmin):
+    list_display = ['name', 'content_preview', 'created_at', 'is_approved', 'action_buttons']
+    list_editable = ['is_approved']
+    search_fields = ['name', 'content']
+
+    def content_preview(self, obj):
+        return obj.content[:50] + '...' if len(obj.content) > 50 else obj.content
+
+    content_preview.short_description = 'Content'
+
+    def action_buttons(self, obj):
+        return format_html(
+            '<div class="action-buttons">{}</div>',
+            self.edit_button(obj) + self.delete_button(obj))
+
+    action_buttons.short_description = 'Actions'
 
 
 custom_admin_site = CustomAdminSite(name='myadmin')

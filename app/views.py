@@ -21,7 +21,7 @@ from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 import json
 
-from .models import LiveWin, Offer, PaymentMethod, SocialLink, UserInteraction, PageVisit
+from .models import LiveWin, Offer, PaymentMethod, SocialLink, UserInteraction, PageVisit, Testimonial
 from django.contrib.admin.views.decorators import staff_member_required
 
 # Cache keys
@@ -59,6 +59,9 @@ def home(request):
         social = SocialLink.objects.first()
         cache.set(SOCIAL_LINK_CACHE_KEY, social, 3600)  # Cache for 1 hour
 
+    testimonials = Testimonial.objects.filter(is_approved=True).order_by('-created_at')[:5]
+
+
     context = {
         'live_wins': LiveWin.objects.filter(visible=True).order_by('-timestamp')[:10],
         'payment_methods': payment_methods,
@@ -67,6 +70,7 @@ def home(request):
         'future_offer': future_offer,
         'contact_form': ContactForm(),
         'tracking_enabled': True,  # Flag for frontend
+        'testimonials': testimonials,
 
     }
     return render(request, 'casino/index.html', context)

@@ -201,6 +201,24 @@
         </div>
     </nav>
 
+    <!-- Testimonials Ticker -->
+    <!-- Testimonials Ticker -->
+    <div class="container mt-2">
+        <div class="testimonials p-3" style="background: rgba(0,0,0,0.3); border-radius:15px;">
+            <marquee class="text-gold-fish">
+                {% for testimonial in testimonials %}
+                    ⭐⭐⭐⭐⭐ "{{ testimonial.content }}" - {{ testimonial.name }} |
+                {% empty %}
+                    ⭐⭐⭐⭐⭐ "Won $500 in 10 minutes!" - John D. |
+                    ⭐⭐⭐⭐⭐ "Fastest payouts ever!" - Sarah K. |
+                    ⭐⭐⭐⭐⭐ "Addicted to Orion Stars!" - Mike T. |
+                    ⭐⭐⭐⭐⭐ "Customer support is 24/7!" - Lisa M. |
+                    ⭐⭐⭐⭐⭐ "Love the bonuses!" - Alex P.
+                {% endfor %}
+            </marquee>
+        </div>
+    </div>
+
     <!-- Main Header with Semantic Improvement -->
     <header id="home" class="text-center py-5 mt-3" role="banner">
         <div class="container">
@@ -212,13 +230,13 @@
         </div>
     </header>
 
-    <!-- Live Wins Ticker -->
+   <!-- Live Wins Ticker -->
     <div class="container mt-4">
         <div class="live-wins p-3" style="background: rgba(0,0,0,0.3); border-radius:15px;">
             <marquee class="text-sea-green">
                 {% for win in live_wins %}
                     {% if win.username and win.amount %}
-                    🎉 {{ win.username }} caught ${{ win.amount }}! 🎉
+                    🎉 {{ win.username }} Won ${{ win.amount }}! 🎉
                     {% endif %}
                 {% empty %}
                     🎉 New wins coming soon! 🎉
@@ -482,9 +500,8 @@
                     const marquee = document.querySelector('marquee');
                     data.wins.forEach(win => {
                         if (win.username && win.amount) {
-                            marquee.innerHTML += ` 🎣 ${win.username} Won $${win.amount}!`;
-                        }
-                    });
+                            marquee.innerHTML += ` 🎉 ${win.username} Won $${win.amount}! `;
+                        }                    });
 
                     // Update lastWinId to the latest win id
                     lastWinId = data.last_win_id;
