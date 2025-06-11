@@ -35,7 +35,7 @@ def home(request):
 
     # Get offers with caching
     # Get offers with caching - clear cache after save in admin
-    offers = cache.get(OFFERS_CACHE_KEY)
+    offers = cache.get(OFFERS_CACHE_KEY)  # Should be OFFERS_CACHE_KEY (plural)
     if not offers:
         offers = Offer.objects.filter(
             Q(countdown_end__gt=now) | Q(scheduled_start__gt=now),

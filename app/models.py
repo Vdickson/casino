@@ -1,6 +1,8 @@
 # models.py
 from django.db import models
 from django.utils import timezone
+from django.core.cache import cache
+
 from django.core.exceptions import ValidationError
 
 
@@ -29,6 +31,11 @@ class Offer(models.Model):
         if self.scheduled_start and self.duration_hours:
             self.countdown_end = self.scheduled_start + timezone.timedelta(hours=self.duration_hours)
         super().save(*args, **kwargs)
+        cache.delete('offers_cache')  # Clear offers cache
+
+    def delete(self, *args, **kwargs):
+        cache.delete('offers_cache')
+        super().delete(*args, **kwargs)
 
     @property
     def time_until_start(self):
@@ -68,6 +75,14 @@ class PaymentMethod(models.Model):
     is_active = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        cache.delete('payment_methods_cache')  # Clear cache on save
+
+    def delete(self, *args, **kwargs):
+        cache.delete('payment_methods_cache')  # Clear cache on delete
+        super().delete(*args, **kwargs)
+
     class Meta:
         ordering = ['order']
 
@@ -77,6 +92,14 @@ class SocialLink(models.Model):
     whatsapp = models.URLField(blank=True)
     telegram = models.URLField(blank=True)
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        cache.delete('social_link_cache')
+
+    def delete(self, *args, **kwargs):
+        cache.delete('social_link_cache')
+        super().delete(*args, **kwargs)
+
 
 class ContactMessage(models.Model):
     name = models.CharField(max_length=100)
@@ -84,7 +107,6 @@ class ContactMessage(models.Model):
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     is_processed = models.BooleanField(default=False)
-
 
 
 class PageVisit(models.Model):
@@ -103,6 +125,7 @@ class PageVisit(models.Model):
             models.Index(fields=['-timestamp']),
             models.Index(fields=['session_key']),
         ]
+
 
 class UserInteraction(models.Model):
     INTERACTION_TYPES = (
@@ -141,6 +164,14 @@ class Testimonial(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        cache.delete('testimonials_cache')  # Optional future-proofing
+
+    def delete(self, *args, **kwargs):
+        cache.delete('testimonials_cache')
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return f"Testimonial by {self.name}"
