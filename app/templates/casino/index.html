@@ -1381,7 +1381,7 @@
                         </li>
                         <li class="d-flex align-items-center">
                             <i class="fas fa-envelope me-3 text-info"></i>
-                            <span>support@firekirin.com</span>
+                            <span>casinofishgames@gmail.com</span>
                         </li>
                     </ul>
                 </div>
@@ -1834,6 +1834,60 @@ document.addEventListener('keypress', () => lastPingTime = Date.now());
                 }
             });
         });
+    </script>
+        <script>
+    // Add this function to refresh buttons every second
+    function refreshButtons() {
+        // Clone and replace buttons to reset their state
+        document.querySelectorAll('.claim-offer-btn, .game-action-btn, .contact-for-game').forEach(btn => {
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+        });
+
+        // Reattach event listeners to the new buttons
+        attachButtonListeners();
+    }
+
+    // Function to reattach event listeners
+    function attachButtonListeners() {
+        // Claim Offer Buttons
+        document.querySelectorAll('.claim-offer-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const title = this.getAttribute('data-offer-title');
+                const desc = this.getAttribute('data-offer-desc');
+                openContactModal(title, desc);
+            });
+        });
+
+        // Game Footer Buttons
+        document.querySelectorAll('.contact-for-game').forEach(button => {
+            button.addEventListener('click', function() {
+                const gameName = this.getAttribute('data-game-name');
+                openContactModal(`Play ${gameName}`, `Ready to play ${gameName}? Contact us to get started!`);
+            });
+        });
+
+        // Hero Play Now Button
+        const heroBtn = document.querySelector('.hero-section .btn-light');
+        if (heroBtn) {
+            heroBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                openContactModal('Get Started', 'Ready to play? Contact us to get started with your account!');
+            });
+        }
+    }
+
+    // Initialize the refresh cycle
+    function initButtonRefresh() {
+        // Initial attachment
+        attachButtonListeners();
+
+        // Refresh buttons every second
+        setInterval(refreshButtons, 1000);
+    }
+
+    // Start the refresh cycle when the page loads
+    document.addEventListener('DOMContentLoaded', initButtonRefresh);
     </script>
     </script>
 </body>
