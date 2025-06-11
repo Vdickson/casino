@@ -1,10 +1,766 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Play premium fish games at FireKirin Gameroom 13. Instant cashouts, 24/7 support, and generous bonuses on all deposits. Join now for exciting online casino action!">
+    <meta name="keywords" content="FireKirin, Orion Stars, fish games, online casino, cash games, instant withdrawal, slots, gambling">
+    <title>FireKirin Gameroom 13 | Premium Online Fish Casino Games</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        :root {
+            --ocean-blue: #0A1931;
+            --coral: #FF6B6B;
+            --gold-fish: #FFD93D;
+            --sea-green: #6BCB77;
+            --deep-purple: #3B185F;
+            --neon-teal: #00FFD1;
+            --dark-bg: #080C18;
+            --light-bg: #121B33;
+        }
+
+        @media (max-width: 768px) {
+            .display-3 {
+                font-size: 2rem;
+                line-height: 1.2;
+            }
+            .lead {
+                font-size: 1rem;
+            }
+            .navbar-collapse {
+                position: fixed;
+                width: 300px;
+                height: 100vh;
+                right: -300px;
+                top: 56px;
+                background: linear-gradient(45deg, var(--deep-purple), var(--ocean-blue));
+                padding: 20px;
+                transition: right 0.3s ease;
+                z-index: 1000;
+            }
+            .navbar-collapse.show {
+                right: 0;
+            }
+            .game-bubble {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+            .offer-card {
+                margin-bottom: 15px;
+            }
+            .container {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            .navbar-brand img {
+                height: 35px; /* Slightly smaller on mobile */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .display-3 {
+                font-size: 1.8rem;
+            }
+            .lead {
+                font-size: 0.9rem;
+            }
+            .navbar-brand {
+                font-size: 1rem;
+            }
+            .countdown-flash {
+                padding: 10px;
+                font-size: 1rem;
+            }
+        }
+
+        body {
+            background: linear-gradient(180deg, var(--dark-bg), var(--ocean-blue));
+            color: white;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-glitter {
+            text-shadow: 0 0 15px var(--neon-teal);
+            background: linear-gradient(45deg, var(--gold-fish), var(--coral));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s infinite alternate;
+        }
+
+        .offer-card {
+            background: rgba(0,0,0,0.5);
+            border: 2px solid var(--neon-teal);
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+
+        .alert-messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+        }
+
+        .alert {
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            border: 1px solid var(--neon-teal);
+        }
+
+        .offer-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 25px var(--neon-teal);
+        }
+
+        .game-bubble {
+            background: rgba(107,203,119,0.1);
+            border: 1px solid var(--sea-green);
+            border-radius: 25px;
+            padding: 10px 20px;
+            margin: 5px;
+        }
+
+        .countdown-flash {
+            animation: pulse 1s infinite;
+            background: var(--coral);
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .navbar-brand img {
+            height: 40px; /* Logo height */
+            margin-right: 10px;
+            filter: drop-shadow(0 0 5px var(--neon-teal));
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-brand:hover img {
+            transform: rotate(15deg);
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px var(--neon-teal); }
+            to { text-shadow: 0 0 30px var(--neon-teal); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
 </head>
 <body>
-$END$
+    <!-- Navigation Bar with Logo -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background: linear-gradient(45deg, var(--deep-purple), var(--ocean-blue)); box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative; z-index: 1001;">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <!-- FireKirin Logo -->
+                <img src="{% static 'images/fk2.jpeg' %}" alt="FireKirin Logo" class="d-inline-block align-top">
+                <span class="title-glitter fw-bold me-2">FireKirin 13</span>
+                <span class="badge bg-danger">TRUSTED</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#games">Games</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#promotions">Promotions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#play-instructions">How to Play</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item d-lg-none mt-2">
+                        <div class="d-flex gap-2">
+                            <a href="{{ social.facebook }}" class="btn btn-sm btn-primary w-100">Facebook</a>
+                            <a href="{{ social.whatsapp }}" class="btn btn-sm btn-success w-100">WhatsApp</a>
+                        </div>
+                    </li>
+                </ul>
+                <div class="d-none d-lg-flex ms-3 gap-2">
+                    <a href="{{ social.facebook }}" class="btn btn-sm btn-primary">Facebook</a>
+                    <a href="{{ social.whatsapp }}" class="btn btn-sm btn-success">WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Testimonials Ticker -->
+    <!-- Testimonials Ticker -->
+    <div class="container mt-2">
+        <div class="testimonials p-3" style="background: rgba(0,0,0,0.3); border-radius:15px;">
+            <marquee class="text-gold-fish">
+                {% for testimonial in testimonials %}
+                    ⭐⭐⭐⭐⭐ "{{ testimonial.content }}" - {{ testimonial.name }} |
+                {% empty %}
+                    ⭐⭐⭐⭐⭐ "Won $500 in 10 minutes!" - John D. |
+                    ⭐⭐⭐⭐⭐ "Fastest payouts ever!" - Sarah K. |
+                    ⭐⭐⭐⭐⭐ "Addicted to Orion Stars!" - Mike T. |
+                    ⭐⭐⭐⭐⭐ "Customer support is 24/7!" - Lisa M. |
+                    ⭐⭐⭐⭐⭐ "Love the bonuses!" - Alex P.
+                {% endfor %}
+            </marquee>
+        </div>
+    </div>
+
+    <!-- Main Header with Semantic Improvement -->
+    <header id="home" class="text-center py-5 mt-3" role="banner">
+        <div class="container">
+            <h1 class="title-glitter display-3 fw-bold animate__animated animate__rubberBand">
+                FireKirin Gameroom 13 - Premium Online Fish Games
+            </h1>
+            <p class="lead text-teal mb-0">Trusted Online Casino with Instant Cashouts & 24/7 Support</p>
+            <p class="lead text-teal mb-2">Play popular fish games like Orion Stars, Juwa, and Ultra Panda</p>
+        </div>
+    </header>
+
+   <!-- Live Wins Ticker -->
+    <div class="container mt-4">
+        <div class="live-wins p-3" style="background: rgba(0,0,0,0.3); border-radius:15px;">
+            <marquee class="text-sea-green">
+                {% for win in live_wins %}
+                    {% if win.username and win.amount %}
+                    🎉 {{ win.username }} Won ${{ win.amount }}! 🎉
+                    {% endif %}
+                {% empty %}
+                    🎉 New wins coming soon! 🎉
+                {% endfor %}
+            </marquee>
+        </div>
+    </div>
+
+    <!-- Limited Offer Countdown -->
+    <div class="container text-center mt-4">
+        {% if active_offer %}
+        <!-- Active Offer -->
+        <div class="countdown-flash p-3 rounded" style="background-color: #fff4e5; border: 2px solid #ffa500;">
+            <div style="color: #d9534f; font-weight: 700; font-size: 1.5rem; margin-bottom: 0.5rem;">
+                ⚡ FLASH OFFER: {{ active_offer.title }} ⚡
+            </div>
+            <div style="color: #0275d8; font-style: italic; font-size: 1.2rem; margin-bottom: 0.75rem;">
+                {{ active_offer.description }}
+            </div>
+            <span id="countdown-timer" class="fw-bold fs-2" style="color: #5cb85c;"></span>
+        </div>
+
+        {% elif future_offer %}
+        <!-- Upcoming Offer -->
+        <div class="countdown-upcoming p-3 rounded" style="background-color: #e3f2fd; border: 2px solid #2196f3;">
+            <div style="color: #1976d2; font-weight: 700; font-size: 1.5rem; margin-bottom: 0.5rem;">
+                🕒 UPCOMING OFFER: {{ future_offer.title }} 🕒
+            </div>
+            <div style="color: #0d47a1; font-style: italic; font-size: 1.2rem; margin-bottom: 0.75rem;">
+                {{ future_offer.description }}
+            </div>
+            <span id="countdown-timer" class="fw-bold fs-2" style="color: #5cb85c;"></span>
+        </div>
+
+        {% else %}
+        <!-- No Offers -->
+        <div class="p-3 rounded" style="background-color: #ffebee; border: 2px solid #ff1744; color: #d32f2f; font-weight: 700;">
+            📢 NO ACTIVE OFFERS! CHECK BACK SOON! 📢
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Promotions Section with Semantic Tag -->
+    <section id="promotions" class="container mt-5" aria-label="Current promotions">
+        <h2 class="text-center mb-4">🎁 Exclusive Casino Bonuses & Promotions</h2>
+        <div class="row justify-content-center gy-3">
+            <div class="col-lg-3 col-md-6">
+                <div class="offer-card p-4 text-center h-100">
+                    <div class="badge bg-warning mb-2">LIMITED</div>
+                    <h5>✅ 100% Signup Bonus</h5>
+                    <p class="mb-0">Start with double credits!</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="offer-card p-4 text-center h-100">
+                    <h5>✅ 20% Regular Bonus</h5>
+                    <p class="mb-0">Earn bonus in every deposit!</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="offer-card p-4 text-center h-100">
+                    <div class="badge bg-danger mb-2">HOT</div>
+                    <h5>✅ 15% Cashback</h5>
+                    <p class="mb-0">Even if you lose!</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="offer-card p-4 text-center h-100">
+                    <h5>✅ 50% Referral Bonus</h5>
+                    <p class="mb-0">Earn while friends play!</p>
+                    <div class="badge bg-success mt-2">POPULAR</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payment Methods -->
+    <div class="container mt-5">
+        <h3 class="text-center mb-4">💳 Payment Methods</h3>
+        <div class="row justify-content-center">
+            {% for method in payment_methods %}
+            <div class="col-md-3 mb-3">
+                <div class="offer-card p-3 text-center">
+                    <h6>{{ method.name }}</h6>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Game Selection -->
+    <section id="games" class="container mt-5">
+        <h2 class="text-center mb-4">🎮 Premium Fish Game Collection</h2>
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3 justify-content-center">
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    Orion Stars
+                </div>
+            </div>
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    FireKirin
+                </div>
+            </div>
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    Vegas
+                </div>
+            </div>
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    Juwa
+                </div>
+            </div>
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    PandaMaster
+                </div>
+            </div>
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    Ultra Panda
+                </div>
+            </div>
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    GameVault
+                </div>
+            </div>
+            <div class="col">
+                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
+                    VBlink
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Instructions Section with Semantic Tag -->
+    <section id="play-instructions" class="container mt-5" aria-label="How to play instructions">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="offer-card p-4">
+                    <h3 class="text-sea-green">📝 How to Play</h3>
+                    <ol class="steps-list">
+                        <li class="mb-3">Follow our social channels</li>
+                        <li class="mb-3">Contact agent for setup</li>
+                        <li class="mb-3">Deposit & start fishing!</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="col-md-6 mt-4 mt-md-0">
+                <div class="offer-card p-4">
+                    <h3 class="text-sea-green">📲 Contact Agent</h3>
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <a href="{{ social.facebook }}" class="btn btn-primary">Facebook</a>
+                        <a href="{{ social.whatsapp }}" class="btn btn-success">WhatsApp</a>
+                        <a href="{{ social.telegram }}" class="btn btn-info">Telegram</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form -->
+    <div id="contact" class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="offer-card p-4">
+                    <h3 class="text-center text-sea-green">📨 Contact Us!</h3>
+
+                    <!-- Messages -->
+                    {% if messages %}
+                    <div class="alert-messages">
+                        {% for message in messages %}
+                        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'contact_submit' %}" class="mt-4">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ contact_form.name }}
+                        </div>
+                        <div class="mb-3">
+                            {{ contact_form.email }}
+                        </div>
+                        <div class="mb-3" >
+                            {{ contact_form.message }}
+                        </div>
+                        <button type="submit" class="btn btn-sea-green w-100">Cast Your Message 🎣</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // Initialize variables
+    let lastWinId = {% if live_wins.0.id %}{{ live_wins.0.id }}{% else %}0{% endif %};
+    let currentOfferId = {% if active_offer %}{{ active_offer.id }}{% elif future_offer %}{{ future_offer.id }}{% else %}null{% endif %};
+    let isPollingActive = true;
+    let lastServerUpdate = Date.now();
+    let serverCountdownSeconds = {% if active_offer %}{{ active_offer.time_remaining.total_seconds|default:0|floatformat:0 }}{% elif future_offer %}{{ future_offer.time_until_start.total_seconds|default:0|floatformat:0 }}{% else %}0{% endif %};
+    let countdownInterval;
+    let hiddenStartTime;
+
+    // Function to update countdown display
+    function updateCountdownDisplay() {
+        // Clear any existing interval
+        clearInterval(countdownInterval);
+
+        // Calculate elapsed time since last server sync
+        const elapsedSeconds = Math.floor((Date.now() - lastServerUpdate) / 1000);
+        let remainingSeconds = Math.max(0, serverCountdownSeconds - elapsedSeconds);
+
+        if (remainingSeconds <= 0) {
+            document.getElementById("countdown-timer").innerHTML = "OFFER EXPIRED!";
+            setTimeout(() => location.reload(), 5000);
+            return;
+        }
+
+        // Start a new interval for smooth countdown
+        countdownInterval = setInterval(() => {
+            remainingSeconds--;
+
+            if (remainingSeconds <= 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("countdown-timer").innerHTML = "OFFER EXPIRED!";
+                setTimeout(() => location.reload(), 5000);
+                return;
+            }
+
+            const hours = Math.floor(remainingSeconds / 3600);
+            const minutes = Math.floor((remainingSeconds % 3600) / 60);
+            const secondsRemaining = remainingSeconds % 60;
+
+            const status = "{% if active_offer %}ENDS IN:{% else %}STARTS IN:{% endif %}";
+            document.getElementById("countdown-timer").innerHTML =
+                `${status} ${hours}h ${minutes}m ${secondsRemaining}s`;
+        }, 1000);
+    }
+
+    // Polling function to get updates
+    function pollUpdates() {
+        if (!isPollingActive) return;
+
+        fetch(`/updates/?last_win_id=${lastWinId}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                // Update last server sync time
+                lastServerUpdate = Date.now();
+
+                // Process new wins
+                if (data.wins && data.wins.length > 0) {
+                    const marquee = document.querySelector('marquee');
+                    data.wins.forEach(win => {
+                        if (win.username && win.amount) {
+                            marquee.innerHTML += ` 🎉 ${win.username} Won $${win.amount}! `;
+                        }                    });
+
+                    // Update lastWinId to the latest win id
+                    lastWinId = data.last_win_id;
+
+                    // Limit the number of displayed wins
+                    const wins = marquee.innerHTML.split('🎣');
+                    if (wins.length > 10) {
+                        marquee.innerHTML = wins.slice(-10).join('🎣');
+                    }
+                }
+
+                // Process offers
+                if (data.offers && data.offers.length > 0) {
+                    // Check if current offer is still active
+                    const currentOfferActive = data.offers.some(o => o.id === currentOfferId);
+
+                    if (!currentOfferActive && currentOfferId) {
+                        // Reload if current offer expired
+                        document.getElementById("countdown-timer").innerHTML = "OFFER EXPIRED!";
+                        setTimeout(() => location.reload(), 5000);
+                    } else {
+                        // Update countdown timers
+                        data.offers.forEach(offer => {
+                            if (offer.id === currentOfferId) {
+                                serverCountdownSeconds = offer.countdown;
+                                updateCountdownDisplay();
+                            }
+                        });
+                    }
+                }
+
+                // Schedule next poll
+                setTimeout(pollUpdates, 15000);
+            })
+            .catch(error => {
+                console.error('Polling error:', error);
+                // Retry after 30 seconds on error
+                setTimeout(pollUpdates, 30000);
+            });
+    }
+
+    // Add to your base template
+    document.addEventListener('DOMContentLoaded', function() {
+        // Start polling when page loads
+        pollUpdates();
+
+        // Initialize countdown if offer exists
+        if (serverCountdownSeconds > 0) {
+            updateCountdownDisplay();
+        }
+
+        // Track all button clicks
+        document.body.addEventListener('click', function(e) {
+            const target = e.target.closest('button, a');
+            if (target) {
+                let type = 'button_click';
+                if (target.tagName === 'A') type = 'link_click';
+
+                // Get the element text
+                let text = target.innerText || target.textContent;
+                text = text.substring(0, 100); // Limit length
+
+                trackInteraction({
+                    type: type,
+                    element_id: target.id || '',
+                    page_path: window.location.pathname,
+                    data: {
+                        text: text.trim(),
+                        classes: target.className
+                    }
+                });
+            }
+        });
+
+        // Special offer interest tracking
+        document.querySelectorAll('.offer-card').forEach(card => {
+            card.addEventListener('click', () => {
+                // Get offer title if available
+                const titleElement = card.querySelector('h5, h6');
+                const title = titleElement ? titleElement.innerText : 'Unknown Offer';
+
+                trackInteraction({
+                    type: 'offer_interest',
+                    page_path: window.location.pathname,
+                    data: {
+                        offer_title: title.substring(0, 100)
+                    }
+                });
+            });
+        });
+
+        // Close mobile menu when clicking a nav link
+        document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                const navbarCollapse = document.querySelector('.navbar-collapse');
+                if (navbarCollapse.classList.contains('show')) {
+                    // Bootstrap way to close the collapse
+                    bootstrap.Collapse.getOrCreateInstance(navbarCollapse).hide();
+                }
+            });
+        });
+
+        function trackInteraction(data) {
+            if (!{{ tracking_enabled|yesno:"true,false" }}) return;
+
+            // Add CSRF token for security
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+
+            fetch("{% url 'track_interaction' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken || ''
+                },
+                body: JSON.stringify(data)
+            }).catch(error => console.error('Tracking error:', error));
+        }
+
+        // Initialize country detection for page visits
+        trackPageVisit();
+    });
+
+    // Track page visits with country
+// Global variable to store detected country
+  // In your base template
+  // Global variable to store detected country
+let detectedCountry = null;
+let lastPingTime = Date.now();
+
+function trackPageVisit(useBeacon = false) {
+    const now = Date.now();
+    const timeSinceLast = (now - lastPingTime) / 1000; // in seconds
+    lastPingTime = now;
+
+    // Only send ping if user was active recently
+    if (timeSinceLast < 300) {
+        sendVisitData(detectedCountry, useBeacon);
+    }
+}
+
+function sendVisitData(country, useBeacon) {
+    const data = { country: country || 'Unknown' };
+
+    if (useBeacon && navigator.sendBeacon) {
+        const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+        navigator.sendBeacon("{% url 'track_page_visit' %}", blob);
+    } else {
+        fetch("{% url 'track_page_visit' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': "{{ csrf_token }}"
+            },
+            body: JSON.stringify(data)
+        }).catch(error => console.error('Tracking error:', error));
+    }
+}
+
+// Detect country first
+function detectCountry() {
+    fetch("https://ipapi.co/json/")
+        .then(response => response.json())
+        .then(data => {
+            detectedCountry = data.country_name || 'Unknown';
+            // Send initial visit with country
+            trackPageVisit();
+        })
+        .catch(() => {
+            detectedCountry = 'Unknown';
+            trackPageVisit();
+        });
+}
+
+// Initialize tracking
+document.addEventListener('DOMContentLoaded', () => {
+    detectCountry();
+
+    // Set up periodic pings every 30 seconds
+    setInterval(() => trackPageVisit(), 30000);
+});
+
+// Final ping when user leaves
+window.addEventListener('beforeunload', () => trackPageVisit(true));
+
+// Track user activity to reset idle timer
+document.addEventListener('mousemove', () => lastPingTime = Date.now());
+document.addEventListener('keypress', () => lastPingTime = Date.now());
+    // Handle visibility changes
+// Track page visibility changes
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'hidden') {
+            // Send final ping when user leaves
+            trackPageVisit();
+        }
+    });
+
+    // Send periodic updates every 30 seconds
+    setInterval(trackPageVisit, 30000);
+
+    function trackPageVisit() {
+        fetch("https://ipapi.co/json/")
+            .then(response => response.json())
+            .then(data => {
+                const country = data.country_name || 'Unknown';
+
+                fetch("{% url 'track_page_visit' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                    },
+                    body: JSON.stringify({
+                        country: country
+                    })
+                });
+            })
+            .catch(() => {
+                // Fallback if IP detection fails
+                fetch("{% url 'track_page_visit' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                    },
+                    body: JSON.stringify({
+                        country: 'Unknown'
+                    })
+                });
+            });
+    }
+
+    // Initial page visit tracking
+    document.addEventListener('DOMContentLoaded', trackPageVisit);
+    // Clean up when navigating away
+    window.addEventListener('beforeunload', function() {
+        isPollingActive = false;
+        clearInterval(countdownInterval);
+    });
+</script>    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+
+    <script>
+        // Close mobile menu when clicking a nav link
+        document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                const navbarCollapse = document.querySelector('.navbar-collapse');
+                if (navbarCollapse.classList.contains('show')) {
+                    // Bootstrap way to close the collapse
+                    bootstrap.Collapse.getOrCreateInstance(navbarCollapse).hide();
+                }
+            });
+        });
+    </script>
+
+    <footer style="background: #0a0a0a; color: var(--gold); text-align: center; padding: 15px 0; font-size: 0.9rem; border-top: 2px solid var(--gold); margin-top: 40px;">
+        &copy; {{ now.year }} FireKirin Gameroom. All rights reserved.
+    </footer>
 </body>
 </html>

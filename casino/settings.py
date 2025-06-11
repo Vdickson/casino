@@ -57,12 +57,27 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'app.middleware.UserTimezoneMiddleware',
     # 'app.middleware.PageVisitMiddleware',
     # 'app.middleware.SessionDurationMiddleware',
 
 ]
 
 ROOT_URLCONF = 'casino.urls'
+
+# Session expires after 1 hour (3600 seconds)
+SESSION_COOKIE_AGE = 3600
+
+# Reset session timer on every request
+SESSION_SAVE_EVERY_REQUEST = True
+
+# Set time zone to Florida (Eastern Time)
+TIME_ZONE = 'America/New_York'
+
+# Enable timezone awareness
+USE_TZ = True
+# Optional: Expire session when browser closes
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # settings.py
 # Increase WSGI timeout (for Gunicorn/Uvicorn)

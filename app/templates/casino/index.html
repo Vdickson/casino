@@ -7,9 +7,21 @@
     <meta name="description" content="Play premium fish games at FireKirin Gameroom 13. Instant cashouts, 24/7 support, and generous bonuses on all deposits. Join now for exciting online casino action!">
     <meta name="keywords" content="FireKirin, Orion Stars, fish games, online casino, cash games, instant withdrawal, slots, gambling">
     <title>FireKirin Gameroom 13 | Premium Online Fish Casino Games</title>
+
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+
+    <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <style>
         :root {
             --ocean-blue: #0A1931;
@@ -20,72 +32,57 @@
             --neon-teal: #00FFD1;
             --dark-bg: #080C18;
             --light-bg: #121B33;
-        }
 
-        @media (max-width: 768px) {
-            .display-3 {
-                font-size: 2rem;
-                line-height: 1.2;
-            }
-            .lead {
-                font-size: 1rem;
-            }
-            .navbar-collapse {
-                position: fixed;
-                width: 300px;
-                height: 100vh;
-                right: -300px;
-                top: 56px;
-                background: linear-gradient(45deg, var(--deep-purple), var(--ocean-blue));
-                padding: 20px;
-                transition: right 0.3s ease;
-                z-index: 1000;
-            }
-            .navbar-collapse.show {
-                right: 0;
-            }
-            .game-bubble {
-                padding: 8px 15px;
-                font-size: 0.9rem;
-            }
-            .offer-card {
-                margin-bottom: 15px;
-            }
-            .container {
-                padding-left: 15px;
-                padding-right: 15px;
-            }
-            .navbar-brand img {
-                height: 35px; /* Slightly smaller on mobile */
-            }
-        }
-
-        @media (max-width: 480px) {
-            .display-3 {
-                font-size: 1.8rem;
-            }
-            .lead {
-                font-size: 0.9rem;
-            }
-            .navbar-brand {
-                font-size: 1rem;
-            }
-            .countdown-flash {
-                padding: 10px;
-                font-size: 1rem;
-            }
+            --primary: #00FFD1;   /* neon-teal */
+            --secondary: #FF6B6B; /* coral */
+            --accent: #FFD93D;    /* gold-fish */
+            --success: #6BCB77;   /* sea-green */
+            --dark: #080C18;      /* dark-bg */
+            --light: #121B33;     /* light-bg */
+            --card-bg: #0A1931;   /* ocean-blue */
+            --text-dark: #ffffff; /* white for text */
+            --text-light: #cccccc; /* light gray */
+            --border: #3B185F;    /* deep-purple */
         }
 
         body {
             background: linear-gradient(180deg, var(--dark-bg), var(--ocean-blue));
-            color: white;
-            font-family: 'Arial', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            color: var(--text-dark);
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
         }
 
-        .title-glitter {
+        /* Modern Navigation */
+        .navbar {
+            background: var(--deep-purple);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            padding: 12px 0;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .navbar-brand img {
+            height: 48px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 5px var(--neon-teal));
+        }
+
+        .navbar-brand:hover img {
+            transform: rotate(15deg);
+        }
+
+        .brand-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: var(--accent);
+            position: relative;
             text-shadow: 0 0 15px var(--neon-teal);
             background: linear-gradient(45deg, var(--gold-fish), var(--coral));
             -webkit-background-clip: text;
@@ -93,24 +90,188 @@
             animation: glow 2s infinite alternate;
         }
 
+        @keyframes glow {
+            from { text-shadow: 0 0 10px var(--neon-teal); }
+            to { text-shadow: 0 0 30px var(--neon-teal); }
+        }
+
+        .brand-text::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-brand:hover .brand-text::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* Trusted Badge */
+        .trusted-badge {
+            position: absolute;
+            top: -8px;
+            right: -35px;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background: linear-gradient(45deg, #dc3545, #fd7e14);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .nav-link {
+            color: var(--text-light) !important;
+            font-weight: 500;
+            margin: 0 8px;
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 8px 16px !important;
+            border-radius: 6px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary) !important;
+            background-color: rgba(0, 255, 209, 0.1);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 16px;
+            width: calc(100% - 32px);
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 70px 0 50px;
+            background: linear-gradient(135deg, var(--ocean-blue) 0%, var(--deep-purple) 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1511882150382-421056c89033?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 3.2rem;
+            line-height: 1.2;
+            margin-bottom: 15px;
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto 25px;
+            color: var(--text-light);
+        }
+
+        /* Cards & Sections */
+        .section {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            position: relative;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 2.3rem;
+            margin-bottom: 40px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .card-modern {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-modern:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+
+        .card-header-modern {
+            background: var(--deep-purple);
+            padding: 20px;
+            border: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: white;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-body-modern {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         .offer-card {
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
             border: 2px solid var(--neon-teal);
-            border-radius: 15px;
-            transition: all 0.3s;
-        }
-
-        .alert-messages {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            min-width: 300px;
-        }
-
-        .alert {
-            box-shadow: 0 0 15px rgba(0,0,0,0.3);
-            border: 1px solid var(--neon-teal);
+            display: flex;
+            flex-direction: column;
         }
 
         .offer-card:hover {
@@ -118,55 +279,532 @@
             box-shadow: 0 0 25px var(--neon-teal);
         }
 
-        .game-bubble {
-            background: rgba(107,203,119,0.1);
-            border: 1px solid var(--sea-green);
-            border-radius: 25px;
-            padding: 10px 20px;
-            margin: 5px;
+        .offer-card .offer-content {
+            padding: 20px;
+            flex-grow: 1;
         }
 
-        .countdown-flash {
-            animation: pulse 1s infinite;
-            background: var(--coral);
-            border-radius: 15px;
+        .offer-card .offer-footer {
+            background: rgba(0,0,0,0.2);
             padding: 15px;
+            text-align: center;
+            border-top: 1px solid var(--border);
         }
 
-        .navbar-brand img {
-            height: 40px; /* Logo height */
-            margin-right: 10px;
-            filter: drop-shadow(0 0 5px var(--neon-teal));
-            transition: transform 0.3s ease;
+        .game-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border);
         }
 
-        .navbar-brand:hover img {
-            transform: rotate(15deg);
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
         }
 
-        @keyframes glow {
-            from { text-shadow: 0 0 10px var(--neon-teal); }
-            to { text-shadow: 0 0 30px var(--neon-teal); }
+        .game-image {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            position: relative;
+        }
+
+        .game-content {
+            padding: 15px;
+            flex-grow: 1;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .game-footer {
+            padding: 12px 15px;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .play-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            opacity: 0.9;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            opacity: 1;
+            background: var(--accent);
+        }
+
+        .game-action-btn {
+            width: 100%;
+            padding: 8px 15px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .game-action-btn:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+        }
+        /* Add this to your existing CSS */
+        .game-content h5 {
+            color: var(--accent) !important;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        .game-description {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        .game-card .game-image {
+            height: 160px; /* Slightly reduced height */
+        }
+
+        /* Countdown Timer */
+        .countdown-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid var(--neon-teal);
+            animation: pulse 1s infinite;
         }
 
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.01); }
             100% { transform: scale(1); }
         }
+
+        .countdown-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .countdown-item {
+            background: var(--ocean-blue);
+            border-radius: 8px;
+            padding: 12px;
+            min-width: 70px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .countdown-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--accent);
+        }
+
+        /* Testimonials & Live Wins */
+        .ticker-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 12px;
+            overflow: hidden;
+            margin: 8px 0;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 20px;
+            margin: 0 15px;
+            background: rgba(42, 82, 190, 0.05);
+            border-radius: 50px;
+            color: var(--accent);
+        }
+
+        .ticker-item i {
+            color: var(--accent);
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--ocean-blue);
+            color: white;
+            padding: 50px 0 25px;
+            position: relative;
+        }
+
+        .footer-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .social-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            color: white;
+            margin-right: 10px;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-3px);
+            background: var(--primary);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        /* Contact Modal */
+        .contact-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1050;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .contact-modal-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            overflow: hidden;
+            animation: fadeIn 0.3s ease-out;
+            border: 2px solid var(--neon-teal);
+        }
+
+        .contact-option {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .contact-option:hover {
+            background: rgba(0,0,0,0.3);
+        }
+
+        .contact-option i {
+            font-size: 1.5rem;
+            width: 40px;
+            margin-right: 15px;
+        }
+
+        .contact-option.facebook i {
+            color: #1877f2;
+        }
+
+        .contact-option.whatsapp i {
+            color: #25d366;
+        }
+
+        .contact-option.telegram i {
+            color: #0088cc;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 2.6rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            .section {
+                padding: 50px 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 60px 0 40px;
+            }
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            .countdown-item {
+                min-width: 60px;
+                padding: 10px;
+            }
+            .countdown-value {
+                font-size: 1.8rem;
+            }
+            .section {
+                padding: 40px 0;
+            }
+            .navbar-brand img {
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-brand img {
+                height: 35px;
+            }
+            .hero-title {
+                font-size: 1.9rem;
+            }
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            .section-title {
+                font-size: 1.8rem;
+            }
+            .countdown-item {
+                min-width: 50px;
+                padding: 8px;
+            }
+            .countdown-value {
+                font-size: 1.5rem;
+            }
+            .trusted-badge {
+                top: -10px;
+                right: -25px;
+                font-size: 0.6rem;
+            }
+        }
+
+
+
+          /* Limited Offer Styles */
+    .flash-offer-container {
+        background: linear-gradient(135deg, var(--deep-purple), var(--ocean-blue));
+        border: 3px solid var(--neon-teal);
+        border-radius: 15px;
+        padding: 25px;
+        margin: 20px 0;
+        box-shadow: 0 0 20px rgba(0, 255, 209, 0.4), 0 0 40px rgba(0, 255, 209, 0.2);
+        position: relative;
+        overflow: hidden;
+        animation: pulse-glow 2s infinite alternate, border-pulse 3s infinite;
+    }
+
+    .upcoming-offer-container {
+        background: linear-gradient(135deg, var(--ocean-blue), var(--light-bg));
+        border: 2px solid var(--border);
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 0 15px rgba(107, 203, 119, 0.3);
+    }
+
+    .no-offer-container {
+        background: linear-gradient(135deg, var(--dark-bg), var(--deep-purple));
+        border: 2px solid var(--secondary);
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 0 15px rgba(255, 107, 107, 0.3);
+    }
+
+    .offer-header, .flash-offer-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .offer-icon {
+        font-size: 1.8rem;
+        animation: bounce 2s infinite;
+    }
+
+    .offer-title {
+        font-size: 1.7rem;
+        font-weight: 800;
+        text-align: center;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        background: linear-gradient(45deg, var(--gold-fish), var(--coral));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .flash-offer-header .offer-title {
+        animation: text-glow 1.5s infinite alternate;
+    }
+
+    .offer-description {
+        font-size: 1.2rem;
+        font-style: italic;
+        margin-bottom: 20px;
+        color: var(--text-light);
+    }
+
+    .countdown-timer-wrapper {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 20px auto;
+        max-width: 500px;
+        border: 1px solid var(--border);
+    }
+
+    #countdown-timer {
+        font-size: 2rem;
+        color: var(--accent);
+        text-shadow: 0 0 10px rgba(255, 217, 61, 0.5);
+        font-family: 'Montserrat', sans-serif;
+        letter-spacing: 1px;
+    }
+
+    .claim-offer-btn {
+        background: linear-gradient(45deg, var(--gold-fish), var(--coral));
+        color: var(--dark-bg);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 700;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(255, 217, 61, 0.4);
+        margin-top: 10px;
+        animation: button-pulse 2s infinite;
+    }
+
+    .claim-offer-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(255, 217, 61, 0.6);
+    }
+
+    /* Animations */
+    @keyframes pulse-glow {
+        0% { box-shadow: 0 0 15px rgba(0, 255, 209, 0.4); }
+        100% { box-shadow: 0 0 30px rgba(0, 255, 209, 0.8), 0 0 50px rgba(0, 255, 209, 0.4); }
+    }
+
+    @keyframes border-pulse {
+        0% { border-color: var(--neon-teal); }
+        50% { border-color: var(--gold-fish); }
+        100% { border-color: var(--neon-teal); }
+    }
+
+    @keyframes text-glow {
+        0% { text-shadow: 0 0 5px rgba(255, 217, 61, 0.5); }
+        100% { text-shadow: 0 0 20px rgba(255, 217, 61, 0.9); }
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    @keyframes button-pulse {
+        0% { transform: scale(1); box-shadow: 0 5px 15px rgba(255, 217, 61, 0.4); }
+        50% { transform: scale(1.05); box-shadow: 0 8px 25px rgba(255, 217, 61, 0.6); }
+        100% { transform: scale(1); box-shadow: 0 5px 15px rgba(255, 217, 61, 0.4); }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .offer-title {
+            font-size: 1.4rem;
+        }
+
+        .offer-description {
+            font-size: 1rem;
+        }
+
+        #countdown-timer {
+            font-size: 1.6rem;
+        }
+
+        .claim-offer-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .offer-header, .flash-offer-header {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .offer-title {
+            font-size: 1.2rem;
+        }
+
+        #countdown-timer {
+            font-size: 1.4rem;
+        }
+    }
     </style>
 </head>
 <body>
-    <!-- Navigation Bar with Logo -->
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background: linear-gradient(45deg, var(--deep-purple), var(--ocean-blue)); box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative; z-index: 1001;">
+    <!-- Modern Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <!-- FireKirin Logo -->
-                <img src="{% static 'images/fk2.jpeg' %}" alt="FireKirin Logo" class="d-inline-block align-top">
-                <span class="title-glitter fw-bold me-2">FireKirin 13</span>
-                <span class="badge bg-danger">TRUSTED</span>
+            <a class="navbar-brand" href="#">
+                <div class="logo-container">
+                    <img src="{% static 'images/fk2.jpeg' %}" alt="FireKirin Logo">
+                    <div class="brand-text">FireKirin 13</div>
+                    <span class="trusted-badge">TRUSTED</span>
+                </div>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -181,219 +819,467 @@
                         <a class="nav-link" href="#promotions">Promotions</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#play-instructions">How to Play</a>
+                        <a class="nav-link" href="#how-to-play">How to Play</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#contact">Contact</a>
                     </li>
                     <li class="nav-item d-lg-none mt-2">
                         <div class="d-flex gap-2">
-                            <a href="{{ social.facebook }}" class="btn btn-sm btn-primary w-100">Facebook</a>
-                            <a href="{{ social.whatsapp }}" class="btn btn-sm btn-success w-100">WhatsApp</a>
+                            <a href="{{ social.facebook }}" class="btn btn-sm btn-primary w-100">
+                                <i class="fab fa-facebook me-1"></i> Facebook
+                            </a>
+                            <a href="{{ social.whatsapp }}" class="btn btn-sm btn-success w-100">
+                                <i class="fab fa-whatsapp me-1"></i> WhatsApp
+                            </a>
                         </div>
                     </li>
                 </ul>
                 <div class="d-none d-lg-flex ms-3 gap-2">
-                    <a href="{{ social.facebook }}" class="btn btn-sm btn-primary">Facebook</a>
-                    <a href="{{ social.whatsapp }}" class="btn btn-sm btn-success">WhatsApp</a>
+                    <a href="{{ social.facebook }}" class="btn btn-sm btn-primary">
+                        <i class="fab fa-facebook me-1"></i> Facebook
+                    </a>
+                    <a href="{{ social.whatsapp }}" class="btn btn-sm btn-success">
+                        <i class="fab fa-whatsapp me-1"></i> WhatsApp
+                    </a>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Testimonials Ticker -->
-    <!-- Testimonials Ticker -->
-    <div class="container mt-2">
-        <div class="testimonials p-3" style="background: rgba(0,0,0,0.3); border-radius:15px;">
-            <marquee class="text-gold-fish">
+    <div class="container mt-0">
+        <div class="ticker-container">
+            <marquee>
                 {% for testimonial in testimonials %}
-                    ⭐⭐⭐⭐⭐ "{{ testimonial.content }}" - {{ testimonial.name }} |
+                    <div class="ticker-item">
+                        <i class="fas fa-star"></i>
+                        "{{ testimonial.content }}" - {{ testimonial.name }}
+                    </div>
                 {% empty %}
-                    ⭐⭐⭐⭐⭐ "Won $500 in 10 minutes!" - John D. |
-                    ⭐⭐⭐⭐⭐ "Fastest payouts ever!" - Sarah K. |
-                    ⭐⭐⭐⭐⭐ "Addicted to Orion Stars!" - Mike T. |
-                    ⭐⭐⭐⭐⭐ "Customer support is 24/7!" - Lisa M. |
-                    ⭐⭐⭐⭐⭐ "Love the bonuses!" - Alex P.
+                    <div class="ticker-item">
+                        <i class="fas fa-star"></i>
+                        "Won $500 in 10 minutes!" - John D.
+                    </div>
+                    <div class="ticker-item">
+                        <i class="fas fa-star"></i>
+                        "Fastest payouts ever!" - Sarah K.
+                    </div>
+                    <div class="ticker-item">
+                        <i class="fas fa-star"></i>
+                        "Addicted to Orion Stars!" - Mike T.
+                    </div>
+                    <div class="ticker-item">
+                        <i class="fas fa-star"></i>
+                        "Customer support is 24/7!" - Lisa M.
+                    </div>
+                    <div class="ticker-item">
+                        <i class="fas fa-star"></i>
+                        "Love the bonuses!" - Alex P.
+                    </div>
                 {% endfor %}
             </marquee>
         </div>
     </div>
 
-    <!-- Main Header with Semantic Improvement -->
-    <header id="home" class="text-center py-5 mt-3" role="banner">
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
         <div class="container">
-            <h1 class="title-glitter display-3 fw-bold animate__animated animate__rubberBand">
-                FireKirin Gameroom 13 - Premium Online Fish Games
-            </h1>
-            <p class="lead text-teal mb-0">Trusted Online Casino with Instant Cashouts & 24/7 Support</p>
-            <p class="lead text-teal mb-2">Play popular fish games like Orion Stars, Juwa, and Ultra Panda</p>
-        </div>
-    </header>
+            <div class="row align-items-center">
+                <div class="col-lg-7 hero-content animate-fade-in">
+                    <h1 class="hero-title">
+                        Premium Online Fish Games
+                    </h1>
+                    <p class="hero-subtitle">
+                        Trusted Online Casino with Instant Cashouts, 100% Signup bonus & 24/7 Support
+                    </p>
+                    <p class="lead mb-4" style="color: var(--text-light);">Play popular fish games like Orion Stars,firekirn, vblink, Juwa,gamevault, pandamaster, Vegas sweeps, Vpower, Milkway, Riversweeps and Ultra Panda</p>
 
-   <!-- Live Wins Ticker -->
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="#games" class="btn btn-light btn-lg px-4 fw-bold">
+                            <i class="fas fa-gamepad me-2"></i> Play Now
+                        </a>
+                        <a href="#promotions" class="btn btn-outline-light btn-lg px-4">
+                            <i class="fas fa-gift me-2"></i> View Bonuses
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-5 d-none d-lg-block">
+                    <img src="https://images.unsplash.com/photo-1511882150382-421056c89033?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+                         alt="Casino Games" class="img-fluid rounded-3 shadow-lg animate-fade-in">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Wins Ticker -->
     <div class="container mt-4">
-        <div class="live-wins p-3" style="background: rgba(0,0,0,0.3); border-radius:15px;">
-            <marquee class="text-sea-green">
+        <div class="ticker-container">
+            <marquee>
                 {% for win in live_wins %}
                     {% if win.username and win.amount %}
-                    🎉 {{ win.username }} Won ${{ win.amount }}! 🎉
+                    <div class="ticker-item">
+                        <i class="fas fa-trophy text-warning"></i>
+                        {{ win.username }} Won ${{ win.amount }}!
+                    </div>
                     {% endif %}
                 {% empty %}
-                    🎉 New wins coming soon! 🎉
+                    <div class="ticker-item">
+                        <i class="fas fa-trophy text-warning"></i>
+                        New wins coming soon!
+                    </div>
                 {% endfor %}
             </marquee>
         </div>
     </div>
 
-    <!-- Limited Offer Countdown -->
-    <div class="container text-center mt-4">
-        {% if active_offer %}
-        <!-- Active Offer -->
-        <div class="countdown-flash p-3 rounded" style="background-color: #fff4e5; border: 2px solid #ffa500;">
-            <div style="color: #d9534f; font-weight: 700; font-size: 1.5rem; margin-bottom: 0.5rem;">
-                ⚡ FLASH OFFER: {{ active_offer.title }} ⚡
-            </div>
-            <div style="color: #0275d8; font-style: italic; font-size: 1.2rem; margin-bottom: 0.75rem;">
-                {{ active_offer.description }}
-            </div>
-            <span id="countdown-timer" class="fw-bold fs-2" style="color: #5cb85c;"></span>
+ <!-- Limited Offer Countdown -->
+<div class="container text-center mt-4">
+    {% if active_offer %}
+    <!-- Active Offer -->
+    <div class="flash-offer-container">
+        <div class="flash-offer-header">
+            <div class="offer-icon">⚡</div>
+            <div class="offer-title">FLASH OFFER: {{ active_offer.title }}</div>
+            <div class="offer-icon">⚡</div>
         </div>
-
-        {% elif future_offer %}
-        <!-- Upcoming Offer -->
-        <div class="countdown-upcoming p-3 rounded" style="background-color: #e3f2fd; border: 2px solid #2196f3;">
-            <div style="color: #1976d2; font-weight: 700; font-size: 1.5rem; margin-bottom: 0.5rem;">
-                🕒 UPCOMING OFFER: {{ future_offer.title }} 🕒
-            </div>
-            <div style="color: #0d47a1; font-style: italic; font-size: 1.2rem; margin-bottom: 0.75rem;">
-                {{ future_offer.description }}
-            </div>
-            <span id="countdown-timer" class="fw-bold fs-2" style="color: #5cb85c;"></span>
+        <div class="offer-description">{{ active_offer.description }}</div>
+        <div class="countdown-timer-wrapper">
+            <span id="countdown-timer" class="fw-bold"></span>
         </div>
-
-        {% else %}
-        <!-- No Offers -->
-        <div class="p-3 rounded" style="background-color: #ffebee; border: 2px solid #ff1744; color: #d32f2f; font-weight: 700;">
-            📢 NO ACTIVE OFFERS! CHECK BACK SOON! 📢
-        </div>
-        {% endif %}
+        <button class="btn claim-offer-btn"
+                data-offer-title="{{ active_offer.title }}"
+                data-offer-desc="{{ active_offer.description }}">
+            <i class="fas fa-bolt me-2"></i> Claim Offer Now
+        </button>
     </div>
 
-    <!-- Promotions Section with Semantic Tag -->
-    <section id="promotions" class="container mt-5" aria-label="Current promotions">
-        <h2 class="text-center mb-4">🎁 Exclusive Casino Bonuses & Promotions</h2>
-        <div class="row justify-content-center gy-3">
+    {% elif future_offer %}
+    <!-- Upcoming Offer -->
+    <div class="upcoming-offer-container">
+        <div class="offer-header">
+            <div class="offer-icon">🕒</div>
+            <div class="offer-title">UPCOMING OFFER: {{ future_offer.title }}</div>
+            <div class="offer-icon">🕒</div>
+        </div>
+        <div class="offer-description">{{ future_offer.description }}</div>
+        <div class="countdown-timer-wrapper">
+            <span id="countdown-timer" class="fw-bold"></span>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- No Offers -->
+    <div class="no-offer-container">
+        <div class="offer-header">
+            <div class="offer-icon">📢</div>
+            <div class="offer-title">NO ACTIVE OFFERS! CHECK BACK SOON!</div>
+            <div class="offer-icon">📢</div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+    <!-- Promotions Section -->
+<section id="promotions" class="section">
+    <div class="container">
+        <h2 class="section-title">🎁 Exclusive Bonuses</h2>
+        <div class="row justify-content-center gy-4">
             <div class="col-lg-3 col-md-6">
-                <div class="offer-card p-4 text-center h-100">
-                    <div class="badge bg-warning mb-2">LIMITED</div>
-                    <h5>✅ 100% Signup Bonus</h5>
-                    <p class="mb-0">Start with double credits!</p>
+                <div class="offer-card animate-fade-in" data-delay="0.1s">
+                    <div class="offer-content">
+                        <div class="badge bg-warning mb-3">LIMITED</div>
+                        <h5>✅ 100% Signup Bonus</h5>
+                        <!-- FIX: Changed text-muted to text-light for visibility -->
+                        <p class="text-light">Start with double credits!</p>
+                    </div>
+                    <div class="offer-footer">
+                        <button class="btn btn-sm btn-outline-primary claim-offer-btn"
+                            data-offer-title="100% Signup Bonus"
+                            data-offer-desc="Get double credits on your first deposit">
+                            Claim Offer
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="offer-card p-4 text-center h-100">
-                    <h5>✅ 20% Regular Bonus</h5>
-                    <p class="mb-0">Earn bonus in every deposit!</p>
+                <div class="offer-card animate-fade-in" data-delay="0.2s">
+                    <div class="offer-content">
+                        <h5>✅ 20% Regular Bonus</h5>
+                        <!-- FIX: Changed text-muted to text-light for visibility -->
+                        <p class="text-light">Earn bonus in every deposit!</p>
+                    </div>
+                    <div class="offer-footer">
+                        <button class="btn btn-sm btn-outline-primary claim-offer-btn"
+                            data-offer-title="20% Regular Bonus"
+                            data-offer-desc="Get 20% bonus on every deposit">
+                            Claim Offer
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="offer-card p-4 text-center h-100">
-                    <div class="badge bg-danger mb-2">HOT</div>
-                    <h5>✅ 15% Cashback</h5>
-                    <p class="mb-0">Even if you lose!</p>
+                <div class="offer-card animate-fade-in" data-delay="0.3s">
+                    <div class="offer-content">
+                        <div class="badge bg-danger mb-3">HOT</div>
+                        <h5>✅ 15% Cashback</h5>
+                        <!-- FIX: Changed text-muted to text-light for visibility -->
+                        <p class="text-light">Even if you lose!</p>
+                    </div>
+                    <div class="offer-footer">
+                        <button class="btn btn-sm btn-outline-primary claim-offer-btn"
+                            data-offer-title="15% Cashback"
+                            data-offer-desc="Get 15% cashback on your losses">
+                            Claim Offer
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="offer-card p-4 text-center h-100">
-                    <h5>✅ 50% Referral Bonus</h5>
-                    <p class="mb-0">Earn while friends play!</p>
-                    <div class="badge bg-success mt-2">POPULAR</div>
+                <div class="offer-card animate-fade-in" data-delay="0.4s">
+                    <div class="offer-content">
+                        <div class="badge bg-success mb-3">POPULAR</div>
+                        <h5>✅ 50% Referral Bonus</h5>
+                        <!-- FIX: Changed text-muted to text-light for visibility -->
+                        <p class="text-light">Earn while friends play!</p>
+                    </div>
+                    <div class="offer-footer">
+                        <button class="btn btn-sm btn-outline-primary claim-offer-btn"
+                            data-offer-title="50% Referral Bonus"
+                            data-offer-desc="Earn 50% of your friend's first deposit">
+                            Invite Friends
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
     <!-- Payment Methods -->
-    <div class="container mt-5">
-        <h3 class="text-center mb-4">💳 Payment Methods</h3>
-        <div class="row justify-content-center">
-            {% for method in payment_methods %}
-            <div class="col-md-3 mb-3">
-                <div class="offer-card p-3 text-center">
-                    <h6>{{ method.name }}</h6>
+<!--&lt;!&ndash; Payment Methods &ndash;&gt;-->
+<!--<section class="section">-->
+<!--    <div class="container">-->
+<!--        <h3 class="section-title">💳 Payment Methods</h3>-->
+<!--        <div class="row justify-content-center">-->
+<!--            {% for method in payment_methods %}-->
+<!--            <div class="col-md-2 col-4 mb-4">-->
+<!--                <div class="card-modern text-center p-3 h-100">-->
+<!--                    <div class="mb-3">-->
+<!--                        <img src="{% static 'images/payments/' %}{{ method.slug }}.png"-->
+<!--                             alt="{{ method.name }}" class="img-fluid" style="height: 40px;">-->
+<!--                    </div>-->
+<!--                    <h6 class="mb-0">{{ method.name }}</h6>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            {% endfor %}-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</section>-->
+<!--    &lt;!&ndash; Game Selection &ndash;&gt;-->
+<!-- Game Selection -->
+<section id="games" class="section">
+    <div class="container">
+        <h2 class="section-title">🎮 Premium Games</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            <!-- Orion Stars -->
+            <div class="col">
+                <div class="game-card">
+                    <div class="game-image" style="background-image: url('{% static 'images/games/orion.jpeg' %}');">
+                    </div>
+                    <div class="game-content">
+                        <h5 class="mb-2 text-white">Orion Stars</h5>
+                        <p class="game-description">Most popular fish game with massive payouts</p>
+                    </div>
+                    <div class="game-footer">
+                        <button class="game-action-btn contact-for-game" data-game-name="Orion Stars">
+                            <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                    </div>
                 </div>
             </div>
-            {% endfor %}
+
+            <!-- FireKirin -->
+            <div class="col">
+                <div class="game-card">
+                    <div class="game-image" style="background-image: url('{% static 'images/games/firekirin.jpeg' %}');">
+                    </div>
+                    <div class="game-content">
+                        <h5 class="mb-2 text-white">FireKirin</h5>
+                        <p class="game-description">Signature game with exciting bonuses</p>
+                    </div>
+                    <div class="game-footer">
+                        <button class="game-action-btn contact-for-game" data-game-name="FireKirin">
+                            <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Juwa -->
+            <div class="col">
+                <div class="game-card">
+                    <div class="game-image" style="background-image: url('{% static 'images/games/juwa.jpeg' %}');">
+                    </div>
+                    <div class="game-content">
+                        <h5 class="mb-2 text-white">Juwa</h5>
+                        <p class="game-description">Fast-paced action with incredible graphics</p>
+                    </div>
+                    <div class="game-footer">
+                        <button class="game-action-btn contact-for-game" data-game-name="Juwa">
+                            <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ultra Panda -->
+            <div class="col">
+                <div class="game-card">
+                    <div class="game-image" style="background-image: url('{% static 'images/games/ultrapanda.jpeg' %}');">
+                    </div>
+                    <div class="game-content">
+                        <h5 class="mb-2 text-white">Ultra Panda</h5>
+                        <p class="game-description">Cute but deadly with big winning potential</p>
+                    </div>
+                    <div class="game-footer">
+                        <button class="game-action-btn contact-for-game" data-game-name="Ultra Panda">
+                            <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panda Master -->
+            <div class="col">
+                <div class="game-card">
+                    <div class="game-image" style="background-image: url('{% static 'images/games/pandamaster.jpeg' %}');">
+                    </div>
+                    <div class="game-content">
+                        <h5 class="mb-2 text-white">Panda Master</h5>
+                        <p class="game-description">Master the pandas for massive rewards</p>
+                    </div>
+                    <div class="game-footer">
+                        <button class="game-action-btn contact-for-game" data-game-name="Panda Master">
+                            <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vegas -->
+            <div class="col">
+                <div class="game-card">
+                    <div class="game-image" style="background-image: url('{% static 'images/games/vegas.jpeg' %}');">
+                    </div>
+                    <div class="game-content">
+                        <h5 class="mb-2 text-white">Vegas</h5>
+                        <p class="game-description">Bring the Vegas experience to your screen</p>
+                    </div>
+                    <div class="game-footer">
+                        <button class="game-action-btn contact-for-game" data-game-name="Vegas">
+                            <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GameVault -->
+            <div class="col">
+                <div class="game-card">
+                    <div class="game-image" style="background-image: url('{% static 'images/games/gamevault.png' %}');">
+                    </div>
+                    <div class="game-content">
+                        <h5 class="mb-2 text-white">GameVault</h5>
+                        <p class="game-description">Treasure trove of winning opportunities</p>
+                    </div>
+                    <div class="game-footer">
+                        <button class="game-action-btn contact-for-game" data-game-name="GameVault">
+                            <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VBlink -->
+            <div class="col">
+                <div class="game-card">
+                    <div class="game-image" style="background-image: url('{% static 'images/games/vblink.jpeg' %}');">
+                    </div>
+                    <div class="game-content">
+                        <h5 class="mb-2 text-white">VBlink</h5>
+                        <p class="game-description">Lightning-fast gameplay with instant wins</p>
+                    </div>
+                    <div class="game-footer">
+                        <button class="game-action-btn contact-for-game" data-game-name="VBlink">
+                            <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <!-- Game Selection -->
-    <section id="games" class="container mt-5">
-        <h2 class="text-center mb-4">🎮 Premium Fish Game Collection</h2>
-        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3 justify-content-center">
-            <div class="col">
-                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
-                    Orion Stars
+</section>
+    <!-- How to Play Section -->
+    <section id="how-to-play" class="section">
+        <div class="container">
+            <h2 class="section-title">📝 How to Play</h2>
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="card-modern h-100">
+                        <div class="card-header-modern">Get Started in 3 Easy Steps</div>
+                        <div class="card-body-modern">
+                            <ol class="steps-list">
+                                <li class="mb-4 d-flex align-items-center">
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        <span>1</span>
+                                    </div>
+                                    <div>
+                                        <h5>Follow our social channels</h5>
+                                        <p class="mb-0 text-muted">Connect with us on Facebook, WhatsApp or Telegram</p>
+                                    </div>
+                                </li>
+                                <li class="mb-4 d-flex align-items-center">
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        <span>2</span>
+                                    </div>
+                                    <div>
+                                        <h5>Contact agent for setup</h5>
+                                        <p class="mb-0 text-muted">Our support team will guide you through setup</p>
+                                    </div>
+                                </li>
+                                <li class="d-flex align-items-center">
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        <span>3</span>
+                                    </div>
+                                    <div>
+                                        <h5>Deposit & start fishing!</h5>
+                                        <p class="mb-0 text-muted">Make your first deposit and start winning</p>
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="col">
-                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
-                    FireKirin
-                </div>
-            </div>
-            <div class="col">
-                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
-                    Vegas
-                </div>
-            </div>
-            <div class="col">
-                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
-                    Juwa
-                </div>
-            </div>
-            <div class="col">
-                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
-                    PandaMaster
-                </div>
-            </div>
-            <div class="col">
-                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
-                    Ultra Panda
-                </div>
-            </div>
-            <div class="col">
-                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
-                    GameVault
-                </div>
-            </div>
-            <div class="col">
-                <div class="game-bubble text-center p-3 h-100 d-flex align-items-center justify-content-center">
-                    VBlink
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Instructions Section with Semantic Tag -->
-    <section id="play-instructions" class="container mt-5" aria-label="How to play instructions">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="offer-card p-4">
-                    <h3 class="text-sea-green">📝 How to Play</h3>
-                    <ol class="steps-list">
-                        <li class="mb-3">Follow our social channels</li>
-                        <li class="mb-3">Contact agent for setup</li>
-                        <li class="mb-3">Deposit & start fishing!</li>
-                    </ol>
-                </div>
-            </div>
-            <div class="col-md-6 mt-4 mt-md-0">
-                <div class="offer-card p-4">
-                    <h3 class="text-sea-green">📲 Contact Agent</h3>
-                    <div class="d-flex justify-content-center gap-3 mt-4">
-                        <a href="{{ social.facebook }}" class="btn btn-primary">Facebook</a>
-                        <a href="{{ social.whatsapp }}" class="btn btn-success">WhatsApp</a>
-                        <a href="{{ social.telegram }}" class="btn btn-info">Telegram</a>
+                <div class="col-lg-6">
+                    <div class="card-modern h-100">
+                        <div class="card-header-modern">📲 Contact Agent</div>
+                        <div class="card-body-modern">
+                            <div class="d-flex flex-column gap-3">
+                                <a href="{{ social.facebook }}" class="btn btn-primary d-flex align-items-center justify-content-center py-3">
+                                    <i class="fab fa-facebook fa-2x me-3"></i>
+                                    <span>Message us on Facebook</span>
+                                </a>
+                                <a href="{{ social.whatsapp }}" class="btn btn-success d-flex align-items-center justify-content-center py-3">
+                                    <i class="fab fa-whatsapp fa-2x me-3"></i>
+                                    <span>Chat on WhatsApp</span>
+                                </a>
+                                <a href="{{ social.telegram }}" class="btn btn-info d-flex align-items-center justify-content-center py-3">
+                                    <i class="fab fa-telegram fa-2x me-3"></i>
+                                    <span>Connect on Telegram</span>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -401,43 +1287,234 @@
     </section>
 
     <!-- Contact Form -->
-    <div id="contact" class="container mt-5 mb-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="offer-card p-4">
-                    <h3 class="text-center text-sea-green">📨 Contact Us!</h3>
+    <section id="contact" class="section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card-modern">
+                        <div class="card-header-modern text-center">📨 Contact Us!</div>
+                        <div class="card-body-modern">
+                            <!-- Messages -->
+                            {% if messages %}
+                            <div class="alert-messages">
+                                {% for message in messages %}
+                                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
+                                    {{ message }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
 
-                    <!-- Messages -->
-                    {% if messages %}
-                    <div class="alert-messages">
-                        {% for message in messages %}
-                        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
-                            {{ message }}
+                            <form method="post" action="{% url 'contact_submit' %}">
+                                {% csrf_token %}
+                                <div class="mb-4">
+                                    <label class="form-label">Your Name</label>
+                                    {{ contact_form.name }}
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Email Address</label>
+                                    {{ contact_form.email }}
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Your Message</label>
+                                    {{ contact_form.message }}
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold">
+                                    <i class="fas fa-paper-plane me-2"></i> Send Message
+                                </button>
+                            </form>
                         </div>
-                        {% endfor %}
                     </div>
-                    {% endif %}
-
-                    <form method="post" action="{% url 'contact_submit' %}" class="mt-4">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            {{ contact_form.name }}
-                        </div>
-                        <div class="mb-3">
-                            {{ contact_form.email }}
-                        </div>
-                        <div class="mb-3" >
-                            {{ contact_form.message }}
-                        </div>
-                        <button type="submit" class="btn btn-sea-green w-100">Cast Your Message 🎣</button>
-                    </form>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <div class="footer-logo">FireKirin</div>
+                    <p class="mb-4 text-light">Your premier destination for premium fish casino games with instant cashouts, 24/7 support, and generous bonuses.</p>
+                    <div class="d-flex">
+                        <a href="{{ social.facebook }}" class="social-icon">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="{{ social.whatsapp }}" class="social-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="{{ social.telegram }}" class="social-icon">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h5 class="mb-4 text-white">Quick Links</h5>
+                    <div class="row">
+                        <div class="col-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><a href="#home" class="text-light text-decoration-none">Home</a></li>
+                                <li class="mb-2"><a href="#games" class="text-light text-decoration-none">Games</a></li>
+                                <li class="mb-2"><a href="#promotions" class="text-light text-decoration-none">Promotions</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><a href="#how-to-play" class="text-light text-decoration-none">How to Play</a></li>
+                                <li class="mb-2"><a href="#contact" class="text-light text-decoration-none">Contact</a></li>
+                                <li class="mb-2"><a href="#" class="text-light text-decoration-none">FAQ</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <h5 class="mb-4 text-white">Contact Info</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-3 d-flex align-items-center">
+                            <i class="fas fa-headset me-3 text-primary"></i>
+                            <span>24/7 Customer Support</span>
+                        </li>
+                        <li class="mb-3 d-flex align-items-center">
+                            <i class="fab fa-whatsapp me-3 text-success"></i>
+                            <span>{{ social.whatsapp|default:"+1 (555) 123-4567" }}</span>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <i class="fas fa-envelope me-3 text-info"></i>
+                            <span>support@firekirin.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-center mt-5 pt-4 border-top border-secondary">
+                <p class="mb-0 text-light">&copy; {{ now.year }} FireKirin Gameroom. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="contact-modal">
+        <div class="contact-modal-content">
+            <div class="card-header-modern text-center">Get Started</div>
+            <div id="offerDetails" class="p-4 border-bottom">
+                <h5 class="mb-2" id="offerTitle"></h5>
+                <p class="text-muted mb-0" id="offerDesc"></p>
+            </div>
+            <div class="contact-options">
+                <div class="contact-option whatsapp" data-contact="whatsapp">
+                    <i class="fab fa-whatsapp"></i>
+                    <div>
+                        <h6 class="mb-0">Contact via WhatsApp</h6>
+                        <small class="text-muted">Instant messaging support</small>
+                    </div>
+                </div>
+                <div class="contact-option facebook" data-contact="facebook">
+                    <i class="fab fa-facebook-messenger"></i>
+                    <div>
+                        <h6 class="mb-0">Contact via Messenger</h6>
+                        <small class="text-muted">Chat with our agents</small>
+                    </div>
+                </div>
+                <div class="contact-option telegram" data-contact="telegram">
+                    <i class="fab fa-telegram"></i>
+                    <div>
+                        <h6 class="mb-0">Contact via Telegram</h6>
+                        <small class="text-muted">Fast and secure messaging</small>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center p-3">
+                <button id="closeModal" class="btn btn-sm btn-outline-secondary">Cancel</button>
             </div>
         </div>
     </div>
 
-<script>
-    // Initialize variables
+    <script>
+        // Contact Modal Functionality
+        const contactModal = document.getElementById('contactModal');
+        const offerTitle = document.getElementById('offerTitle');
+        const offerDesc = document.getElementById('offerDesc');
+        const closeModal = document.getElementById('closeModal');
+
+        // Function to open modal with content
+        function openContactModal(title, description) {
+            offerTitle.textContent = title;
+            offerDesc.textContent = description;
+            contactModal.style.display = 'flex';
+        }
+
+        // Claim Offer Buttons
+        document.querySelectorAll('.claim-offer-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const title = this.getAttribute('data-offer-title');
+                const desc = this.getAttribute('data-offer-desc');
+                openContactModal(title, desc);
+            });
+        });
+
+        // Play Game Buttons (floating play button)
+        document.querySelectorAll('.play-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const gameName = this.getAttribute('data-game-name');
+                openContactModal(`Play ${gameName}`, `Ready to play ${gameName}? Contact us to get started!`);
+            });
+        });
+
+        // Game Footer Buttons
+        document.querySelectorAll('.contact-for-game').forEach(button => {
+            button.addEventListener('click', function() {
+                const gameName = this.getAttribute('data-game-name');
+                openContactModal(`Play ${gameName}`, `Ready to play ${gameName}? Contact us to get started!`);
+            });
+        });
+
+        // Hero Play Now Button
+        document.querySelector('.hero-section .btn-light').addEventListener('click', function(e) {
+            e.preventDefault();
+            openContactModal('Get Started', 'Ready to play? Contact us to get started with your account!');
+        });
+
+        // Contact Options
+        document.querySelectorAll('.contact-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const contactMethod = this.getAttribute('data-contact');
+                let url;
+
+                switch(contactMethod) {
+                    case 'whatsapp':
+                        url = "{{ social.whatsapp }}";
+                        break;
+                    case 'facebook':
+                        url = "{{ social.facebook }}";
+                        break;
+                    case 'telegram':
+                        url = "{{ social.telegram }}";
+                        break;
+                }
+
+                if(url) {
+                    // Add the offer/game to the message
+                    const message = encodeURIComponent(`I want to: ${offerTitle.textContent} - ${offerDesc.textContent}`);
+                    window.open(`${url}?text=${message}`, '_blank');
+                }
+
+                contactModal.style.display = 'none';
+            });
+        });
+
+        // Close Modal
+        closeModal.addEventListener('click', function() {
+            contactModal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === contactModal) {
+                contactModal.style.display = 'none';
+            }
+        });
+
+         // Initialize variables
     let lastWinId = {% if live_wins.0.id %}{{ live_wins.0.id }}{% else %}0{% endif %};
     let currentOfferId = {% if active_offer %}{{ active_offer.id }}{% elif future_offer %}{{ future_offer.id }}{% else %}null{% endif %};
     let isPollingActive = true;
@@ -758,9 +1835,6 @@ document.addEventListener('keypress', () => lastPingTime = Date.now());
             });
         });
     </script>
-
-    <footer style="background: #0a0a0a; color: var(--gold); text-align: center; padding: 15px 0; font-size: 0.9rem; border-top: 2px solid var(--gold); margin-top: 40px;">
-        &copy; {{ now.year }} FireKirin Gameroom. All rights reserved.
-    </footer>
+    </script>
 </body>
 </html>
