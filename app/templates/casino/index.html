@@ -333,20 +333,21 @@
 
         .play-btn {
             position: absolute;
-            bottom: 15px;
-            right: 15px;
+            bottom: 10px;
+            right: 10px;
             background: var(--success);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             transition: all 0.3s ease;
             opacity: 0.9;
+            font-size: 0.8rem;
         }
 
         .play-btn:hover {
@@ -357,13 +358,23 @@
 
         .game-action-btn {
             width: 100%;
-            padding: 8px 15px;
-            background: var(--success);
+            padding: 6px 12px;
             color: white;
             border: none;
             border-radius: 6px;
             font-weight: 500;
+            font-size: 0.85rem;
             transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-download {
+            background: var(--primary);
+        }
+
+        .game-footer {
+            display: flex;
+            gap: 10px;
         }
 
         .game-action-btn:hover {
@@ -791,6 +802,15 @@
             font-size: 1.4rem;
         }
     }
+          .contact-for-game {
+        background-color: #4CAF50 !important;  /* Vibrant green */
+        border-color: #45a049 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+    .contact-for-game:hover {
+        background-color: #45a049 !important;
+    }
     </style>
 </head>
 <body>
@@ -895,11 +915,11 @@
                     </p>
                     <p class="lead mb-4" style="color: var(--text-light);">Play popular fish games like Orion Stars,firekirn, vblink, Juwa,gamevault, pandamaster, Vegas sweeps, Vpower, Milkway, Riversweeps and Ultra Panda</p>
 
-                    <div class="d-flex gap-3 flex-wrap">
-                        <a href="#games" class="btn btn-light btn-lg px-4 fw-bold">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="#games" class="btn btn-light btn-md px-3 fw-bold">
                             <i class="fas fa-gamepad me-2"></i> Play Now
                         </a>
-                        <a href="#promotions" class="btn btn-outline-light btn-lg px-4">
+                        <a href="#promotions" class="btn btn-outline-light btn-md px-3">
                             <i class="fas fa-gift me-2"></i> View Bonuses
                         </a>
                     </div>
@@ -1089,11 +1109,14 @@
                     </div>
                     <div class="game-content">
                         <h5 class="mb-2 text-white">Orion Stars</h5>
-                        <p class="game-description">Most popular fish game with massive payouts</p>
+                        <p class="game-description text-white">Most popular fish game with massive payouts</p>
                     </div>
-                    <div class="game-footer">
+                    <div class="game-footer d-flex gap-2">
                         <button class="game-action-btn contact-for-game" data-game-name="Orion Stars">
                             <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                        <button class="game-action-btn btn-download" data-game="orion">
+                            <i class="fas fa-download me-2"></i> Download
                         </button>
                     </div>
                 </div>
@@ -1108,9 +1131,12 @@
                         <h5 class="mb-2 text-white">FireKirin</h5>
                         <p class="game-description">Signature game with exciting bonuses</p>
                     </div>
-                    <div class="game-footer">
+                    <div class="game-footer d-flex gap-2">
                         <button class="game-action-btn contact-for-game" data-game-name="FireKirin">
                             <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                        <button class="game-action-btn btn-download" data-game="firekirin">
+                            <i class="fas fa-download me-2"></i> Download
                         </button>
                     </div>
                 </div>
@@ -1125,9 +1151,12 @@
                         <h5 class="mb-2 text-white">Juwa</h5>
                         <p class="game-description">Fast-paced action with incredible graphics</p>
                     </div>
-                    <div class="game-footer">
+                    <div class="game-footer d-flex gap-2">
                         <button class="game-action-btn contact-for-game" data-game-name="Juwa">
                             <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                        <button class="game-action-btn btn-download" data-game="juwa">
+                            <i class="fas fa-download me-2"></i> Download
                         </button>
                     </div>
                 </div>
@@ -1142,9 +1171,12 @@
                         <h5 class="mb-2 text-white">Ultra Panda</h5>
                         <p class="game-description">Cute but deadly with big winning potential</p>
                     </div>
-                    <div class="game-footer">
+                    <div class="game-footer d-flex gap-2">
                         <button class="game-action-btn contact-for-game" data-game-name="Ultra Panda">
                             <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                        <button class="game-action-btn btn-download" data-game="ultrapanda">
+                            <i class="fas fa-download me-2"></i> Download
                         </button>
                     </div>
                 </div>
@@ -1159,9 +1191,12 @@
                         <h5 class="mb-2 text-white">Panda Master</h5>
                         <p class="game-description">Master the pandas for massive rewards</p>
                     </div>
-                    <div class="game-footer">
+                    <div class="game-footer d-flex gap-2">
                         <button class="game-action-btn contact-for-game" data-game-name="Panda Master">
                             <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                        <button class="game-action-btn btn-download" data-game="pandamaster">
+                            <i class="fas fa-download me-2"></i> Download
                         </button>
                     </div>
                 </div>
@@ -1176,9 +1211,12 @@
                         <h5 class="mb-2 text-white">Vegas</h5>
                         <p class="game-description">Bring the Vegas experience to your screen</p>
                     </div>
-                    <div class="game-footer">
+                    <div class="game-footer d-flex gap-2">
                         <button class="game-action-btn contact-for-game" data-game-name="Vegas">
                             <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                        <button class="game-action-btn btn-download" data-game="vegas">
+                            <i class="fas fa-download me-2"></i> Download
                         </button>
                     </div>
                 </div>
@@ -1193,9 +1231,12 @@
                         <h5 class="mb-2 text-white">GameVault</h5>
                         <p class="game-description">Treasure trove of winning opportunities</p>
                     </div>
-                    <div class="game-footer">
+                    <div class="game-footer d-flex gap-2">
                         <button class="game-action-btn contact-for-game" data-game-name="GameVault">
                             <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                        <button class="game-action-btn btn-download" data-game="gamevault">
+                            <i class="fas fa-download me-2"></i> Download
                         </button>
                     </div>
                 </div>
@@ -1210,9 +1251,12 @@
                         <h5 class="mb-2 text-white">VBlink</h5>
                         <p class="game-description">Lightning-fast gameplay with instant wins</p>
                     </div>
-                    <div class="game-footer">
+                    <div class="game-footer d-flex gap-2">
                         <button class="game-action-btn contact-for-game" data-game-name="VBlink">
                             <i class="fas fa-gamepad me-2"></i> Play Now
+                        </button>
+                        <button class="game-action-btn btn-download" data-game="vblink">
+                            <i class="fas fa-download me-2"></i> Download
                         </button>
                     </div>
                 </div>
@@ -1405,21 +1449,21 @@
                     <i class="fab fa-whatsapp"></i>
                     <div>
                         <h6 class="mb-0">Contact via WhatsApp</h6>
-                        <small class="text-muted">Instant messaging support</small>
+                        <small class="text-light">Instant messaging support</small>
                     </div>
                 </div>
                 <div class="contact-option facebook" data-contact="facebook">
                     <i class="fab fa-facebook-messenger"></i>
                     <div>
                         <h6 class="mb-0">Contact via Messenger</h6>
-                        <small class="text-muted">Chat with our agents</small>
+                        <small class="text-light">Chat with our agents</small>
                     </div>
                 </div>
                 <div class="contact-option telegram" data-contact="telegram">
                     <i class="fab fa-telegram"></i>
                     <div>
                         <h6 class="mb-0">Contact via Telegram</h6>
-                        <small class="text-muted">Fast and secure messaging</small>
+                        <small class="text-light">Fast and secure messaging</small>
                     </div>
                 </div>
             </div>
@@ -1452,19 +1496,40 @@
             });
         });
 
-        // Play Game Buttons (floating play button)
-        document.querySelectorAll('.play-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const gameName = this.getAttribute('data-game-name');
-                openContactModal(`Play ${gameName}`, `Ready to play ${gameName}? Contact us to get started!`);
+    // Download buttons handler - simplified and moved to main DOMContentLoaded
+    function setupDownloadButtons() {
+        const downloadUrls = {
+            'orion': 'http://start.orionstars.vip:8580/index.html',
+            'firekirin': 'http://start.firekirin.xyz:8580/index.html',
+            'juwa': 'https://dl.juwa777.com',
+            'ultrapanda': 'https://www.ultrapanda.mobi/',
+            'pandamaster': 'https://pandamaster.com',
+            'vegas': 'https://m.lasvegassweeps.com/',
+            'gamevault': 'https://download.gamevault999.com/',
+            'vblink': 'https://vblink.net/'
+        };
+
+        document.querySelectorAll('.btn-download').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();  // Prevent default behavior
+                const game = this.getAttribute('data-game');
+                if (downloadUrls[game]) {
+                    window.open(downloadUrls[game], '_blank');
+                } else {
+                    alert('Download link not available. Please contact support.');
+                }
             });
         });
+    }
 
         // Game Footer Buttons
         document.querySelectorAll('.contact-for-game').forEach(button => {
             button.addEventListener('click', function() {
                 const gameName = this.getAttribute('data-game-name');
-                openContactModal(`Play ${gameName}`, `Ready to play ${gameName}? Contact us to get started!`);
+                const startText = gameName.includes('Orion')
+                    ? 'Ready to play Orion Stars? Contact us to get started!'
+                    : `Ready to play ${gameName}? Contact us to get started!`;
+                openContactModal(`Play ${gameName}`, startText);
             });
         });
 
@@ -1494,7 +1559,7 @@
 
                 if(url) {
                     // Add the offer/game to the message
-                    const message = encodeURIComponent(`I want to: ${offerTitle.textContent} - ${offerDesc.textContent}`);
+                    const message = encodeURIComponent(`I want ${offerTitle.textContent}`);
                     window.open(`${url}?text=${message}`, '_blank');
                 }
 
@@ -1620,8 +1685,10 @@
             });
     }
 
-    // Add to your base template
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize download buttons
+        setupDownloadButtons();
+
         // Start polling when page loads
         pollUpdates();
 
@@ -1877,17 +1944,6 @@ document.addEventListener('keypress', () => lastPingTime = Date.now());
         }
     }
 
-    // Initialize the refresh cycle
-    function initButtonRefresh() {
-        // Initial attachment
-        attachButtonListeners();
-
-        // Refresh buttons every second
-        setInterval(refreshButtons, 1000);
-    }
-
-    // Start the refresh cycle when the page loads
-    document.addEventListener('DOMContentLoaded', initButtonRefresh);
     </script>
     </script>
 </body>
