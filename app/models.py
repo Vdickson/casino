@@ -116,9 +116,11 @@ class PageVisit(models.Model):
     last_activity = models.DateTimeField(auto_now=True)  # Track last update
     duration = models.PositiveIntegerField(default=0)  # Total active seconds
     session_key = models.CharField(max_length=40, unique=True)
+    path = models.CharField(max_length=255, default='/')  # Add this new field
+
 
     def __str__(self):
-        return f"{self.ip_address} ({self.country}) - {self.duration}s"
+        return f"{self.ip_address} ({self.country}) - {self.duration}s - {self.path}"
 
     class Meta:
         indexes = [
@@ -135,6 +137,7 @@ class UserInteraction(models.Model):
         ('offer_interest', 'Offer Interest'),
         ('payment_click', 'Payment Method Click'),
     )
+    page_visit = models.ForeignKey('PageVisit', on_delete=models.SET_NULL, null=True, blank=True, related_name='interactions')
     type = models.CharField(max_length=50, choices=INTERACTION_TYPES)
     element_id = models.CharField(max_length=100, blank=True, null=True)
     page_path = models.CharField(max_length=255)
@@ -175,3 +178,36 @@ class Testimonial(models.Model):
 
     def __str__(self):
         return f"Testimonial by {self.name}"
+
+
+# models.py
+# Add this new model for cookie consent tracking
+class CookieConsent(models.Model):
+    session_key = models.CharField(max_length=40, unique=True)
+    analytics = models.BooleanField(default=False)
+    preferences = models.BooleanField(default=False)
+    marketing = models.BooleanField(default=False)
+    consent_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Cookie Consent ({self.session_key})"
+
+
+# models.py - Add this for analytics events
+class AnalyticsEvent(models.Model):
+    session_key = models.CharField(max_length=40)
+    category = models.CharField(max_length=100)
+    action = models.CharField(max_length=100)
+    label = models.CharField(max_length=255, blank=True)
+    path = models.CharField(max_length=255)
+    value = models.IntegerField(default=0)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['category', 'action']),
+            models.Index(fields=['timestamp']),
+        ]
+
+    def __str__(self):
+        return f"{self.category} - {self.action}"

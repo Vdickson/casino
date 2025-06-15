@@ -20,798 +20,165 @@
     <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main CSS -->
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
 
     <style>
-        :root {
-            --ocean-blue: #0A1931;
-            --coral: #FF6B6B;
-            --gold-fish: #FFD93D;
-            --sea-green: #6BCB77;
-            --deep-purple: #3B185F;
-            --neon-teal: #00FFD1;
-            --dark-bg: #080C18;
-            --light-bg: #121B33;
-
-            --primary: #00FFD1;   /* neon-teal */
-            --secondary: #FF6B6B; /* coral */
-            --accent: #FFD93D;    /* gold-fish */
-            --success: #6BCB77;   /* sea-green */
-            --dark: #080C18;      /* dark-bg */
-            --light: #121B33;     /* light-bg */
-            --card-bg: #0A1931;   /* ocean-blue */
-            --text-dark: #ffffff; /* white for text */
-            --text-light: #cccccc; /* light gray */
-            --border: #3B185F;    /* deep-purple */
+        /* Ad Modal Styles */
+        .ad-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 10000;
+            width: 320px;
+            max-width: 90%;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        body {
-            background: linear-gradient(180deg, var(--dark-bg), var(--ocean-blue));
-            color: var(--text-dark);
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-        }
-
-        /* Modern Navigation */
-        .navbar {
-            background: var(--deep-purple);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            padding: 12px 0;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .ad-content {
+            text-align: center;
             position: relative;
         }
 
-        .navbar-brand img {
-            height: 48px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            filter: drop-shadow(0 0 5px var(--neon-teal));
-        }
-
-        .navbar-brand:hover img {
-            transform: rotate(15deg);
-        }
-
-        .brand-text {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-            font-size: 1.8rem;
-            color: var(--accent);
-            position: relative;
-            text-shadow: 0 0 15px var(--neon-teal);
-            background: linear-gradient(45deg, var(--gold-fish), var(--coral));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: glow 2s infinite alternate;
-        }
-
-        @keyframes glow {
-            from { text-shadow: 0 0 10px var(--neon-teal); }
-            to { text-shadow: 0 0 30px var(--neon-teal); }
-        }
-
-        .brand-text::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--accent);
-            transform: scaleX(0);
-            transform-origin: right;
-            transition: transform 0.3s ease;
-        }
-
-        .navbar-brand:hover .brand-text::after {
-            transform: scaleX(1);
-            transform-origin: left;
-        }
-
-        /* Trusted Badge */
-        .trusted-badge {
-            position: absolute;
-            top: -8px;
-            right: -35px;
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 12px;
-            background: linear-gradient(45deg, #dc3545, #fd7e14);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-
-        .nav-link {
-            color: var(--text-light) !important;
-            font-weight: 500;
-            margin: 0 8px;
-            position: relative;
-            transition: all 0.3s ease;
-            padding: 8px 16px !important;
-            border-radius: 6px;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            color: var(--primary) !important;
-            background-color: rgba(0, 255, 209, 0.1);
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 16px;
-            width: calc(100% - 32px);
-            height: 2px;
-            background: var(--accent);
-            transform: scaleX(0);
-            transform-origin: right;
-            transition: transform 0.3s ease;
-        }
-
-        .nav-link:hover::after, .nav-link.active::after {
-            transform: scaleX(1);
-            transform-origin: left;
-        }
-
-        /* Hero Section */
-        .hero-section {
-            padding: 70px 0 50px;
-            background: linear-gradient(135deg, var(--ocean-blue) 0%, var(--deep-purple) 100%);
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-section::before {
-            content: '';
+        .close-ad {
             position: absolute;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('https://images.unsplash.com/photo-1511882150382-421056c89033?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80');
-            background-size: cover;
-            background-position: center;
-            opacity: 0.15;
-            z-index: 0;
+            right: 5px;
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #666;
         }
 
-        .hero-content {
-            position: relative;
-            z-index: 1;
+        .ad-modal h3 {
+            margin-top: 15px;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .ad-modal p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .ad-modal .btn {
+            width: 100%;
+        }
+
+        /* Compact Layout Overrides */
+        .hero-section {
+            padding: 2rem 0;
         }
 
         .hero-title {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-            font-size: 3.2rem;
-            line-height: 1.2;
-            margin-bottom: 15px;
-            color: var(--accent);
-            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+            font-size: 2.2rem;
+            margin-bottom: 0.8rem;
         }
 
         .hero-subtitle {
-            font-size: 1.3rem;
-            opacity: 0.9;
-            max-width: 700px;
-            margin: 0 auto 25px;
-            color: var(--text-light);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
         }
 
-        /* Cards & Sections */
         .section {
-            padding: 60px 0;
+            padding: 2.5rem 0;
         }
 
         .section-title {
-            position: relative;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 2.3rem;
-            margin-bottom: 40px;
-            text-align: center;
-            color: var(--primary);
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: var(--accent);
-            border-radius: 2px;
-        }
-
-        .card-modern {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            height: 100%;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .card-modern:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            border-color: var(--primary);
-        }
-
-        .card-header-modern {
-            background: var(--deep-purple);
-            padding: 20px;
-            border: none;
-            font-weight: 600;
-            font-size: 1.2rem;
-            color: white;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .card-body-modern {
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .offer-card {
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            height: 100%;
-            overflow: hidden;
-            position: relative;
-            border: 2px solid var(--neon-teal);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .offer-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 0 25px var(--neon-teal);
-        }
-
-        .offer-card .offer-content {
-            padding: 20px;
-            flex-grow: 1;
-        }
-
-        .offer-card .offer-footer {
-            background: rgba(0,0,0,0.2);
-            padding: 15px;
-            text-align: center;
-            border-top: 1px solid var(--border);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
         }
 
         .game-card {
-            position: relative;
-            overflow: hidden;
-            border-radius: 12px;
             height: 100%;
-            background: rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid var(--border);
-        }
-
-        .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            border-color: var(--primary);
         }
 
         .game-image {
-            height: 180px;
-            background-size: cover;
-            background-position: center;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
-            position: relative;
+            height: 140px;
         }
 
-        .game-content {
-            padding: 15px;
-            flex-grow: 1;
-            background: rgba(0,0,0,0.2);
-        }
-
-        .game-footer {
-            padding: 12px 15px;
-            background: rgba(0,0,0,0.3);
-            border-top: 1px solid var(--border);
-            text-align: center;
-        }
-
-        .play-btn {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background: var(--success);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-            opacity: 0.9;
-            font-size: 0.8rem;
-        }
-
-        .play-btn:hover {
-            transform: scale(1.1);
-            opacity: 1;
-            background: var(--accent);
-        }
-
-        .game-action-btn {
-            width: 100%;
-            padding: 6px 12px;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: 500;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-            flex: 1;
-        }
-
-        .btn-download {
-            background: var(--primary);
-        }
-
-        .game-footer {
-            display: flex;
-            gap: 10px;
-        }
-
-        .game-action-btn:hover {
-            background: var(--accent);
-            transform: translateY(-2px);
-        }
-        /* Add this to your existing CSS */
         .game-content h5 {
-            color: var(--accent) !important;
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            font-size: 1rem;
         }
 
         .game-description {
-            color: rgba(255, 255, 255, 0.85) !important;
-            font-size: 0.9rem;
-            margin-bottom: 0;
+            font-size: 0.85rem;
         }
 
-        .game-card .game-image {
-            height: 160px; /* Slightly reduced height */
+        .game-action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.85rem;
         }
 
-        /* Countdown Timer */
-        .countdown-container {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-            border: 2px solid var(--neon-teal);
-            animation: pulse 1s infinite;
+        .offer-card {
+            padding: 1rem;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.01); }
-            100% { transform: scale(1); }
-        }
-
-        .countdown-title {
-            font-size: 1.7rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-
-        .countdown-timer {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .countdown-item {
-            background: var(--ocean-blue);
-            border-radius: 8px;
-            padding: 12px;
-            min-width: 70px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
-        }
-
-        .countdown-value {
-            font-size: 2rem;
-            font-weight: 700;
-            line-height: 1;
-            color: var(--accent);
-        }
-
-        /* Testimonials & Live Wins */
-        .ticker-container {
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-            padding: 12px;
-            overflow: hidden;
-            margin: 8px 0;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .ticker-item {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 20px;
-            margin: 0 15px;
-            background: rgba(42, 82, 190, 0.05);
-            border-radius: 50px;
-            color: var(--accent);
-        }
-
-        .ticker-item i {
-            color: var(--accent);
-            margin-right: 10px;
-            font-size: 1.2rem;
-        }
-
-        /* Footer */
-        .footer {
-            background: var(--ocean-blue);
-            color: white;
-            padding: 50px 0 25px;
-            position: relative;
-        }
-
-        .footer-logo {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            color: var(--accent);
-        }
-
-        .social-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+        .offer-card h5 {
             font-size: 1.1rem;
-            transition: all 0.3s ease;
-            color: white;
-            margin-right: 10px;
+            margin-bottom: 0.5rem;
         }
 
-        .social-icon:hover {
-            transform: translateY(-3px);
-            background: var(--primary);
+        .card-modern {
+            padding: 1.25rem;
         }
 
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .card-header-modern {
+            font-size: 1.2rem;
+            padding: 0.75rem 1rem;
         }
 
-        .animate-fade-in {
-            animation: fadeIn 0.6s ease-out forwards;
+        .steps-list li {
+            margin-bottom: 1rem;
         }
 
-        /* Contact Modal */
-        .contact-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1050;
-            justify-content: center;
-            align-items: center;
+        .ticker-container {
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
         }
 
-        .contact-modal-content {
-            background: var(--card-bg);
-            border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
-            overflow: hidden;
-            animation: fadeIn 0.3s ease-out;
-            border: 2px solid var(--neon-teal);
+        .sticky-offer-container {
+            padding: 0.5rem 0;
         }
 
-        .contact-option {
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            background: rgba(0,0,0,0.2);
+        .flash-offer-banner,
+        .upcoming-offer-banner,
+        .no-offer-banner {
+            padding: 0.75rem 1rem;
         }
 
-        .contact-option:hover {
-            background: rgba(0,0,0,0.3);
-        }
-
-        .contact-option i {
-            font-size: 1.5rem;
-            width: 40px;
-            margin-right: 15px;
-        }
-
-        .contact-option.facebook i {
-            color: #1877f2;
-        }
-
-        .contact-option.whatsapp i {
-            color: #25d366;
-        }
-
-        .contact-option.telegram i {
-            color: #0088cc;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .hero-title {
-                font-size: 2.6rem;
-            }
-            .section-title {
-                font-size: 2rem;
-            }
-            .section {
-                padding: 50px 0;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .hero-section {
-                padding: 60px 0 40px;
-            }
-            .hero-title {
-                font-size: 2.2rem;
-            }
-            .countdown-item {
-                min-width: 60px;
-                padding: 10px;
-            }
-            .countdown-value {
-                font-size: 1.8rem;
-            }
-            .section {
-                padding: 40px 0;
-            }
-            .navbar-brand img {
-                height: 40px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .navbar-brand img {
-                height: 35px;
-            }
-            .hero-title {
-                font-size: 1.9rem;
-            }
-            .hero-subtitle {
-                font-size: 1.1rem;
-            }
-            .section-title {
-                font-size: 1.8rem;
-            }
-            .countdown-item {
-                min-width: 50px;
-                padding: 8px;
-            }
-            .countdown-value {
-                font-size: 1.5rem;
-            }
-            .trusted-badge {
-                top: -10px;
-                right: -25px;
-                font-size: 0.6rem;
-            }
-        }
-
-
-
-          /* Limited Offer Styles */
-    .flash-offer-container {
-        background: linear-gradient(135deg, var(--deep-purple), var(--ocean-blue));
-        border: 3px solid var(--neon-teal);
-        border-radius: 15px;
-        padding: 25px;
-        margin: 20px 0;
-        box-shadow: 0 0 20px rgba(0, 255, 209, 0.4), 0 0 40px rgba(0, 255, 209, 0.2);
-        position: relative;
-        overflow: hidden;
-        animation: pulse-glow 2s infinite alternate, border-pulse 3s infinite;
-    }
-
-    .upcoming-offer-container {
-        background: linear-gradient(135deg, var(--ocean-blue), var(--light-bg));
-        border: 2px solid var(--border);
-        border-radius: 15px;
-        padding: 20px;
-        margin: 20px 0;
-        box-shadow: 0 0 15px rgba(107, 203, 119, 0.3);
-    }
-
-    .no-offer-container {
-        background: linear-gradient(135deg, var(--dark-bg), var(--deep-purple));
-        border: 2px solid var(--secondary);
-        border-radius: 15px;
-        padding: 20px;
-        margin: 20px 0;
-        box-shadow: 0 0 15px rgba(255, 107, 107, 0.3);
-    }
-
-    .offer-header, .flash-offer-header {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 15px;
-        margin-bottom: 15px;
-    }
-
-    .offer-icon {
-        font-size: 1.8rem;
-        animation: bounce 2s infinite;
-    }
-
-    .offer-title {
-        font-size: 1.7rem;
-        font-weight: 800;
-        text-align: center;
-        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        background: linear-gradient(45deg, var(--gold-fish), var(--coral));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .flash-offer-header .offer-title {
-        animation: text-glow 1.5s infinite alternate;
-    }
-
-    .offer-description {
-        font-size: 1.2rem;
-        font-style: italic;
-        margin-bottom: 20px;
-        color: var(--text-light);
-    }
-
-    .countdown-timer-wrapper {
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 10px;
-        padding: 15px;
-        margin: 20px auto;
-        max-width: 500px;
-        border: 1px solid var(--border);
-    }
-
-    #countdown-timer {
-        font-size: 2rem;
-        color: var(--accent);
-        text-shadow: 0 0 10px rgba(255, 217, 61, 0.5);
-        font-family: 'Montserrat', sans-serif;
-        letter-spacing: 1px;
-    }
-
-    .claim-offer-btn {
-        background: linear-gradient(45deg, var(--gold-fish), var(--coral));
-        color: var(--dark-bg);
-        border: none;
-        padding: 12px 30px;
-        font-weight: 700;
-        border-radius: 50px;
-        font-size: 1.2rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(255, 217, 61, 0.4);
-        margin-top: 10px;
-        animation: button-pulse 2s infinite;
-    }
-
-    .claim-offer-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(255, 217, 61, 0.6);
-    }
-
-    /* Animations */
-    @keyframes pulse-glow {
-        0% { box-shadow: 0 0 15px rgba(0, 255, 209, 0.4); }
-        100% { box-shadow: 0 0 30px rgba(0, 255, 209, 0.8), 0 0 50px rgba(0, 255, 209, 0.4); }
-    }
-
-    @keyframes border-pulse {
-        0% { border-color: var(--neon-teal); }
-        50% { border-color: var(--gold-fish); }
-        100% { border-color: var(--neon-teal); }
-    }
-
-    @keyframes text-glow {
-        0% { text-shadow: 0 0 5px rgba(255, 217, 61, 0.5); }
-        100% { text-shadow: 0 0 20px rgba(255, 217, 61, 0.9); }
-    }
-
-    @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-    }
-
-    @keyframes button-pulse {
-        0% { transform: scale(1); box-shadow: 0 5px 15px rgba(255, 217, 61, 0.4); }
-        50% { transform: scale(1.05); box-shadow: 0 8px 25px rgba(255, 217, 61, 0.6); }
-        100% { transform: scale(1); box-shadow: 0 5px 15px rgba(255, 217, 61, 0.4); }
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
         .offer-title {
-            font-size: 1.4rem;
+            font-size: 1rem;
         }
 
         .offer-description {
-            font-size: 1rem;
+            font-size: 0.85rem;
         }
 
-        #countdown-timer {
-            font-size: 1.6rem;
+        .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
         }
 
-        .claim-offer-btn {
-            padding: 10px 20px;
-            font-size: 1rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .offer-header, .flash-offer-header {
-            flex-direction: column;
-            gap: 5px;
+        footer.footer {
+            padding: 2rem 0 0;
         }
 
-        .offer-title {
+        .footer-logo {
             font-size: 1.2rem;
         }
-
-        #countdown-timer {
-            font-size: 1.4rem;
-        }
-    }
-          .contact-for-game {
-        background-color: #4CAF50 !important;  /* Vibrant green */
-        border-color: #45a049 !important;
-        color: white !important;
-        font-weight: bold;
-    }
-    .contact-for-game:hover {
-        background-color: #45a049 !important;
-    }
     </style>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
     <!-- Modern Navigation -->
@@ -954,52 +321,54 @@
     </div>
 
  <!-- Limited Offer Countdown -->
-<div class="container text-center mt-4">
+<div class="sticky-offer-container">
     {% if active_offer %}
     <!-- Active Offer -->
-    <div class="flash-offer-container">
-        <div class="flash-offer-header">
+    <div class="flash-offer-banner">
+        <div class="banner-content">
             <div class="offer-icon">⚡</div>
-            <div class="offer-title">FLASH OFFER: {{ active_offer.title }}</div>
-            <div class="offer-icon">⚡</div>
+            <div class="offer-info">
+                <div class="offer-title">FLASH OFFER: {{ active_offer.title }}</div>
+                <div class="offer-description">{{ active_offer.description }}</div>
+            </div>
+            <div class="countdown-timer-wrapper">
+                <span id="countdown-timer" class="fw-bold"></span>
+            </div>
+            <button class="btn claim-offer-btn"
+                    data-offer-title="{{ active_offer.title }}"
+                    data-offer-desc="{{ active_offer.description }}">
+                <i class="fas fa-bolt me-2"></i> Claim Now
+            </button>
         </div>
-        <div class="offer-description">{{ active_offer.description }}</div>
-        <div class="countdown-timer-wrapper">
-            <span id="countdown-timer" class="fw-bold"></span>
-        </div>
-        <button class="btn claim-offer-btn"
-                data-offer-title="{{ active_offer.title }}"
-                data-offer-desc="{{ active_offer.description }}">
-            <i class="fas fa-bolt me-2"></i> Claim Offer Now
-        </button>
     </div>
 
     {% elif future_offer %}
     <!-- Upcoming Offer -->
-    <div class="upcoming-offer-container">
-        <div class="offer-header">
+    <div class="upcoming-offer-banner">
+        <div class="banner-content">
             <div class="offer-icon">🕒</div>
-            <div class="offer-title">UPCOMING OFFER: {{ future_offer.title }}</div>
-            <div class="offer-icon">🕒</div>
-        </div>
-        <div class="offer-description">{{ future_offer.description }}</div>
-        <div class="countdown-timer-wrapper">
-            <span id="countdown-timer" class="fw-bold"></span>
+            <div class="offer-info">
+                <div class="offer-title">UPCOMING OFFER: {{ future_offer.title }}</div>
+                <div class="offer-description">{{ future_offer.description }}</div>
+            </div>
+            <div class="countdown-timer-wrapper">
+                <span id="countdown-timer" class="fw-bold"></span>
+            </div>
         </div>
     </div>
 
     {% else %}
     <!-- No Offers -->
-    <div class="no-offer-container">
-        <div class="offer-header">
+    <div class="no-offer-banner">
+        <div class="banner-content">
             <div class="offer-icon">📢</div>
-            <div class="offer-title">NO ACTIVE OFFERS! CHECK BACK SOON!</div>
-            <div class="offer-icon">📢</div>
+            <div class="offer-info">
+                <div class="offer-title">NO ACTIVE OFFERS! CHECK BACK SOON!</div>
+            </div>
         </div>
     </div>
     {% endif %}
 </div>
-
     <!-- Promotions Section -->
 <section id="promotions" class="section">
     <div class="container">
@@ -1011,7 +380,7 @@
                         <div class="badge bg-warning mb-3">LIMITED</div>
                         <h5>✅ 100% Signup Bonus</h5>
                         <!-- FIX: Changed text-muted to text-light for visibility -->
-                        <p class="text-light">Start with double credits!</p>
+                        <p class="text-light">Start with double credits! in all the games </p>
                     </div>
                     <div class="offer-footer">
                         <button class="btn btn-sm btn-outline-primary claim-offer-btn"
@@ -1027,7 +396,7 @@
                     <div class="offer-content">
                         <h5>✅ 20% Regular Bonus</h5>
                         <!-- FIX: Changed text-muted to text-light for visibility -->
-                        <p class="text-light">Earn bonus in every deposit!</p>
+                        <p class="text-light">Earn bonus in every deposit you make!</p>
                     </div>
                     <div class="offer-footer">
                         <button class="btn btn-sm btn-outline-primary claim-offer-btn"
@@ -1044,7 +413,7 @@
                         <div class="badge bg-danger mb-3">HOT</div>
                         <h5>✅ 15% Cashback</h5>
                         <!-- FIX: Changed text-muted to text-light for visibility -->
-                        <p class="text-light">Even if you lose!</p>
+                        <p class="text-light">When you loose 3 games in a row!</p>
                     </div>
                     <div class="offer-footer">
                         <button class="btn btn-sm btn-outline-primary claim-offer-btn"
@@ -1061,7 +430,7 @@
                         <div class="badge bg-success mb-3">POPULAR</div>
                         <h5>✅ 50% Referral Bonus</h5>
                         <!-- FIX: Changed text-muted to text-light for visibility -->
-                        <p class="text-light">Earn while friends play!</p>
+                        <p class="text-light">Earn while friends play! </p>
                     </div>
                     <div class="offer-footer">
                         <button class="btn btn-sm btn-outline-primary claim-offer-btn"
@@ -1076,28 +445,7 @@
     </div>
 </section>
 
-    <!-- Payment Methods -->
-<!--&lt;!&ndash; Payment Methods &ndash;&gt;-->
-<!--<section class="section">-->
-<!--    <div class="container">-->
-<!--        <h3 class="section-title">💳 Payment Methods</h3>-->
-<!--        <div class="row justify-content-center">-->
-<!--            {% for method in payment_methods %}-->
-<!--            <div class="col-md-2 col-4 mb-4">-->
-<!--                <div class="card-modern text-center p-3 h-100">-->
-<!--                    <div class="mb-3">-->
-<!--                        <img src="{% static 'images/payments/' %}{{ method.slug }}.png"-->
-<!--                             alt="{{ method.name }}" class="img-fluid" style="height: 40px;">-->
-<!--                    </div>-->
-<!--                    <h6 class="mb-0">{{ method.name }}</h6>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            {% endfor %}-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</section>-->
-<!--    &lt;!&ndash; Game Selection &ndash;&gt;-->
-<!-- Game Selection -->
+    <!-- Game Selection -->
 <section id="games" class="section">
     <div class="container">
         <h2 class="section-title">🎮 Premium Games</h2>
@@ -1264,6 +612,7 @@
         </div>
     </div>
 </section>
+
     <!-- How to Play Section -->
     <section id="how-to-play" class="section">
         <div class="container">
@@ -1442,7 +791,7 @@
             <div class="card-header-modern text-center">Get Started</div>
             <div id="offerDetails" class="p-4 border-bottom">
                 <h5 class="mb-2" id="offerTitle"></h5>
-                <p class="text-muted mb-0" id="offerDesc"></p>
+                <p class="text-light mb-0" id="offerDesc"></p>
             </div>
             <div class="contact-options">
                 <div class="contact-option whatsapp" data-contact="whatsapp">
@@ -1473,478 +822,259 @@
         </div>
     </div>
 
-    <script>
-        // Contact Modal Functionality
-        const contactModal = document.getElementById('contactModal');
-        const offerTitle = document.getElementById('offerTitle');
-        const offerDesc = document.getElementById('offerDesc');
-        const closeModal = document.getElementById('closeModal');
+    <!-- Flash Offer Modal -->
+    <div id="flashModal" class="ad-modal">
+        <div class="ad-content">
+            <button id="closeFlashModal" class="close-ad">&times;</button>
+            <h3 id="flashTitle">Flash Offer</h3>
+            <p id="flashDesc">Limited time special offer!</p>
+            <button id="flashClaimBtn" class="btn btn-primary">Claim Offer</button>
+        </div>
+    </div>
 
-        // Function to open modal with content
-        function openContactModal(title, description) {
-            offerTitle.textContent = title;
-            offerDesc.textContent = description;
-            contactModal.style.display = 'flex';
+    <!-- Recommendation Modal -->
+    <div id="recommendationModal" class="ad-modal">
+        <div class="ad-content">
+            <button id="closeRecModal" class="close-ad">&times;</button>
+            <h3 id="recTitle">Recommended Offer</h3>
+            <p id="recDesc">Special offer just for you!</p>
+            <button id="recClaimBtn" class="btn btn-primary">Claim Offer</button>
+        </div>
+    </div>
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-consent-banner" class="cookie-banner">
+        <div class="cookie-content">
+            <p>We use cookies to enhance your experience and analyze site performance. By clicking "Accept", you consent to our use of cookies.</p>
+            <div class="cookie-buttons">
+                <button id="cookie-settings" class="btn btn-sm btn-outline-light">Preferences</button>
+                <button id="cookie-reject" class="btn btn-sm btn-danger">Reject All</button>
+                <button id="cookie-accept" class="btn btn-sm btn-success">Accept All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Preferences Modal -->
+    <div id="cookie-modal" class="cookie-modal">
+        <div class="cookie-modal-content">
+            <div class="cookie-modal-header">
+                <h5>Cookie Preferences</h5>
+                <button id="cookie-modal-close" class="btn-close" aria-label="Close"></button>
+            </div>
+            <div class="cookie-modal-body">
+                <div class="cookie-category">
+                    <div class="cookie-toggle">
+                        <h6>Essential Cookies</h6>
+                        <label class="switch">
+                            <input type="checkbox" checked disabled>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <p>These cookies are necessary for the website to function and cannot be switched off.</p>
+                </div>
+
+                <div class="cookie-category">
+                    <div class="cookie-toggle">
+                        <h6>Analytics Cookies</h6>
+                        <label class="switch">
+                            <input id="analytics-toggle" type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <p>Allow us to collect data to improve your experience and site performance.</p>
+                </div>
+
+                <div class="cookie-category">
+                    <div class="cookie-toggle">
+                        <h6>Preferences Cookies</h6>
+                        <label class="switch">
+                            <input id="preferences-toggle" type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <p>Remember your settings and preferences for future visits.</p>
+                </div>
+
+                <div class="cookie-category">
+                    <div class="cookie-toggle">
+                        <h6>Marketing Cookies</h6>
+                        <label class="switch">
+                            <input id="marketing-toggle" type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <p>Help us show you relevant offers and promotions.</p>
+                </div>
+            </div>
+            <div class="cookie-modal-footer">
+                <button id="save-preferences" class="btn btn-primary">Save Preferences</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuration Script -->
+   <!-- Replace the entire Configuration Script section with this updated version -->
+<script>
+    // Create a temporary object first
+    const tempConfig = {
+        lastWinId: {% if live_wins.0.id %}{{ live_wins.0.id }}{% else %}0{% endif %},
+        currentOfferId: {% if active_offer %}{{ active_offer.id }}{% elif future_offer %}{{ future_offer.id }}{% else %}null{% endif %},
+        serverCountdownSeconds: {% if active_offer %}{{ active_offer.time_remaining.total_seconds|default:0|floatformat:0 }}{% elif future_offer %}{{ future_offer.time_until_start.total_seconds|default:0|floatformat:0 }}{% else %}0{% endif %},
+        countdownStatus: "{% if active_offer %}ENDS IN:{% else %}STARTS IN:{% endif %}",
+        trackingEnabled: {% if tracking_enabled %}true{% else %}false{% endif %},
+        csrfToken: "{{ csrf_token }}",
+        flashOffer: {
+            title: "{% if active_offer %}{{ active_offer.title }}{% else %}100% Signup Bonus{% endif %}",
+            description: "{% if active_offer %}{{ active_offer.description }}{% else %}Get double credits on your first deposit{% endif %}"
+        },
+        recommendedOffers: [
+            {title: "Double Your First Deposit!", description: "Get 100% bonus on your first deposit"},
+            {title: "Special", description: "30% bonus on all weekend deposits"},
+            {title: "Get 15% Cashback", description: "Get 15% cashback bonus when you loose 3 games in rot"},
+            {title: "Get 50% Refferral", description: "Get 50% bonus when you refer your friends"}
+        ],
+        urls: {
+            trackInteraction: "{% url 'track_interaction' %}",
+            trackPageVisit: "{% url 'track_page_visit' %}",
+        },
+        social: {
+            whatsapp: "{{ social.whatsapp }}",
+            facebook: "{{ social.facebook }}",
+            telegram: "{{ social.telegram }}"
         }
+    };
 
-        // Claim Offer Buttons
-        document.querySelectorAll('.claim-offer-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const title = this.getAttribute('data-offer-title');
-                const desc = this.getAttribute('data-offer-desc');
-                openContactModal(title, desc);
-            });
-        });
-
-    // Download buttons handler - simplified and moved to main DOMContentLoaded
-    function setupDownloadButtons() {
-        const downloadUrls = {
-            'orion': 'http://start.orionstars.vip:8580/index.html',
-            'firekirin': 'http://start.firekirin.xyz:8580/index.html',
-            'juwa': 'https://dl.juwa777.com',
-            'ultrapanda': 'https://www.ultrapanda.mobi/',
-            'pandamaster': 'https://pandamaster.com',
-            'vegas': 'https://m.lasvegassweeps.com/',
-            'gamevault': 'https://download.gamevault999.com/',
-            'vblink': 'https://vblink.net/'
-        };
-
-        document.querySelectorAll('.btn-download').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();  // Prevent default behavior
-                const game = this.getAttribute('data-game');
-                if (downloadUrls[game]) {
-                    window.open(downloadUrls[game], '_blank');
-                } else {
-                    alert('Download link not available. Please contact support.');
-                }
-            });
-        });
+    // Add trackEvent URL safely
+    try {
+        tempConfig.urls.trackEvent = "{% url 'track_event' %}";
+    } catch (e) {
+        console.warn("Error setting trackEvent URL:", e);
+        tempConfig.urls.trackEvent = "/track-event/"; // Fallback value
     }
 
-        // Game Footer Buttons
-        document.querySelectorAll('.contact-for-game').forEach(button => {
-            button.addEventListener('click', function() {
-                const gameName = this.getAttribute('data-game-name');
-                const startText = gameName.includes('Orion')
-                    ? 'Ready to play Orion Stars? Contact us to get started!'
-                    : `Ready to play ${gameName}? Contact us to get started!`;
-                openContactModal(`Play ${gameName}`, startText);
-            });
-        });
+    // Assign to global config
+    window.CONFIG = tempConfig;
+</script>
 
-        // Hero Play Now Button
-        document.querySelector('.hero-section .btn-light').addEventListener('click', function(e) {
-            e.preventDefault();
-            openContactModal('Get Started', 'Ready to play? Contact us to get started with your account!');
-        });
-
-        // Contact Options
-        document.querySelectorAll('.contact-option').forEach(option => {
-            option.addEventListener('click', function() {
-                const contactMethod = this.getAttribute('data-contact');
-                let url;
-
-                switch(contactMethod) {
-                    case 'whatsapp':
-                        url = "{{ social.whatsapp }}";
-                        break;
-                    case 'facebook':
-                        url = "{{ social.facebook }}";
-                        break;
-                    case 'telegram':
-                        url = "{{ social.telegram }}";
-                        break;
-                }
-
-                if(url) {
-                    // Add the offer/game to the message
-                    const message = encodeURIComponent(`I want ${offerTitle.textContent}`);
-                    window.open(`${url}?text=${message}`, '_blank');
-                }
-
-                contactModal.style.display = 'none';
-            });
-        });
-
-        // Close Modal
-        closeModal.addEventListener('click', function() {
-            contactModal.style.display = 'none';
-        });
-
-        // Close modal when clicking outside
-        window.addEventListener('click', function(event) {
-            if (event.target === contactModal) {
-                contactModal.style.display = 'none';
-            }
-        });
-
-         // Initialize variables
-    let lastWinId = {% if live_wins.0.id %}{{ live_wins.0.id }}{% else %}0{% endif %};
-    let currentOfferId = {% if active_offer %}{{ active_offer.id }}{% elif future_offer %}{{ future_offer.id }}{% else %}null{% endif %};
-    let isPollingActive = true;
-    let lastServerUpdate = Date.now();
-    let serverCountdownSeconds = {% if active_offer %}{{ active_offer.time_remaining.total_seconds|default:0|floatformat:0 }}{% elif future_offer %}{{ future_offer.time_until_start.total_seconds|default:0|floatformat:0 }}{% else %}0{% endif %};
-    let countdownInterval;
-    let hiddenStartTime;
-
-    // Function to update countdown display
-    function updateCountdownDisplay() {
-        // Clear any existing interval
-        clearInterval(countdownInterval);
-
-        // Calculate elapsed time since last server sync
-        const elapsedSeconds = Math.floor((Date.now() - lastServerUpdate) / 1000);
-        let remainingSeconds = Math.max(0, serverCountdownSeconds - elapsedSeconds);
-
-        if (remainingSeconds <= 0) {
-            document.getElementById("countdown-timer").innerHTML = "OFFER EXPIRED!";
-            setTimeout(() => location.reload(), 5000);
-            return;
-        }
-
-        // Start a new interval for smooth countdown
-        countdownInterval = setInterval(() => {
-            remainingSeconds--;
-
-            if (remainingSeconds <= 0) {
-                clearInterval(countdownInterval);
-                document.getElementById("countdown-timer").innerHTML = "OFFER EXPIRED!";
-                setTimeout(() => location.reload(), 5000);
-                return;
-            }
-
-            const hours = Math.floor(remainingSeconds / 3600);
-            const minutes = Math.floor((remainingSeconds % 3600) / 60);
-            const secondsRemaining = remainingSeconds % 60;
-
-            const status = "{% if active_offer %}ENDS IN:{% else %}STARTS IN:{% endif %}";
-            document.getElementById("countdown-timer").innerHTML =
-                `${status} ${hours}h ${minutes}m ${secondsRemaining}s`;
-        }, 1000);
-    }
-
-    // Polling function to get updates
-    function pollUpdates() {
-        if (!isPollingActive) return;
-
-        fetch(`/updates/?last_win_id=${lastWinId}`)
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                // Update last server sync time
-                lastServerUpdate = Date.now();
-
-                // Process new wins
-                if (data.wins && data.wins.length > 0) {
-                    const marquee = document.querySelector('marquee');
-                    data.wins.forEach(win => {
-                        if (win.username && win.amount) {
-                            marquee.innerHTML += ` 🎉 ${win.username} Won $${win.amount}! `;
-                        }                    });
-
-                    // Update lastWinId to the latest win id
-                    lastWinId = data.last_win_id;
-
-                    // Limit the number of displayed wins
-                    const wins = marquee.innerHTML.split('🎣');
-                    if (wins.length > 10) {
-                        marquee.innerHTML = wins.slice(-10).join('🎣');
-                    }
-                }
-
-                // Process offers
-                if (data.offers && data.offers.length > 0) {
-                    // Check if current offer is still active
-                    const currentOfferActive = data.offers.some(o => o.id === currentOfferId);
-
-                    if (!currentOfferActive && currentOfferId) {
-                        // Reload if current offer expired
-                        document.getElementById("countdown-timer").innerHTML = "OFFER EXPIRED!";
-                        setTimeout(() => location.reload(), 5000);
-                    } else {
-                        // Update countdown timers
-                        data.offers.forEach(offer => {
-                            if (offer.id === currentOfferId) {
-                                serverCountdownSeconds = offer.countdown;
-                                updateCountdownDisplay();
-                            }
-                        });
-                    }
-                }
-
-                // Schedule next poll
-                setTimeout(pollUpdates, 15000);
-            })
-            .catch(error => {
-                console.error('Polling error:', error);
-                // Retry after 30 seconds on error
-                setTimeout(pollUpdates, 30000);
-            });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize download buttons
-        setupDownloadButtons();
-
-        // Start polling when page loads
-        pollUpdates();
-
-        // Initialize countdown if offer exists
-        if (serverCountdownSeconds > 0) {
-            updateCountdownDisplay();
-        }
-
-        // Track all button clicks
-        document.body.addEventListener('click', function(e) {
-            const target = e.target.closest('button, a');
-            if (target) {
-                let type = 'button_click';
-                if (target.tagName === 'A') type = 'link_click';
-
-                // Get the element text
-                let text = target.innerText || target.textContent;
-                text = text.substring(0, 100); // Limit length
-
-                trackInteraction({
-                    type: type,
-                    element_id: target.id || '',
-                    page_path: window.location.pathname,
-                    data: {
-                        text: text.trim(),
-                        classes: target.className
-                    }
-                });
-            }
-        });
-
-        // Special offer interest tracking
-        document.querySelectorAll('.offer-card').forEach(card => {
-            card.addEventListener('click', () => {
-                // Get offer title if available
-                const titleElement = card.querySelector('h5, h6');
-                const title = titleElement ? titleElement.innerText : 'Unknown Offer';
-
-                trackInteraction({
-                    type: 'offer_interest',
-                    page_path: window.location.pathname,
-                    data: {
-                        offer_title: title.substring(0, 100)
-                    }
-                });
-            });
-        });
-
-        // Close mobile menu when clicking a nav link
-        document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                const navbarCollapse = document.querySelector('.navbar-collapse');
-                if (navbarCollapse.classList.contains('show')) {
-                    // Bootstrap way to close the collapse
-                    bootstrap.Collapse.getOrCreateInstance(navbarCollapse).hide();
-                }
-            });
-        });
-
-        function trackInteraction(data) {
-            if (!{{ tracking_enabled|yesno:"true,false" }}) return;
-
-            // Add CSRF token for security
-            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
-
-            fetch("{% url 'track_interaction' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken || ''
-                },
-                body: JSON.stringify(data)
-            }).catch(error => console.error('Tracking error:', error));
-        }
-
-        // Initialize country detection for page visits
-        trackPageVisit();
-    });
-
-    // Track page visits with country
-// Global variable to store detected country
-  // In your base template
-  // Global variable to store detected country
-let detectedCountry = null;
-let lastPingTime = Date.now();
-
-function trackPageVisit(useBeacon = false) {
-    const now = Date.now();
-    const timeSinceLast = (now - lastPingTime) / 1000; // in seconds
-    lastPingTime = now;
-
-    // Only send ping if user was active recently
-    if (timeSinceLast < 300) {
-        sendVisitData(detectedCountry, useBeacon);
-    }
-}
-
-function sendVisitData(country, useBeacon) {
-    const data = { country: country || 'Unknown' };
-
-    if (useBeacon && navigator.sendBeacon) {
-        const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
-        navigator.sendBeacon("{% url 'track_page_visit' %}", blob);
-    } else {
-        fetch("{% url 'track_page_visit' %}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': "{{ csrf_token }}"
-            },
-            body: JSON.stringify(data)
-        }).catch(error => console.error('Tracking error:', error));
-    }
-}
-
-// Detect country first
-function detectCountry() {
-    fetch("https://ipapi.co/json/")
-        .then(response => response.json())
-        .then(data => {
-            detectedCountry = data.country_name || 'Unknown';
-            // Send initial visit with country
-            trackPageVisit();
-        })
-        .catch(() => {
-            detectedCountry = 'Unknown';
-            trackPageVisit();
-        });
-}
-
-// Initialize tracking
-document.addEventListener('DOMContentLoaded', () => {
-    detectCountry();
-
-    // Set up periodic pings every 30 seconds
-    setInterval(() => trackPageVisit(), 30000);
-});
-
-// Final ping when user leaves
-window.addEventListener('beforeunload', () => trackPageVisit(true));
-
-// Track user activity to reset idle timer
-document.addEventListener('mousemove', () => lastPingTime = Date.now());
-document.addEventListener('keypress', () => lastPingTime = Date.now());
-    // Handle visibility changes
-// Track page visibility changes
-    document.addEventListener('visibilitychange', function() {
-        if (document.visibilityState === 'hidden') {
-            // Send final ping when user leaves
-            trackPageVisit();
-        }
-    });
-
-    // Send periodic updates every 30 seconds
-    setInterval(trackPageVisit, 30000);
-
-    function trackPageVisit() {
-        fetch("https://ipapi.co/json/")
-            .then(response => response.json())
-            .then(data => {
-                const country = data.country_name || 'Unknown';
-
-                fetch("{% url 'track_page_visit' %}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
-                    },
-                    body: JSON.stringify({
-                        country: country
-                    })
-                });
-            })
-            .catch(() => {
-                // Fallback if IP detection fails
-                fetch("{% url 'track_page_visit' %}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
-                    },
-                    body: JSON.stringify({
-                        country: 'Unknown'
-                    })
-                });
-            });
-    }
-
-    // Initial page visit tracking
-    document.addEventListener('DOMContentLoaded', trackPageVisit);
-    // Clean up when navigating away
-    window.addEventListener('beforeunload', function() {
-        isPollingActive = false;
-        clearInterval(countdownInterval);
-    });
-</script>    <style>
-        html {
-            scroll-behavior: smooth;
-        }
-    </style>
+    <script src="{% static 'js/core.js' %}"></script>
 
     <script>
-        // Close mobile menu when clicking a nav link
-        document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                const navbarCollapse = document.querySelector('.navbar-collapse');
-                if (navbarCollapse.classList.contains('show')) {
-                    // Bootstrap way to close the collapse
-                    bootstrap.Collapse.getOrCreateInstance(navbarCollapse).hide();
-                }
-            });
-        });
-    </script>
-        <script>
-    // Add this function to refresh buttons every second
-    function refreshButtons() {
-        // Clone and replace buttons to reset their state
-        document.querySelectorAll('.claim-offer-btn, .game-action-btn, .contact-for-game').forEach(btn => {
-            const newBtn = btn.cloneNode(true);
-            btn.parentNode.replaceChild(newBtn, btn);
-        });
-
-        // Reattach event listeners to the new buttons
-        attachButtonListeners();
-    }
-
-    // Function to reattach event listeners
-    function attachButtonListeners() {
-        // Claim Offer Buttons
-        document.querySelectorAll('.claim-offer-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const title = this.getAttribute('data-offer-title');
-                const desc = this.getAttribute('data-offer-desc');
-                openContactModal(title, desc);
-            });
-        });
-
-        // Game Footer Buttons
-        document.querySelectorAll('.contact-for-game').forEach(button => {
-            button.addEventListener('click', function() {
-                const gameName = this.getAttribute('data-game-name');
-                openContactModal(`Play ${gameName}`, `Ready to play ${gameName}? Contact us to get started!`);
-            });
-        });
-
-        // Hero Play Now Button
-        const heroBtn = document.querySelector('.hero-section .btn-light');
-        if (heroBtn) {
-            heroBtn.addEventListener('click', function(e) {
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                openContactModal('Get Started', 'Ready to play? Contact us to get started with your account!');
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
             });
-        }
-    }
+        });
 
+        // Ad Modal Functionality
+        const flashModal = document.getElementById('flashModal');
+        const recModal = document.getElementById('recommendationModal');
+        const closeFlashBtn = document.getElementById('closeFlashModal');
+        const closeRecBtn = document.getElementById('closeRecModal');
+        const flashClaimBtn = document.getElementById('flashClaimBtn');
+        const recClaimBtn = document.getElementById('recClaimBtn');
+        const flashTitle = document.getElementById('flashTitle');
+        const flashDesc = document.getElementById('flashDesc');
+        const recTitle = document.getElementById('recTitle');
+        const recDesc = document.getElementById('recDesc');
+
+        let modalTimer;
+        let isFlashModalActive = true;
+        let hasShownInitialModal = false;
+
+        // Show modal with animation
+        function showModal(modal) {
+            modal.style.display = 'block';
+            setTimeout(() => {
+                modal.style.opacity = 1;
+            }, 10);
+        }
+
+        // Hide modal with animation
+        function hideModal(modal) {
+            modal.style.opacity = 0;
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
+        // Show initial modal on page load
+        function showInitialModal() {
+            if (!hasShownInitialModal) {
+                hasShownInitialModal = true;
+
+                // Set flash modal content
+                flashTitle.textContent = CONFIG.flashOffer.title;
+                flashDesc.textContent = CONFIG.flashOffer.description;
+
+                // Show flash modal
+                showModal(flashModal);
+
+                // Set timer for recommendation modal after 5 minutes
+                modalTimer = setTimeout(() => {
+                    showRecommendationModal();
+                }, 300000); // 5 minutes
+            }
+        }
+
+        // Show recommendation modal
+        function showRecommendationModal() {
+            // Choose a random recommended offer
+            const offers = CONFIG.recommendedOffers;
+            const randomOffer = offers[Math.floor(Math.random() * offers.length)];
+            recTitle.textContent = randomOffer.title;
+            recDesc.textContent = randomOffer.description;
+
+            // Show modal
+            showModal(recModal);
+            isFlashModalActive = false;
+
+            // Set timer for flash modal after 5 minutes
+            modalTimer = setTimeout(() => {
+                showFlashModal();
+            }, 300000); // 5 minutes
+        }
+
+        // Show flash modal
+        function showFlashModal() {
+            // Set flash modal content
+            flashTitle.textContent = CONFIG.flashOffer.title;
+            flashDesc.textContent = CONFIG.flashOffer.description;
+
+            // Show modal
+            showModal(flashModal);
+            isFlashModalActive = true;
+
+            // Set timer for recommendation modal after 5 minutes
+            modalTimer = setTimeout(() => {
+                showRecommendationModal();
+            }, 300000); // 5 minutes
+        }
+
+        // Close button event handlers
+        closeFlashBtn.addEventListener('click', () => {
+            hideModal(flashModal);
+        });
+
+        closeRecBtn.addEventListener('click', () => {
+            hideModal(recModal);
+        });
+
+        // Claim button event handlers
+        flashClaimBtn.addEventListener('click', () => {
+            hideModal(flashModal);
+        });
+
+        recClaimBtn.addEventListener('click', () => {
+            hideModal(recModal);
+        });
+
+        // Show initial modal after 1 second
+        setTimeout(showInitialModal, 1000);
     </script>
-    </script>
+
 </body>
 </html>

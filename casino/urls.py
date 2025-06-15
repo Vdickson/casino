@@ -14,11 +14,30 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+"""
+URL configuration for casino project.
+"""
 from django.contrib import admin
-from django.urls import path
-from django.urls import path, include  # include is important
+from django.urls import path, include
+from app.admin import custom_admin_site
+from app.views import (
+    home,
+    updates,
+    subscribe,
+    contact_submit,
+    track_interaction,
+    track_page_visit,
+    cookie_consent,
+    track_event
+)
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('app.urls')),  # Route all base URLs to the casino app
-
+    path('admin/', custom_admin_site.urls),
+    path('', home, name='home'),
+    path('updates/', updates, name='updates'),
+    path('subscribe/', subscribe, name='subscribe'),
+    path('contact/', contact_submit, name='contact_submit'),
+    path('track-interaction/', track_interaction, name='track_interaction'),
+    path('track-visit/', track_page_visit, name='track_page_visit'),
+    path('cookie-consent/', cookie_consent, name='cookie_consent'),
+    path('track-event/', track_event, name='track_event'),
 ]

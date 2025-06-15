@@ -6,9 +6,13 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 from django.db.models import Count
 from django.utils import timezone
+from django.urls import reverse
+from django.db.models import Count, F, Q
+from django.db.models.functions import TruncDay
 from django.views.decorators.cache import cache_page
 
-from .models import LiveWin, Offer, PaymentMethod, SocialLink, ContactMessage, PageVisit, UserInteraction, Testimonial
+from .models import LiveWin, Offer, PaymentMethod, SocialLink, ContactMessage, PageVisit, UserInteraction, Testimonial, \
+    CookieConsent, AnalyticsEvent
 
 
 class BaseModelAdmin(admin.ModelAdmin):
@@ -263,16 +267,22 @@ class CustomAdminSite(admin.AdminSite):
 
     def get_urls(self):
         urls = super().get_urls()
+
+        # Remove the catch-all pattern
+        catch_all_pattern = urls.pop()
+
+        # Add analytics route before the catch-all pattern
         urls += [
             path('analytics/', self.admin_view(analytics_dashboard), name='analytics_dashboard'),
+            catch_all_pattern  # Re-add the catch-all pattern last
         ]
+
         return urls
 
     def index(self, request, extra_context=None):
         extra_context = extra_context or {}
         extra_context['show_analytics_link'] = True
         return super().index(request, extra_context)
-
 
 @admin.register(Testimonial)
 class TestimonialAdmin(BaseModelAdmin):
@@ -293,12 +303,128 @@ class TestimonialAdmin(BaseModelAdmin):
     action_buttons.short_description = 'Actions'
 
 
-custom_admin_site = CustomAdminSite(name='myadmin')
+# ===== NEW MODELS FOR COOKIES & ANALYTICS =====
+@admin.register(CookieConsent)
+class CookieConsentAdmin(BaseModelAdmin):
+    list_display = ['session_key', 'analytics_status', 'marketing_status', 'consent_date', 'action_buttons']
+    list_filter = ['analytics', 'marketing', 'consent_date']
+    search_fields = ['session_key']
+    ordering = ['-consent_date']
+    list_per_page = 20
+    readonly_fields = ['session_key', 'consent_date']
+
+    @admin.display(description='Analytics')
+    def analytics_status(self, obj):
+        color = 'green' if obj.analytics else 'red'
+        text = "Enabled" if obj.analytics else "Disabled"
+        return format_html(f'<span class="status-indicator" style="background-color: {color}"></span> {text}')
+
+    @admin.display(description='Marketing')
+    def marketing_status(self, obj):
+        color = 'green' if obj.marketing else 'red'
+        text = "Enabled" if obj.marketing else "Disabled"
+        return format_html(f'<span class="status-indicator" style="background-color: {color}"></span> {text}')
+
+    def action_buttons(self, obj):
+        return format_html(
+            '<div class="action-buttons">{}</div>',
+            self.edit_button(obj) + self.delete_button(obj))
+
+    action_buttons.short_description = 'Actions'
+
+
+@admin.register(AnalyticsEvent)
+class AnalyticsEventAdmin(admin.ModelAdmin):
+    list_display = ['event_summary', 'session_key', 'path', 'timestamp', 'user_insights']
+    list_filter = ['category', 'action', 'timestamp']
+    search_fields = ['label', 'path', 'session_key']
+    date_hierarchy = 'timestamp'
+    list_per_page = 25
+    readonly_fields = ['session_key', 'category', 'action', 'label', 'path', 'value', 'timestamp']
+
+    @admin.display(description='Event')
+    def event_summary(self, obj):
+        return f"{obj.category} / {obj.action}"
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+
+        # Top events
+        top_events = AnalyticsEvent.objects.values(
+            'category', 'action'
+        ).annotate(
+            count=Count('id')
+        ).order_by('-count')[:10]
+
+        # Daily event counts
+        daily_counts = AnalyticsEvent.objects.annotate(
+            date=TruncDay('timestamp')
+        ).values('date').annotate(
+            count=Count('id')
+        ).order_by('-date')[:30]
+
+        # Top pages
+        top_pages = AnalyticsEvent.objects.values(
+            'path'
+        ).annotate(
+            count=Count('id')
+        ).order_by('-count')[:10]
+
+        # Consent stats
+        consent_stats = CookieConsent.objects.aggregate(
+            total=Count('id'),
+            analytics=Count('id', filter=Q(analytics=True)),
+            marketing=Count('id', filter=Q(marketing=True)))
+
+        extra_context.update({
+            'top_events': top_events,
+            'daily_counts': list(daily_counts),
+            'top_pages': top_pages,
+            'consent_stats': consent_stats,
+        })
+
+        return super().changelist_view(request, extra_context=extra_context)
+
+
+    @admin.display(description='User Insights')
+    def user_insights(self, obj):
+        try:
+            consent = CookieConsent.objects.get(session_key=obj.session_key)
+            insights = []
+            if consent.analytics:
+                insights.append("Analytics")
+            if consent.marketing:
+                insights.append("Marketing")
+            return ", ".join(insights) or "None"
+        except CookieConsent.DoesNotExist:
+            return "No consent"
+
+
+custom_admin_site = CustomAdminSite(name='admin')
+# Register models with admin classes
+custom_admin_site.register(CookieConsent, CookieConsentAdmin)
+custom_admin_site.register(AnalyticsEvent, AnalyticsEventAdmin)
+
+from django.contrib.admin.sites import AlreadyRegistered
 
 # Re-register all models with custom admin site
-models = [LiveWin, Offer, PaymentMethod, SocialLink, ContactMessage, PageVisit, UserInteraction]
+models = [LiveWin, Offer, PaymentMethod, SocialLink, ContactMessage, PageVisit, AnalyticsEvent, CookieConsent, UserInteraction]
+
 for model in models:
     try:
         custom_admin_site.register(model, globals()[f"{model.__name__}Admin"])
-    except:
-        custom_admin_site.register(model)
+    except AlreadyRegistered:
+        pass
+    except KeyError:
+        # If no custom ModelAdmin class is defined, register model without admin class
+        try:
+            custom_admin_site.register(model)
+        except AlreadyRegistered:
+            pass
+

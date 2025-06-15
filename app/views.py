@@ -18,10 +18,16 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_GET
 from django.contrib.sessions.models import Session
 from django.utils import timezone
+from django.db.models import Count
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count, Avg, Q, F
+from datetime import timedelta
+from django.utils import timezone
 import json
 
-from .models import LiveWin, Offer, PaymentMethod, SocialLink, UserInteraction, PageVisit, Testimonial
+from .models import LiveWin, Offer, PaymentMethod, SocialLink, UserInteraction, PageVisit, Testimonial, CookieConsent, \
+    AnalyticsEvent
 from django.contrib.admin.views.decorators import staff_member_required
 
 # Cache keys
@@ -32,6 +38,7 @@ OFFERS_CACHE_KEY = 'offers_cache'
 
 def home(request):
     now = timezone.now()
+    recommended_offers = []
 
     # Get offers with caching
     # Get offers with caching - clear cache after save in admin
@@ -61,7 +68,45 @@ def home(request):
 
     testimonials = Testimonial.objects.filter(is_approved=True).order_by('-created_at')[:5]
 
+    # Get user preferences from cookies
+    user_preferences = {}
+    if request.session.session_key:
+        try:
+            consent = CookieConsent.objects.get(session_key=request.session.session_key)
+            user_preferences = {
+                'analytics': consent.analytics,
+                'marketing': consent.marketing
+            }
+        except CookieConsent.DoesNotExist:
+            pass
 
+    # Get recommended offers based on interactions
+    show_personalization = False
+    # Get user preferences from cookies
+    user_preferences = {}
+    show_personalization = False  # Initialize here
+
+    if request.session.session_key:
+        try:
+            consent = CookieConsent.objects.get(session_key=request.session.session_key)
+            if consent.marketing:
+                # Get user's top 3 interested offers
+                top_offer_ids = UserInteraction.objects.filter(
+                    type='offer_interest',
+                    page_visit__session_key=request.session.session_key  # Fix here
+                ).values('additional_data__offer_id').annotate(
+                    count=Count('id')
+                ).order_by('-count')[:3]
+
+                offer_ids = [item['additional_data__offer_id'] for item in top_offer_ids]
+                recommended_offers = list(Offer.objects.filter(
+                    id__in=offer_ids,
+                    is_active=True
+                ).values('id', 'title', 'description'))
+        except CookieConsent.DoesNotExist:
+            pass
+        # Convert to JSON-safe format
+    recommended_offers_json = json.dumps(recommended_offers)
     context = {
         'live_wins': LiveWin.objects.filter(visible=True).order_by('-timestamp')[:10],
         'payment_methods': payment_methods,
@@ -71,6 +116,9 @@ def home(request):
         'contact_form': ContactForm(),
         'tracking_enabled': True,  # Flag for frontend
         'testimonials': testimonials,
+        'user_preferences': user_preferences,
+        'recommended_offers': recommended_offers,
+        'show_personalization': user_preferences.get('marketing', False)
 
     }
     return render(request, 'casino/index.html', context)
@@ -191,81 +239,6 @@ def track_interaction(request):
     return JsonResponse({'status': 'invalid method'}, status=405)
 
 
-# New view for analytics dashboard
-@staff_member_required
-def analytics_dashboard(request):
-    # Today's stats
-    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    visits_today = PageVisit.objects.filter(timestamp__gte=today).count()
-
-    # Popular content
-    popular_pages = PageVisit.objects.values('path').annotate(
-        visits=models.Count('id')
-    ).order_by('-visits')[:10]
-
-    # User interests
-    offer_interest = UserInteraction.objects.filter(
-        type='offer_interest'
-    ).values('additional_data__offer_id').annotate(
-        interactions=models.Count('id')
-    ).order_by('-interactions')
-
-    context = {
-        'visits_today': visits_today,
-        'popular_pages': popular_pages,
-        'offer_interest': offer_interest,
-    }
-    return render(request, 'admin/analytics.html', context)
-
-
-# tracks user page vists
-# @csrf_exempt
-# def track_page_visit(request):
-#     if request.method != 'POST':
-#         return JsonResponse({'status': 'invalid method'}, status=405)
-#
-#     try:
-#         data = json.loads(request.body)
-#         ip = request.META.get('REMOTE_ADDR')
-#         country = data.get('country', 'Unknown')
-#         session_key = request.session.session_key
-#
-#         # Check if we have an existing active session for this IP
-#         existing_visit = None
-#         try:
-#             existing_visit = PageVisit.objects.get(
-#                 ip_address=ip,
-#                 is_active=True
-#             )
-#         except ObjectDoesNotExist:
-#             pass
-#         except PageVisit.MultipleObjectsReturned:
-#             # Handle rare case of multiple active sessions
-#             PageVisit.objects.filter(ip_address=ip, is_active=True).update(is_active=False)
-#             existing_visit = None
-#
-#         if existing_visit:
-#             # Update duration for existing session
-#             duration = (timezone.now() - existing_visit.timestamp).total_seconds()
-#             existing_visit.duration = int(duration)
-#             existing_visit.save()
-#         else:
-#             # Create new session record
-#             PageVisit.objects.create(
-#                 ip_address=ip,
-#                 country=country,
-#                 session_key=session_key
-#             )
-#
-#         return JsonResponse({'status': 'success'})
-#
-#     except Exception as e:
-#         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
-
-# views.py
-
-
-
 @csrf_exempt
 def track_page_visit(request):
     if request.method != 'POST':
@@ -274,6 +247,7 @@ def track_page_visit(request):
     try:
         data = json.loads(request.body)
         ip = request.META.get('REMOTE_ADDR', 'Unknown')
+        path = data.get('path', '/')  # Get path from request
 
         # Ensure country is never empty
         country = data.get('country', '').strip()
@@ -294,6 +268,7 @@ def track_page_visit(request):
                 defaults={
                     'ip_address': ip,
                     'country': country,
+                    'path': path,
                     'timestamp': now,
                     'last_activity': now
                 }
@@ -316,6 +291,9 @@ def track_page_visit(request):
                 if visit.country == 'Unknown' and country != 'Unknown':
                     visit.country = country
 
+                if 'path' in data:  # Update path if provided
+                    visit.path = data['path']
+
                 # Update last activity time
                 visit.last_activity = now
                 visit.save()
@@ -324,6 +302,228 @@ def track_page_visit(request):
 
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+# views.py
+# views.py - Update the cookie_consent view
+# views.py - Update cookie_consent view
+@csrf_exempt
+def cookie_consent(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            # Ensure session exists
+            if not request.session.session_key:
+                request.session.create()
+            session_key = request.session.session_key
+
+            # Only create consent record when user makes a choice
+            consent, created = CookieConsent.objects.update_or_create(
+                session_key=session_key,
+                defaults={
+                    'analytics': data.get('analytics', False),
+                    'preferences': data.get('preferences', False),
+                    'marketing': data.get('marketing', False),
+                }
+            )
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'invalid method'}, status=405)
+
+
+# views.py
+# views.py
+# views.py - Update track_event view
+# views.py
+@csrf_exempt
+def track_event(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            # Create session if doesn't exist
+            if not request.session.session_key:
+                request.session.create()
+            session_key = request.session.session_key
+
+            # Check consent
+            try:
+                consent = CookieConsent.objects.get(session_key=session_key)
+            except CookieConsent.DoesNotExist:
+                return JsonResponse({'status': 'no_consent'}, status=403)
+
+            if not consent.analytics:
+                return JsonResponse({'status': 'no_consent'}, status=403)
+
+            # Save event
+            event = AnalyticsEvent(
+                session_key=session_key,
+                category=data.get('category', ''),
+                action=data.get('action', ''),
+                label=data.get('label', ''),
+                path=data.get('path', request.path),
+                value=data.get('value', 0),
+                event_value=data.get('event_value', 0),
+                is_conversion=data.get('is_conversion', False)
+            )
+            event.save()
+
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'invalid method'}, status=405)
+
+# views.py
+@staff_member_required
+def analytics_dashboard(request):
+    # Time ranges
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    yesterday = today - timedelta(days=1)
+    last_week = today - timedelta(days=7)
+
+    # Basic metrics
+    visits_today = PageVisit.objects.filter(timestamp__gte=today).count()
+    visits_yesterday = PageVisit.objects.filter(timestamp__gte=yesterday, timestamp__lt=today).count()
+    total_visits = PageVisit.objects.count()
+    visit_change = ((visits_today - visits_yesterday) / visits_yesterday * 100) if visits_yesterday else 0
+
+    # Consent metrics
+    total_consent = CookieConsent.objects.count()
+    analytics_consent = CookieConsent.objects.filter(analytics=True).count()
+    consent_rate = (analytics_consent / total_consent * 100) if total_consent else 0
+
+    # Engagement metrics
+    avg_duration = PageVisit.objects.aggregate(avg=Avg('duration'))['avg'] or 0
+    bounce_rate = PageVisit.objects.filter(duration__lt=5).count() / total_visits * 100 if total_visits else 0
+
+    # Conversion metrics
+    conversions = UserInteraction.objects.filter(type='form_submit').count()
+    conversion_rate = (conversions / visits_today * 100) if visits_today else 0
+
+    # Device metrics
+    device_distribution = PageVisit.objects.values('device_type').annotate(
+        count=Count('id'),
+        percentage=Count('id') * 100 / total_visits
+    ).order_by('-count')
+
+    # Popular pages
+    popular_pages = PageVisit.objects.values('path').annotate(
+        visits=Count('id'),
+        avg_duration=Avg('duration'),
+        bounce_rate=Count('id', filter=Q(duration__lt=5)) * 100 / Count('id')
+    ).order_by('-visits')[:10]
+
+    # Top events
+    top_events = AnalyticsEvent.objects.values('category', 'action').annotate(
+        count=Count('id'),
+        avg_value=Avg('event_value')
+    ).order_by('-count')[:10]
+
+    # Conversion events
+    conversion_events = AnalyticsEvent.objects.filter(is_conversion=True).values(
+        'category', 'action', 'label'
+    ).annotate(
+        count=Count('id'),
+        total_value=Sum('event_value')
+    ).order_by('-count')[:10]
+
+    # Offer performance
+    offer_performance = []
+    offers = Offer.objects.all()
+    for offer in offers:
+        views = UserInteraction.objects.filter(
+            type='offer_interest',
+            additional_data__offer_id=offer.id
+        ).count()
+
+        conversions = UserInteraction.objects.filter(
+            type='form_submit',
+            additional_data__offer_title=offer.title
+        ).count()
+
+        conversion_rate_val = (conversions / views * 100) if views else 0
+
+        offer_performance.append({
+            'title': offer.title,
+            'views': views,
+            'conversions': conversions,
+            'conversion_rate': conversion_rate_val
+        })
+
+    # User interests
+    user_interests = AnalyticsEvent.objects.values('category').annotate(
+        count=Count('id'),
+        unique_users=Count('session_key', distinct=True)
+    ).order_by('-count')[:10]
+
+    # Traffic sources
+    traffic_sources = AnalyticsEvent.objects.filter(
+        category='traffic',
+        action='source'
+    ).values('label').annotate(
+        count=Count('id'),
+        conversions=Count('id', filter=Q(is_conversion=True))
+    ).order_by('-count')[:10]
+
+    # Conversion funnel
+    funnel_steps = [
+        {'name': 'Visitors', 'count': total_visits},
+        {'name': 'Engaged Visitors', 'count': PageVisit.objects.filter(duration__gte=10).count()},
+        {'name': 'Offer Views', 'count': UserInteraction.objects.filter(type='offer_interest').count()},
+        {'name': 'Contact Initiated', 'count': UserInteraction.objects.filter(
+            type='button_click', element_id__contains='contact').count()},
+        {'name': 'Form Submissions', 'count': conversions}
+    ]
+
+    # Calculate percentages for funnel
+    for i, step in enumerate(funnel_steps):
+        if i == 0:
+            step['percent'] = 100
+        else:
+            step['percent'] = (step['count'] / funnel_steps[0]['count'] * 100) if funnel_steps[0]['count'] else 0
+
+    # Time-based metrics
+    # Last 7 days visits
+    daily_visits = []
+    for i in range(7, -1, -1):
+        date = today - timedelta(days=i)
+        count = PageVisit.objects.filter(
+            timestamp__date=date
+        ).count()
+        daily_visits.append({'date': date.strftime('%a'), 'count': count})
+
+    # Last 30 minutes activity
+    recent_activity = AnalyticsEvent.objects.filter(
+        timestamp__gte=timezone.now() - timedelta(minutes=30)
+    ).order_by('-timestamp')[:20]
+
+    context = {
+        # Basic metrics
+        'visits_today': visits_today,
+        'visit_change': visit_change,
+        'total_visits': total_visits,
+        'consent_rate': consent_rate,
+        'avg_duration': avg_duration,
+        'bounce_rate': bounce_rate,
+        'conversion_rate': conversion_rate,
+
+        # Detailed metrics
+        'popular_pages': popular_pages,
+        'top_events': top_events,
+        'conversion_events': conversion_events,
+        'offer_performance': offer_performance,
+        'user_interests': user_interests,
+        'traffic_sources': traffic_sources,
+        'device_distribution': device_distribution,
+
+        # Funnel
+        'conversion_funnel': funnel_steps,
+
+        # Time-based data
+        'daily_visits': daily_visits,
+        'recent_activity': recent_activity,
+    }
+    return render(request, 'admin/analytics_dashboard.html', context)
 
 def subscribe(request):
     if request.method != 'POST':
