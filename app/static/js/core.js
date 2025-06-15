@@ -581,7 +581,7 @@ function initAds() {
     currentAdIndex = (currentAdIndex + 1) % adTypes.length;
 
     // Schedule next ad
-    adTimeout = setTimeout(showAd, 300000); // 5 minutes
+    adTimeout = setTimeout(showAd, 180000); // 3 minutes
   }
   function showFlashOffer() {
     const lastClose = localStorage.getItem('flashClosed');
@@ -593,7 +593,7 @@ function initAds() {
     // Set offer data
     const flashOffer = window.CONFIG.flashOffer || {
       title: "Limited Time Offer!",
-      description: "Double your first deposit - up to $100 bonus!"
+      description: "Double your first deposit - up to 100% bonus!"
     };
 
     flashModal.setAttribute('data-offer-title', flashOffer.title);
