@@ -59,21 +59,29 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
+    'app.middleware.CountryRestrictionMiddleware',
     # 'app.middleware.UserTimezoneMiddleware',
     # 'app.middleware.PageVisitMiddleware',
     # 'app.middleware.SessionDurationMiddleware',
 
 ]
-
+# Add this at the bottom
+handler403 = 'app.views.access_denied'
 ROOT_URLCONF = 'casino.urls'
 
+# settings.py
+CSRF_FAILURE_VIEW = 'django.views.csrf.csrf_failure'
+# handler403 = 'app.views.custom_permission_denied_view'  # Add this line
 # Session expires after 1 hour (3600 seconds)
 SESSION_COOKIE_AGE = 3600
 
 # Reset session timer on every request
 SESSION_SAVE_EVERY_REQUEST = True
-
+# settings.py
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# settings.py
+GEOIP_PATH = '/path/to/geolite2/database'
 # Set time zone to Florida (Eastern Time)
 TIME_ZONE = 'America/New_York'
 

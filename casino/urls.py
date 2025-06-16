@@ -28,7 +28,7 @@ from app.views import (
     track_interaction,
     track_page_visit,
     cookie_consent,
-    track_event
+    track_event, access_denied
 )
 urlpatterns = [
     path('admin/', custom_admin_site.urls),
@@ -40,4 +40,7 @@ urlpatterns = [
     path('track-visit/', track_page_visit, name='track_page_visit'),
     path('cookie-consent/', cookie_consent, name='cookie_consent'),
     path('track-event/', track_event, name='track_event'),
+    path('access-denied/', access_denied, name='access_denied'),
+
 ]
+handler403 = 'app.views.access_denied'

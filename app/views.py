@@ -371,6 +371,8 @@ def track_event(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'invalid method'}, status=405)
+
+
 # views.py
 # Update the analytics_dashboard view
 @staff_member_required
@@ -493,9 +495,16 @@ def analytics_dashboard(request):
     }
     return render(request, 'admin/analytics_dashboard.html', context)
 
+
 def subscribe(request):
     if request.method != 'POST':
         return JsonResponse({'success': False}, status=400)
 
     # Simplified subscription logic
     return JsonResponse({'success': True})
+
+
+# views.py
+
+def access_denied(request, exception=None):
+    return render(request, 'casino/403.html', status=403)

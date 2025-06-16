@@ -1,4 +1,6 @@
 // core.js
+// Add this at the top of the file
+let detectedCountry = 'Unknown';
 // Add this at the top of core.js
 function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -332,17 +334,26 @@ function trackPageVisit(useBeacon = false) {
     }
 }
 
+// Add this to the detectCountry function
 function detectCountry() {
     fetch("https://ipapi.co/json/")
-        .then(response => response.json())
-        .then(data => {
-            detectedCountry = data.country_name || 'Unknown';
-            trackPageVisit();
-        })
-        .catch(() => {
-            detectedCountry = 'Unknown';
-            trackPageVisit();
+    .then(response => response.json())
+    .then(data => {
+        detectedCountry = data.country || 'Unknown';
+
+        // Add country header to all future requests
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('X-Country-Code', detectedCountry);
+            }
         });
+
+        trackPageVisit();
+    })
+    .catch(() => {
+        detectedCountry = 'Unknown';
+        trackPageVisit();
+    });
 }
 
 function setupTracking() {
@@ -359,6 +370,12 @@ function setupTracking() {
                 page_path: window.location.pathname,
                 data: { text, classes: target.className }
             });
+        }
+    });
+    // Add country header to all existing requests
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('X-Country-Code', detectedCountry);
         }
     });
 
@@ -758,6 +775,8 @@ function initAds() {
 // Main Initialization
 // ======================
 document.addEventListener('DOMContentLoaded', function() {
+    // Detect country first thing
+    detectCountry();
     // Setup core functionality
     setupContactModalListeners();
     setupDownloadButtons();
