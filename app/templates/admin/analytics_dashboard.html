@@ -3,338 +3,346 @@
 
 {% block content %}
 <div class="analytics-dashboard">
-    <h1>Analytics Dashboard</h1>
+    <h1 class="mb-4">Analytics Dashboard</h1>
 
-    <!-- Key Metrics Row -->
-    <div class="row">
-        <!-- Visits Card -->
-        <div class="col-md-2">
-            <div class="card text-center mb-4">
+    <!-- Key Metrics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-2 col-md-4 mb-3">
+            <div class="card border-start border-primary h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Today's Visits</h5>
-                    <p class="display-4">{{ visits_today }}</p>
-                    <div class="text-{% if visit_change >= 0 %}success{% else %}danger{% endif %}">
-                        <i class="fas fa-arrow-{% if visit_change >= 0 %}up{% else %}down{% endif %}"></i>
-                        {{ visit_change|floatformat:1 }}%
+                    <h6 class="card-title text-muted">Today's Visits</h6>
+                    <div class="d-flex align-items-center">
+                        <h3 class="mb-0">{{ visits_today }}</h3>
+                        <span class="badge ms-2 bg-{% if visit_change >= 0 %}success{% else %}danger{% endif %}">
+                            {{ visit_change|floatformat:1 }}%
+                        </span>
                     </div>
+                    <small class="text-muted">Yesterday: {{ visits_yesterday }}</small>
                 </div>
             </div>
         </div>
 
-        <!-- Consent Card -->
-        <div class="col-md-2">
-            <div class="card text-center mb-4">
+        <div class="col-xl-2 col-md-4 mb-3">
+            <div class="card border-start border-success h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Analytics Consent</h5>
-                    <p class="display-4">{{ consent_rate|floatformat:1 }}%</p>
+                    <h6 class="card-title text-muted">Consent Rate</h6>
+                    <h3 class="mb-0">{{ consent_rate|floatformat:1 }}%</h3>
+                    <small class="text-muted">{{ analytics_consent }}/{{ total_consent }} users</small>
                 </div>
             </div>
         </div>
 
-        <!-- Engagement Card -->
-        <div class="col-md-2">
-            <div class="card text-center mb-4">
+        <div class="col-xl-2 col-md-4 mb-3">
+            <div class="card border-start border-info h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Avg. Engagement</h5>
-                    <p class="display-4">{{ avg_duration|floatformat:0 }}s</p>
+                    <h6 class="card-title text-muted">Avg. Engagement</h6>
+                    <h3 class="mb-0">{{ avg_duration|floatformat:0 }}s</h3>
+                    <small class="text-muted">Per session</small>
                 </div>
             </div>
         </div>
 
-        <!-- Bounce Rate Card -->
-        <div class="col-md-2">
-            <div class="card text-center mb-4">
+        <div class="col-xl-2 col-md-4 mb-3">
+            <div class="card border-start border-warning h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Bounce Rate</h5>
-                    <p class="display-4">{{ bounce_rate|floatformat:1 }}%</p>
+                    <h6 class="card-title text-muted">Bounce Rate</h6>
+                    <h3 class="mb-0">{{ bounce_rate|floatformat:1 }}%</h3>
+                    <small class="text-muted">{{ bounce_count }} sessions</small>
                 </div>
             </div>
         </div>
 
-        <!-- Conversion Card -->
-        <div class="col-md-2">
-            <div class="card text-center mb-4">
+        <div class="col-xl-2 col-md-4 mb-3">
+            <div class="card border-start border-danger h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Conversion Rate</h5>
-                    <p class="display-4">{{ conversion_rate|floatformat:1 }}%</p>
+                    <h6 class="card-title text-muted">Conversion Rate</h6>
+                    <h3 class="mb-0">{{ conversion_rate|floatformat:1 }}%</h3>
+                    <small class="text-muted">{{ conversions }} submissions</small>
                 </div>
             </div>
         </div>
 
-        <!-- Total Visits Card -->
-        <div class="col-md-2">
-            <div class="card text-center mb-4">
+        <div class="col-xl-2 col-md-4 mb-3">
+            <div class="card border-start border-secondary h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Total Visits</h5>
-                    <p class="display-4">{{ total_visits|intcomma }}</p>
+                    <h6 class="card-title text-muted">Total Visits</h6>
+                    <h3 class="mb-0">{{ total_visits|intcomma }}</h3>
+                    <small class="text-muted">All time</small>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Traffic Overview Row -->
-    <div class="row mt-4">
-        <!-- Traffic Chart -->
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Traffic Overview (Last 7 Days)</h3>
-                </div>
-                <div class="card-body">
-                    <canvas id="trafficChart" height="250"></canvas>
-                </div>
-            </div>
+    <!-- Traffic Chart -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Traffic Overview (Last 7 Days)</h5>
         </div>
-
-        <!-- Device Distribution -->
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Device Distribution</h3>
-                </div>
-                <div class="card-body">
-                    <canvas id="deviceChart" height="250"></canvas>
-                </div>
-            </div>
+        <div class="card-body">
+            <canvas id="trafficChart" height="250"></canvas>
         </div>
     </div>
 
-    <!-- Content Performance Row -->
-    <div class="row mt-4">
+    <!-- Tables Row -->
+    <div class="row">
         <!-- Popular Pages -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3>Popular Pages</h3>
-                    <span>Total: {{ total_visits|intcomma }}</span>
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Popular Pages</h5>
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Page</th>
-                                <th>Visits</th>
-                                <th>Engagement</th>
-                                <th>Bounce Rate</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for page in popular_pages %}
-                            <tr>
-                                <td>{{ page.path|truncatechars:40 }}</td>
-                                <td>{{ page.visits }}</td>
-                                <td>{{ page.avg_duration|floatformat:0 }}s</td>
-                                <td>{{ page.bounce_rate|floatformat:1 }}%</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Page</th>
+                                    <th>Visits</th>
+                                    <th>Duration</th>
+                                    <th>Bounce Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for page in popular_pages %}
+                                <tr>
+                                    <td>{{ page.path|truncatechars:30 }}</td>
+                                    <td>{{ page.visits }}</td>
+                                    <td>{{ page.avg_duration|floatformat:0 }}s</td>
+                                    <td>
+                                        <div class="progress" style="height: 5px;">
+                                            <div class="progress-bar bg-warning" style="width: {{ page.bounce_rate }}%"></div>
+                                        </div>
+                                        <small>{{ page.bounce_rate|floatformat:1 }}%</small>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No data available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Top Events -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Top User Events</h3>
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Top User Events</h5>
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Category</th>
-                                <th>Action</th>
-                                <th>Count</th>
-                                <th>Avg. Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for event in top_events %}
-                            <tr>
-                                <td>{{ event.category }}</td>
-                                <td>{{ event.action }}</td>
-                                <td>{{ event.count }}</td>
-                                <td>{{ event.avg_value|floatformat:2 }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Conversion Performance Row -->
-    <div class="row mt-4">
-        <!-- Offer Performance -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Offer Performance</h3>
-                </div>
-                <div class="card-body">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Offer</th>
-                                <th>Views</th>
-                                <th>Conversions</th>
-                                <th>Rate</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for offer in offer_performance %}
-                            <tr>
-                                <td>{{ offer.title|truncatechars:30 }}</td>
-                                <td>{{ offer.views }}</td>
-                                <td>{{ offer.conversions }}</td>
-                                <td>{{ offer.conversion_rate|floatformat:1 }}%</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- User Interests -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3>User Interests</h3>
-                </div>
-                <div class="card-body">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Category</th>
-                                <th>Interactions</th>
-                                <th>Unique Users</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for interest in user_interests %}
-                            <tr>
-                                <td>{{ interest.category }}</td>
-                                <td>{{ interest.count }}</td>
-                                <td>{{ interest.unique_users }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Conversion Funnel -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Conversion Funnel</h3>
-                </div>
-                <div class="card-body">
-                    <div class="funnel">
-                        {% for step in conversion_funnel %}
-                        <div class="funnel-step" style="width: {{ step.percent }}%">
-                            <div class="step-name">{{ step.name }}</div>
-                            <div class="step-count">{{ step.count|intcomma }}</div>
-                            <div class="step-percent">{{ step.percent|floatformat:1 }}%</div>
-                        </div>
-                        {% endfor %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Action</th>
+                                    <th>Count</th>
+                                    <th>Avg Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in top_events %}
+                                <tr>
+                                    <td>{{ event.category }}</td>
+                                    <td>{{ event.action }}</td>
+                                    <td>{{ event.count }}</td>
+                                    <td>{{ event.avg_value|floatformat:2 }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No data available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Recent Activity -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Recent Activity (Last 30 minutes)</h3>
+    <!-- Conversion Row -->
+    <div class="row">
+        <!-- Offer Performance -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Offer Performance</h5>
                 </div>
                 <div class="card-body">
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Session</th>
-                                <th>Category</th>
-                                <th>Action</th>
-                                <th>Label</th>
-                                <th>Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for activity in recent_activity %}
-                            <tr>
-                                <td>{{ activity.timestamp|time }}</td>
-                                <td>{{ activity.session_key|slice:":8" }}...</td>
-                                <td>{{ activity.category }}</td>
-                                <td>{{ activity.action }}</td>
-                                <td>{{ activity.label|truncatechars:30 }}</td>
-                                <td>{{ activity.value }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Offer</th>
+                                    <th>Views</th>
+                                    <th>Conversions</th>
+                                    <th>Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for offer in offer_performance %}
+                                <tr>
+                                    <td>{{ offer.title|truncatechars:30 }}</td>
+                                    <td>{{ offer.views }}</td>
+                                    <td>{{ offer.conversions }}</td>
+                                    <td>
+                                        <div class="progress" style="height: 5px;">
+                                            <div class="progress-bar bg-success" style="width: {{ offer.conversion_rate }}%"></div>
+                                        </div>
+                                        <small>{{ offer.conversion_rate|floatformat:1 }}%</small>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No data available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- User Interests -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">User Interests</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Interactions</th>
+                                    <th>Unique Users</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for interest in user_interests %}
+                                <tr>
+                                    <td>{{ interest.category }}</td>
+                                    <td>{{ interest.count }}</td>
+                                    <td>{{ interest.unique_users }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center">No data available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Funnel Visualization -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Conversion Funnel</h5>
+        </div>
+        <div class="card-body">
+            <div class="row text-center">
+                {% for step in conversion_funnel %}
+                <div class="col mb-4">
+                    <div class="funnel-step p-3 bg-light rounded">
+                        <h6 class="mb-1">{{ step.name }}</h6>
+                        <h4 class="mb-0">{{ step.count|intcomma }}</h4>
+                        <small class="text-muted">{{ step.percent|floatformat:1 }}%</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="progress" style="height: 30px;">
+                {% for step in conversion_funnel %}
+                <div class="progress-bar
+                    {% cycle 'bg-primary' 'bg-success' 'bg-info' 'bg-warning' 'bg-danger' %}"
+                    style="width: {{ step.percent }}%">
+                    <span>{{ step.percent|floatformat:1 }}%</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Recent Activity (Last 30 minutes)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Session</th>
+                            <th>Category</th>
+                            <th>Action</th>
+                            <th>Label</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for activity in recent_activity %}
+                        <tr>
+                            <td>{{ activity.timestamp|time }}</td>
+                            <td>{{ activity.session_key|slice:":8" }}...</td>
+                            <td>{{ activity.category }}</td>
+                            <td>{{ activity.action }}</td>
+                            <td>{{ activity.label|truncatechars:20 }}</td>
+                            <td>{{ activity.value }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No recent activity</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-.funnel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.funnel-step {
-    background: #4e73df;
-    padding: 15px;
-    margin: 8px 0;
-    text-align: center;
-    color: white;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    position: relative;
-}
-.funnel-step:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-.step-name {
-    font-weight: bold;
-    font-size: 1.1rem;
-}
-.step-count {
-    font-size: 1.4rem;
-    margin: 5px 0;
-}
-.step-percent {
-    font-size: 0.9rem;
-    opacity: 0.9;
+.analytics-dashboard {
+    padding: 20px;
+    background-color: #f8f9fc;
 }
 .card {
-    margin-bottom: 20px;
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
     border: none;
+    border-radius: 8px;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
 }
 .card-header {
-    background-color: #f8f9fc;
-    border-bottom: 1px solid #e3e6f0;
+    padding: 0.75rem 1.25rem;
+}
+.funnel-step {
+    position: relative;
+    z-index: 1;
+}
+.progress-bar span {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #000;
+    font-weight: bold;
+    text-shadow: 0 0 2px #fff;
 }
 </style>
 
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Traffic Chart
 document.addEventListener('DOMContentLoaded', function() {
     // Traffic Chart
     const trafficCtx = document.getElementById('trafficChart').getContext('2d');
@@ -361,6 +369,9 @@ document.addEventListener('DOMContentLoaded', function() {
             scales: {
                 y: {
                     beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    },
                     grid: {
                         color: 'rgba(0, 0, 0, 0.05)'
                     }
@@ -368,42 +379,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 x: {
                     grid: {
                         display: false
-                    }
-                }
-            }
-        }
-    });
-
-    // Device Distribution Chart
-    const deviceCtx = document.getElementById('deviceChart').getContext('2d');
-    const deviceChart = new Chart(deviceCtx, {
-        type: 'doughnut',
-        data: {
-            labels: [{% for device in device_distribution %}"{{ device.device_type }}",{% endfor %}],
-            datasets: [{
-                data: [{% for device in device_distribution %}{{ device.percentage|floatformat }},{% endfor %}],
-                backgroundColor: [
-                    'rgba(78, 115, 223, 0.8)',
-                    'rgba(54, 185, 204, 0.8)',
-                    'rgba(28, 200, 138, 0.8)',
-                    'rgba(246, 194, 62, 0.8)',
-                    'rgba(231, 74, 59, 0.8)'
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.label}: ${context.parsed}%`;
-                        }
                     }
                 }
             }

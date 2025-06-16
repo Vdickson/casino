@@ -14,6 +14,26 @@ function trackAnalyticsEvent(category, action, label, value = 0) {
         category: category,
         action: action,
         label: label,
+        value: value,  // Use 'value' not 'event_value'
+        path: window.location.pathname
+    };
+
+    fetch(window.CONFIG.urls.trackEvent, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken') || ''
+        },
+        body: JSON.stringify(data)
+    }).catch(error => console.error('Analytics tracking error:', error));
+}function trackAnalyticsEvent(category, action, label, value = 0) {
+    const consent = getCookieConsent();
+    if (!consent || !consent.analytics) return;
+
+    const data = {
+        category: category,
+        action: action,
+        label: label,
         value: value,
         path: window.location.pathname
     };

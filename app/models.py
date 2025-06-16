@@ -202,6 +202,9 @@ class AnalyticsEvent(models.Model):
     path = models.CharField(max_length=255)
     value = models.IntegerField(default=0)
     timestamp = models.DateTimeField(auto_now_add=True)
+    # Add these new fields:
+    event_value = models.IntegerField(default=0)
+    is_conversion = models.BooleanField(default=False)
 
     class Meta:
         indexes = [

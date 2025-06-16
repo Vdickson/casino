@@ -260,6 +260,7 @@ def analytics_dashboard(request):
 
 
 # Custom Admin Site
+# admin.py
 class CustomAdminSite(admin.AdminSite):
     site_header = 'Admin Dashboard'
     site_title = 'Administration Portal'
@@ -267,7 +268,6 @@ class CustomAdminSite(admin.AdminSite):
 
     def get_urls(self):
         urls = super().get_urls()
-
         # Remove the catch-all pattern
         catch_all_pattern = urls.pop()
 
@@ -284,6 +284,28 @@ class CustomAdminSite(admin.AdminSite):
         extra_context['show_analytics_link'] = True
         return super().index(request, extra_context)
 
+    # NEW: Add this method to customize the app list
+    def get_app_list(self, request):
+        app_list = super().get_app_list(request)
+
+        # Add custom analytics link to the app list
+        analytics_link = {
+            'name': 'Analytics Dashboard',
+            'app_label': 'analytics',
+            'models': [
+                {
+                    'name': 'View Analytics',
+                    'object_name': 'analytics',
+                    'admin_url': reverse('admin:analytics_dashboard'),
+                    'view_only': True,
+                }
+            ]
+        }
+
+        # Insert at the top of the app list
+        app_list.insert(0, analytics_link)
+
+        return app_list
 @admin.register(Testimonial)
 class TestimonialAdmin(BaseModelAdmin):
     list_display = ['name', 'content_preview', 'created_at', 'is_approved', 'action_buttons']
@@ -414,7 +436,7 @@ custom_admin_site.register(AnalyticsEvent, AnalyticsEventAdmin)
 from django.contrib.admin.sites import AlreadyRegistered
 
 # Re-register all models with custom admin site
-models = [LiveWin, Offer, PaymentMethod, SocialLink, ContactMessage, PageVisit, AnalyticsEvent, CookieConsent, UserInteraction]
+models = [LiveWin, Offer, PaymentMethod, SocialLink, ContactMessage, PageVisit, AnalyticsEvent,Testimonial, CookieConsent, UserInteraction]
 
 for model in models:
     try:

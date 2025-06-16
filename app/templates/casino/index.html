@@ -24,51 +24,218 @@
     <link href="{% static 'css/main.css' %}" rel="stylesheet">
 
     <style>
-        /* Ad Modal Styles */
+         /* Enhanced Ad Modal Styles */
         .ad-modal {
             display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             z-index: 10000;
-            width: 320px;
+            width: 350px;
             max-width: 90%;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.5s;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            font-family: 'Poppins', sans-serif;
+            animation: float 4s infinite ease-in-out;
         }
 
         .ad-content {
-            text-align: center;
             position: relative;
+            padding: 30px 25px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--ocean-blue), var(--deep-purple));
+            border: 3px solid var(--neon-teal);
+            border-radius: 15px;
+            animation: border-pulse 3s infinite;
         }
 
         .close-ad {
             position: absolute;
-            top: 0;
-            right: 5px;
-            font-size: 24px;
-            cursor: pointer;
-            background: none;
+            top: 10px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
             border: none;
-            color: #666;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .close-ad:hover {
+            background: var(--secondary);
+            transform: rotate(90deg);
         }
 
         .ad-modal h3 {
-            margin-top: 15px;
-            font-size: 1.5rem;
-            color: #333;
+            font-size: 1.8rem;
+            margin: 15px 0 10px;
+            font-weight: 800;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            background: linear-gradient(45deg, var(--gold-fish), var(--coral));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
         }
 
         .ad-modal p {
-            color: #666;
-            margin-bottom: 20px;
+            color: var(--text-light);
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            line-height: 1.5;
         }
 
+        .btn-claim {
+            background: linear-gradient(45deg, var(--gold-fish), var(--coral));
+            color: var(--dark-bg);
+            border: none;
+            padding: 12px 30px;
+            font-weight: 700;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 217, 61, 0.4);
+            animation: button-pulse 2s infinite;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-claim:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 217, 61, 0.6);
+        }
+
+        .offer-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, var(--secondary), var(--accent));
+            color: white;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+            animation: badge-pulse 1.5s infinite alternate;
+            z-index: 1;
+        }
+
+        .ad-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            animation: bounce 2s infinite;
+            color: var(--accent);
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+        }
+
+        .countdown-badge {
+            display: inline-block;
+            background: rgba(0,0,0,0.3);
+            border-radius: 30px;
+            padding: 8px 20px;
+            margin-top: 15px;
+            font-weight: 600;
+            color: var(--accent);
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 1px;
+            border: 1px solid var(--border);
+        }
+
+        /* Glow effect for flash offers */
+        .flash-ad::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, var(--neon-teal), var(--gold-fish), var(--coral), var(--sea-green));
+            z-index: -1;
+            border-radius: 20px;
+            filter: blur(10px);
+            opacity: 0.7;
+            animation: neon-glow 3s infinite;
+        }
+
+        /* Animations */
+        @keyframes border-pulse {
+            0% { border-color: var(--neon-teal); }
+            50% { border-color: var(--gold-fish); }
+            100% { border-color: var(--neon-teal); }
+        }
+
+        @keyframes button-pulse {
+            0% { transform: scale(1); box-shadow: 0 5px 15px rgba(255, 217, 61, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 8px 25px rgba(255, 217, 61, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 5px 15px rgba(255, 217, 61, 0.4); }
+        }
+
+        @keyframes badge-pulse {
+            0% { transform: translateX(-50%) scale(1); }
+            100% { transform: translateX(-50%) scale(1.1); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes float {
+            0% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-10px); }
+            100% { transform: translate(-50%, -50%) translateY(0); }
+        }
+
+        @keyframes neon-glow {
+            0% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.5; }
+        }
+
+        /* Specific ad types */
+        .flash-ad .ad-content {
+            background: linear-gradient(135deg, var(--deep-purple), var(--ocean-blue));
+            border: 3px solid var(--neon-teal);
+        }
+
+        .flash-ad .offer-badge {
+            background: linear-gradient(45deg, var(--secondary), var(--neon-teal));
+        }
+
+        .recommendation-ad .ad-content {
+            background: linear-gradient(135deg, var(--ocean-blue), var(--sea-green));
+            border: 3px solid var(--success);
+        }
+
+        .recommendation-ad .offer-badge {
+            background: linear-gradient(45deg, var(--success), var(--accent));
+        }
+
+        .limited-ad .ad-content {
+            background: linear-gradient(135deg, var(--deep-purple), var(--secondary));
+            border: 3px solid var(--accent);
+        }
+
+        .limited-ad .offer-badge {
+            background: linear-gradient(45deg, var(--secondary), var(--accent));
+        }
         .ad-modal .btn {
             width: 100%;
         }
@@ -822,25 +989,44 @@
         </div>
     </div>
 
-    <!-- Flash Offer Modal -->
-    <div id="flashModal" class="ad-modal">
+     <!-- Flash Offer Modal -->
+    <div id="flashModal" class="ad-modal flash-ad">
         <div class="ad-content">
-            <button id="closeFlashModal" class="close-ad">&times;</button>
-            <h3 id="flashTitle">Flash Offer</h3>
-            <p id="flashDesc">Limited time special offer!</p>
-            <button id="flashClaimBtn" class="btn btn-primary">Claim Offer</button>
+            <button id="closeFlashModal" class="close-ad">✕</button>
+            <div class="offer-badge">Flash Offer</div>
+            <div class="ad-icon">⚡</div>
+            <h3 id="flashTitle">Double Your Deposit!</h3>
+            <p id="flashDesc">Get 100% bonus on your first deposit. Limited time only!</p>
+            <button id="flashClaimBtn" class="btn-claim">Claim Now</button>
+<!--            <div class="countdown-badge">Ends in: <span id="flashCountdown">05:00</span></div>-->
         </div>
     </div>
 
     <!-- Recommendation Modal -->
-    <div id="recommendationModal" class="ad-modal">
+    <div id="recommendationModal" class="ad-modal recommendation-ad">
         <div class="ad-content">
-            <button id="closeRecModal" class="close-ad">&times;</button>
-            <h3 id="recTitle">Recommended Offer</h3>
-            <p id="recDesc">Special offer just for you!</p>
-            <button id="recClaimBtn" class="btn btn-primary">Claim Offer</button>
+            <button id="closeRecModal" class="close-ad">✕</button>
+            <div class="offer-badge">Recommended</div>
+            <div class="ad-icon">🎯</div>
+            <h3 id="recTitle">Special Weekend Bonus</h3>
+            <p id="recDesc">Get 30% extra on all deposits this weekend!</p>
+            <button id="recClaimBtn" class="btn-claim">Claim Offer</button>
         </div>
     </div>
+
+    <!-- Limited Offer Modal -->
+    <div id="limitedModal" class="ad-modal limited-ad">
+        <div class="ad-content">
+            <button id="closeLimitedModal" class="close-ad">✕</button>
+            <div class="offer-badge">Limited Time</div>
+            <div class="ad-icon">🔥</div>
+            <h3 id="limitedTitle">100% Welcome Bonus</h3>
+            <p id="limitedDesc">Sign up now and get up to 100% in bonus credits!</p>
+            <button id="limitedClaimBtn" class="btn-claim">Get Bonus</button>
+<!--            <div class="countdown-badge">Ends in: <span id="limitedCountdown">24:00:00</span></div>-->
+        </div>
+    </div>
+
 
     <!-- Cookie Consent Banner -->
     <div id="cookie-consent-banner" class="cookie-banner">
@@ -914,18 +1100,20 @@
 
     <!-- Configuration Script -->
    <!-- Replace the entire Configuration Script section with this updated version -->
+<!-- Configuration Script -->
 <script>
     // Create a temporary object first
     const tempConfig = {
         lastWinId: {% if live_wins.0.id %}{{ live_wins.0.id }}{% else %}0{% endif %},
         currentOfferId: {% if active_offer %}{{ active_offer.id }}{% elif future_offer %}{{ future_offer.id }}{% else %}null{% endif %},
+        // FIX: Ensure value is always a number, not None
         serverCountdownSeconds: {% if active_offer %}{{ active_offer.time_remaining.total_seconds|default:0|floatformat:0 }}{% elif future_offer %}{{ future_offer.time_until_start.total_seconds|default:0|floatformat:0 }}{% else %}0{% endif %},
         countdownStatus: "{% if active_offer %}ENDS IN:{% else %}STARTS IN:{% endif %}",
         trackingEnabled: {% if tracking_enabled %}true{% else %}false{% endif %},
         csrfToken: "{{ csrf_token }}",
         flashOffer: {
-            title: "{% if active_offer %}{{ active_offer.title }}{% else %}100% Signup Bonus{% endif %}",
-            description: "{% if active_offer %}{{ active_offer.description }}{% else %}Get double credits on your first deposit{% endif %}"
+            title: "{% if active_offer %}{{ active_offer.title|escapejs }}{% else %}100% Signup Bonus{% endif %}",
+            description: "{% if active_offer %}{{ active_offer.description|escapejs }}{% else %}Get double credits on your first deposit{% endif %}"
         },
         recommendedOffers: [
             {title: "Double Your First Deposit!", description: "Get 100% bonus on your first deposit"},
@@ -938,9 +1126,9 @@
             trackPageVisit: "{% url 'track_page_visit' %}",
         },
         social: {
-            whatsapp: "{{ social.whatsapp }}",
-            facebook: "{{ social.facebook }}",
-            telegram: "{{ social.telegram }}"
+            whatsapp: "{{ social.whatsapp|escapejs }}",
+            facebook: "{{ social.facebook|escapejs }}",
+            telegram: "{{ social.telegram|escapejs }}"
         }
     };
 

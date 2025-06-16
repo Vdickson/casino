@@ -336,6 +336,7 @@ def cookie_consent(request):
 # views.py
 # views.py - Update track_event view
 # views.py
+# Update the track_event view
 @csrf_exempt
 def track_event(request):
     if request.method == 'POST':
@@ -355,16 +356,14 @@ def track_event(request):
             if not consent.analytics:
                 return JsonResponse({'status': 'no_consent'}, status=403)
 
-            # Save event
+            # Save event - ONLY USE EXISTING FIELDS
             event = AnalyticsEvent(
                 session_key=session_key,
                 category=data.get('category', ''),
                 action=data.get('action', ''),
                 label=data.get('label', ''),
                 path=data.get('path', request.path),
-                value=data.get('value', 0),
-                event_value=data.get('event_value', 0),
-                is_conversion=data.get('is_conversion', False)
+                value=data.get('value', 0)
             )
             event.save()
 
@@ -372,18 +371,19 @@ def track_event(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'invalid method'}, status=405)
-
 # views.py
+# Update the analytics_dashboard view
 @staff_member_required
 def analytics_dashboard(request):
     # Time ranges
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     yesterday = today - timedelta(days=1)
     last_week = today - timedelta(days=7)
+    now = timezone.now()
 
     # Basic metrics
-    visits_today = PageVisit.objects.filter(timestamp__gte=today).count()
-    visits_yesterday = PageVisit.objects.filter(timestamp__gte=yesterday, timestamp__lt=today).count()
+    visits_today = PageVisit.objects.filter(timestamp__date=today.date()).count()
+    visits_yesterday = PageVisit.objects.filter(timestamp__date=yesterday.date()).count()
     total_visits = PageVisit.objects.count()
     visit_change = ((visits_today - visits_yesterday) / visits_yesterday * 100) if visits_yesterday else 0
 
@@ -394,43 +394,33 @@ def analytics_dashboard(request):
 
     # Engagement metrics
     avg_duration = PageVisit.objects.aggregate(avg=Avg('duration'))['avg'] or 0
-    bounce_rate = PageVisit.objects.filter(duration__lt=5).count() / total_visits * 100 if total_visits else 0
+    bounce_count = PageVisit.objects.filter(duration__lt=5).count()
+    bounce_rate = (bounce_count / total_visits * 100) if total_visits else 0
 
     # Conversion metrics
     conversions = UserInteraction.objects.filter(type='form_submit').count()
     conversion_rate = (conversions / visits_today * 100) if visits_today else 0
 
-    # Device metrics
-    device_distribution = PageVisit.objects.values('device_type').annotate(
-        count=Count('id'),
-        percentage=Count('id') * 100 / total_visits
-    ).order_by('-count')
-
     # Popular pages
     popular_pages = PageVisit.objects.values('path').annotate(
         visits=Count('id'),
         avg_duration=Avg('duration'),
-        bounce_rate=Count('id', filter=Q(duration__lt=5)) * 100 / Count('id')
+    ).annotate(
+        bounce_count=Count('id', filter=Q(duration__lt=5))
     ).order_by('-visits')[:10]
+
+    for page in popular_pages:
+        page['bounce_rate'] = (page['bounce_count'] / page['visits'] * 100) if page['visits'] else 0
 
     # Top events
     top_events = AnalyticsEvent.objects.values('category', 'action').annotate(
         count=Count('id'),
-        avg_value=Avg('event_value')
-    ).order_by('-count')[:10]
-
-    # Conversion events
-    conversion_events = AnalyticsEvent.objects.filter(is_conversion=True).values(
-        'category', 'action', 'label'
-    ).annotate(
-        count=Count('id'),
-        total_value=Sum('event_value')
+        avg_value=Avg('value')
     ).order_by('-count')[:10]
 
     # Offer performance
     offer_performance = []
-    offers = Offer.objects.all()
-    for offer in offers:
+    for offer in Offer.objects.all():
         views = UserInteraction.objects.filter(
             type='offer_interest',
             additional_data__offer_id=offer.id
@@ -456,15 +446,6 @@ def analytics_dashboard(request):
         unique_users=Count('session_key', distinct=True)
     ).order_by('-count')[:10]
 
-    # Traffic sources
-    traffic_sources = AnalyticsEvent.objects.filter(
-        category='traffic',
-        action='source'
-    ).values('label').annotate(
-        count=Count('id'),
-        conversions=Count('id', filter=Q(is_conversion=True))
-    ).order_by('-count')[:10]
-
     # Conversion funnel
     funnel_steps = [
         {'name': 'Visitors', 'count': total_visits},
@@ -483,22 +464,18 @@ def analytics_dashboard(request):
             step['percent'] = (step['count'] / funnel_steps[0]['count'] * 100) if funnel_steps[0]['count'] else 0
 
     # Time-based metrics
-    # Last 7 days visits
     daily_visits = []
     for i in range(7, -1, -1):
         date = today - timedelta(days=i)
-        count = PageVisit.objects.filter(
-            timestamp__date=date
-        ).count()
+        count = PageVisit.objects.filter(timestamp__date=date).count()
         daily_visits.append({'date': date.strftime('%a'), 'count': count})
 
     # Last 30 minutes activity
     recent_activity = AnalyticsEvent.objects.filter(
-        timestamp__gte=timezone.now() - timedelta(minutes=30)
+        timestamp__gte=now - timedelta(minutes=30)
     ).order_by('-timestamp')[:20]
 
     context = {
-        # Basic metrics
         'visits_today': visits_today,
         'visit_change': visit_change,
         'total_visits': total_visits,
@@ -506,20 +483,11 @@ def analytics_dashboard(request):
         'avg_duration': avg_duration,
         'bounce_rate': bounce_rate,
         'conversion_rate': conversion_rate,
-
-        # Detailed metrics
         'popular_pages': popular_pages,
         'top_events': top_events,
-        'conversion_events': conversion_events,
         'offer_performance': offer_performance,
         'user_interests': user_interests,
-        'traffic_sources': traffic_sources,
-        'device_distribution': device_distribution,
-
-        # Funnel
         'conversion_funnel': funnel_steps,
-
-        # Time-based data
         'daily_visits': daily_visits,
         'recent_activity': recent_activity,
     }
