@@ -1,6 +1,4 @@
 // core.js
-// Add this at the top of the file
-let detectedCountry = 'Unknown';
 // Add this at the top of core.js
 function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -9,26 +7,6 @@ function getCookie(name) {
 }
 // Add this function to track analytics events
 function trackAnalyticsEvent(category, action, label, value = 0) {
-    const consent = getCookieConsent();
-    if (!consent || !consent.analytics) return;
-
-    const data = {
-        category: category,
-        action: action,
-        label: label,
-        value: value,  // Use 'value' not 'event_value'
-        path: window.location.pathname
-    };
-
-    fetch(window.CONFIG.urls.trackEvent, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken') || ''
-        },
-        body: JSON.stringify(data)
-    }).catch(error => console.error('Analytics tracking error:', error));
-}function trackAnalyticsEvent(category, action, label, value = 0) {
     const consent = getCookieConsent();
     if (!consent || !consent.analytics) return;
 
@@ -334,26 +312,17 @@ function trackPageVisit(useBeacon = false) {
     }
 }
 
-// Add this to the detectCountry function
 function detectCountry() {
     fetch("https://ipapi.co/json/")
-    .then(response => response.json())
-    .then(data => {
-        detectedCountry = data.country || 'Unknown';
-
-        // Add country header to all future requests
-        $.ajaxSetup({
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader('X-Country-Code', detectedCountry);
-            }
+        .then(response => response.json())
+        .then(data => {
+            detectedCountry = data.country_name || 'Unknown';
+            trackPageVisit();
+        })
+        .catch(() => {
+            detectedCountry = 'Unknown';
+            trackPageVisit();
         });
-
-        trackPageVisit();
-    })
-    .catch(() => {
-        detectedCountry = 'Unknown';
-        trackPageVisit();
-    });
 }
 
 function setupTracking() {
@@ -370,12 +339,6 @@ function setupTracking() {
                 page_path: window.location.pathname,
                 data: { text, classes: target.className }
             });
-        }
-    });
-    // Add country header to all existing requests
-    $.ajaxSetup({
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader('X-Country-Code', detectedCountry);
         }
     });
 
@@ -775,8 +738,6 @@ function initAds() {
 // Main Initialization
 // ======================
 document.addEventListener('DOMContentLoaded', function() {
-    // Detect country first thing
-    detectCountry();
     // Setup core functionality
     setupContactModalListeners();
     setupDownloadButtons();

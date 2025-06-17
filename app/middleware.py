@@ -1,4 +1,4 @@
-# app/middleware.py
+# middleware.py
 import requests
 from django.http import HttpResponseForbidden
 from ipware import get_client_ip
@@ -14,10 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class CountryRestrictionMiddleware:
-    # Add this at the top of the class
-    TEST_WHITELIST_IPS = {
-        "127.0.0.1",  # Replace with your Kenyan test IP
-    }
+    # List of African country codes to block
     AFRICAN_COUNTRIES = {
         'DZ', 'AO', 'BJ', 'BW', 'BF', 'BI', 'CV', 'CM', 'CF', 'TD', 'KM', 'CG',
         'CD', 'DJ', 'EG', 'GQ', 'ER', 'SZ', 'ET', 'GA', 'GM', 'GH', 'GN', 'GW',
@@ -31,71 +28,79 @@ class CountryRestrictionMiddleware:
         self.geoip_reader = None
         try:
             self.geoip_reader = geoip2.database.Reader(settings.GEOIP_PATH)
-        except:
-            logger.warning("GeoIP2 database not available")
+        except Exception as e:
+            logger.error(f"Failed to load GeoIP database: {str(e)}")
 
     def __call__(self, request):
-        # # Allow bypass for testing (e.g., ?force_country=US)
-        # if request.GET.get('force_country'):
-        #     return self.get_response(request)
-        # Skip admin/static files
+        # Skip admin/static/media files and access denied page
         if request.path.startswith(('/admin/', '/static/', '/media/')) or request.path == reverse('access_denied'):
             return self.get_response(request)
 
         # Get client IP
-        client_ip, _ = get_client_ip(request)
-        print(f"🌐 Detected IP: {client_ip}")  # Debug log
+        client_ip, is_routable = get_client_ip(request)
 
-        # Allow whitelisted IPs (even if from Africa)
-        if client_ip in self.TEST_WHITELIST_IPS:
-            print("✅ Whitelisted IP allowed (testing mode)")
-            return self.get_response(request)
+        # If no IP could be determined, block access to be safe
+        if client_ip is None:
+            logger.warning("Could not determine client IP - blocking access")
+            return redirect('access_denied')
 
-        # Block African countries
+        # Check if IP is from an African country
         country = self.get_country_from_ip(client_ip)
         if country in self.AFRICAN_COUNTRIES:
+            logger.info(f"Blocking access from African country: {country} (IP: {client_ip})")
             return redirect('access_denied')
 
         return self.get_response(request)
+
     def get_country_from_ip(self, ip):
         cache_key = f'ip_country_{ip}'
         country = cache.get(cache_key)
         if country:
             return country
 
-        # 1. Try local GeoIP database first
+        # Try local GeoIP database first (most reliable)
         if self.geoip_reader:
             try:
                 response = self.geoip_reader.country(ip)
                 country = response.country.iso_code
-                cache.set(cache_key, country, 86400)
-                return country
-            except:
-                pass
+                if country:
+                    cache.set(cache_key, country, 86400)  # Cache for 24 hours
+                    return country
+            except Exception as e:
+                logger.warning(f"GeoIP lookup failed for {ip}: {str(e)}")
 
+        # Fallback to ipapi.co
         try:
-            # Try primary service
-            response = requests.get(f"https://ipapi.co/{ip}/country/", timeout=2)
-            if response.status_code == 200:
-                country = response.text.strip()
-                if country:  # Cache only valid responses
-                    cache.set(cache_key, country, 86400)  # 24 hours
-                return country
-        except Exception as e:
-            logger.warning(f"ipapi.co failed for {ip}: {str(e)}")
-
-        try:
-            # Fallback service
-            response = requests.get(f"https://ipinfo.io/{ip}/country", timeout=2)
+            response = requests.get(
+                f"https://ipapi.co/{ip}/country/",
+                headers={'User-Agent': 'django-country-restriction'},
+                timeout=2
+            )
             if response.status_code == 200:
                 country = response.text.strip()
                 if country:
                     cache.set(cache_key, country, 86400)
-                return country
+                    return country
         except Exception as e:
-            logger.error(f"Country detection failed for {ip}: {str(e)}")
+            logger.warning(f"ipapi.co lookup failed for {ip}: {str(e)}")
 
-        return None  # Detection failed
+        # Final fallback to ipinfo.io
+        try:
+            response = requests.get(
+                f"https://ipinfo.io/{ip}/country",
+                headers={'User-Agent': 'django-country-restriction'},
+                timeout=2
+            )
+            if response.status_code == 200:
+                country = response.text.strip()
+                if country:
+                    cache.set(cache_key, country, 86400)
+                    return country
+        except Exception as e:
+            logger.warning(f"ipinfo.io lookup failed for {ip}: {str(e)}")
+
+        logger.error(f"All country detection methods failed for IP: {ip}")
+        return None  # Could not determine country
 # # # middleware.py
 # # import geoip2.database
 # # from django.conf import settings

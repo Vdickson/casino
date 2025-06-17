@@ -1,3 +1,41 @@
+
+    <style>
+        /* Notification popup styles */
+        .notification-popup {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: #25D366;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 99999;
+            animation: slideIn 0.5s ease-out;
+            max-width: 300px;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification-content i {
+            font-size: 1.2rem;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+    </style>
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -31,9 +69,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 10000;
-            width: 350px;
-            max-width: 90%;
+            width: 280px !important; /* Reduced from 350px */
+             max-width: 90%;
+             z-index: 10050; /* Higher than other elements */
             opacity: 0;
             transition: opacity 0.5s;
             border-radius: 15px;
@@ -42,10 +80,14 @@
             font-family: 'Poppins', sans-serif;
             animation: float 4s infinite ease-in-out;
         }
-
+         .ad-modal.show {
+                display: block;
+                opacity: 1;
+                z-index: 10050;
+            }
         .ad-content {
             position: relative;
-            padding: 30px 25px;
+             padding: 20px 15px !important; /* Reduced padding */
             text-align: center;
             background: linear-gradient(135deg, var(--ocean-blue), var(--deep-purple));
             border: 3px solid var(--neon-teal);
@@ -78,8 +120,8 @@
         }
 
         .ad-modal h3 {
-            font-size: 1.8rem;
-            margin: 15px 0 10px;
+            font-size: 1.4rem !important; /* Smaller heading */
+            margin: 10px 0 !important;
             font-weight: 800;
             text-shadow: 0 0 10px rgba(0,0,0,0.5);
             background: linear-gradient(45deg, var(--gold-fish), var(--coral));
@@ -90,8 +132,8 @@
 
         .ad-modal p {
             color: var(--text-light);
-            margin-bottom: 25px;
-            font-size: 1.1rem;
+            font-size: 0.9rem !important; /* Smaller text */
+            margin-bottom: 15px !important;
             line-height: 1.5;
         }
 
@@ -99,10 +141,9 @@
             background: linear-gradient(45deg, var(--gold-fish), var(--coral));
             color: var(--dark-bg);
             border: none;
-            padding: 12px 30px;
-            font-weight: 700;
+            padding: 8px 20px !important; /* Smaller button */
+            font-size: 1rem !important;            font-weight: 700;
             border-radius: 50px;
-            font-size: 1.2rem;
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(255, 217, 61, 0.4);
             animation: button-pulse 2s infinite;
@@ -383,6 +424,20 @@
             visibility: hidden;
             transform: translateY(10px);
             transition: all 0.3s ease;
+            z-index: 10000;
+            border: 1px solid #ddd;
+        }
+
+        .whatsapp-bot-popup::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
         }
 
         .whatsapp-bot.active .whatsapp-bot-popup {
@@ -455,6 +510,32 @@
             padding: 10px 15px;
             border-top: 1px solid #eee;
         }
+         /* Add these styles to your CSS */
+    #contactModal,
+    #contactModal * {
+        color: white !important;
+    }
+
+    #contactModal .card-header-modern,
+    #contactModal h5,
+    #contactModal h6,
+    #contactModal p,
+    #contactModal small {
+        color: white !important;
+    }
+
+    #contactModal .contact-option i {
+        color: white !important;
+    }
+
+    #contactModal .btn-outline-secondary {
+        color: white !important;
+        border-color: white !important;
+    }
+
+    #contactModal .btn-outline-secondary:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+    }
     </style>
 
     <!-- Bootstrap JS Bundle with Popper -->
@@ -1066,54 +1147,43 @@
     </footer>
 
     <!-- Contact Modal -->
-    <div id="contactModal" class="contact-modal">
-        <div class="contact-modal-content">
-            <div class="card-header-modern text-center">Get Started</div>
-            <div id="offerDetails" class="p-4 border-bottom">
-                <h5 class="mb-2" id="offerTitle"></h5>
-                <p class="text-light mb-0" id="offerDesc"></p>
-            </div>
-            <div class="contact-options">
-                <div class="contact-option whatsapp" data-contact="https://api.whatsapp.com/send/?phone=%2B19548328649&text&type=phone_number&app_absent=0">
-                    <i class="fab fa-whatsapp"></i>
-                    <div>
-                        <h6 class="mb-0">Contact via WhatsApp</h6>
-                        <small class="text-light">Instant messaging support</small>
-                    </div>
-                </div>
-                <div class="contact-option facebook" data-contact="facebook">
-                    <i class="fab fa-facebook-messenger"></i>
-                    <div>
-                        <h6 class="mb-0">Contact via Messenger</h6>
-                        <small class="text-light">Chat with our agents</small>
-                    </div>
-                </div>
-                <div class="contact-option telegram" data-contact="telegram">
-                    <i class="fab fa-telegram"></i>
-                    <div>
-                        <h6 class="mb-0">Contact via Telegram</h6>
-                        <small class="text-light">Fast and secure messaging</small>
-                    </div>
+<!-- Contact Modal -->
+  <!-- Contact Modal -->
+<div id="contactModal" class="contact-modal">
+    <div class="contact-modal-content">
+        <div class="card-header-modern text-center">Get Started</div>
+        <div id="offerDetails" class="p-4 border-bottom">
+            <h5 class="mb-2" id="offerTitle"></h5>
+            <p class="mb-0" id="offerDesc"></p>
+        </div>
+        <div class="contact-options">
+            <div class="contact-option whatsapp" data-contact="whatsapp">
+                <i class="fab fa-whatsapp"></i>
+                <div>
+                    <h6 class="mb-0">Contact via WhatsApp</h6>
+                    <small>Instant messaging support</small>
                 </div>
             </div>
-            <div class="text-center p-3">
-                <button id="closeModal" class="btn btn-sm btn-outline-secondary">Cancel</button>
+            <div class="contact-option facebook" data-contact="facebook">
+                <i class="fab fa-facebook-messenger"></i>
+                <div>
+                    <h6 class="mb-0">Contact via Messenger</h6>
+                    <small>Chat with our agents</small>
+                </div>
+            </div>
+            <div class="contact-option telegram" data-contact="telegram">
+                <i class="fab fa-telegram"></i>
+                <div>
+                    <h6 class="mb-0">Contact via Telegram</h6>
+                    <small>Fast and secure messaging</small>
+                </div>
             </div>
         </div>
-    </div>
-
-     <!-- Flash Offer Modal -->
-    <div id="flashModal" class="ad-modal flash-ad">
-        <div class="ad-content">
-            <button id="closeFlashModal" class="close-ad">✕</button>
-            <div class="offer-badge">Flash Offer</div>
-            <div class="ad-icon">⚡</div>
-            <h3 id="flashTitle">Double Your Deposit!</h3>
-            <p id="flashDesc">Get 100% bonus on your first deposit. Limited time only!</p>
-            <button id="flashClaimBtn" class="btn-claim">Claim Now</button>
-<!--            <div class="countdown-badge">Ends in: <span id="flashCountdown">05:00</span></div>-->
+        <div class="text-center p-3">
+            <button id="closeModal" class="btn btn-sm btn-outline-secondary">Cancel</button>
         </div>
     </div>
+</div>
 
     <!-- Recommendation Modal -->
     <div id="recommendationModal" class="ad-modal recommendation-ad">
@@ -1303,34 +1373,152 @@
             const whatsappClose = document.querySelector('.whatsapp-bot-close');
             const whatsappOptions = document.querySelectorAll('.whatsapp-bot-option');
             const whatsappChatBtn = document.querySelector('.whatsapp-bot-footer a');
+            const whatsappBody = document.querySelector('.whatsapp-bot-body');
+            const whatsappFooter = document.querySelector('.whatsapp-bot-footer');
+
+            // Notification messages array
+            const notifications = [
+                "🛎️ Need help? Chat with us!",
+                "🔥 Hot Offer: 100% Signup Bonus!",
+                "💎 New: 30% Regular Bonus!",
+                "💰 Get 15% Cashback on losses!",
+                "🎁 Special: 50% Referral Bonus!"
+            ];
+
+            let currentNotificationIndex = 0;
+            let selectedOption = null;
+            let lastActivityTime = Date.now();
+            let isUserActive = false;
+            let notificationInterval;
+            let activeNotification = null;
+
+            // Track user activity
+            function trackActivity() {
+                lastActivityTime = Date.now();
+                if (!isUserActive) {
+                    isUserActive = true;
+                    startNotificationSystem();
+                }
+            }
+
+            // Start notification system when user is active
+            function startNotificationSystem() {
+                // Clear any existing interval
+                if (notificationInterval) clearInterval(notificationInterval);
+
+                // Show "Need help?" notification first
+                currentNotificationIndex = 0;
+                showNotification();
+
+                // Show subsequent notifications every 2 minutes
+                notificationInterval = setInterval(() => {
+                    if (isUserActive) {
+                        showNotification();
+                    }
+                }, 120000); // 2 minutes
+            }
+
+            // Check for user inactivity
+            function checkInactivity() {
+                const inactiveTime = Date.now() - lastActivityTime;
+                if (inactiveTime > 300000) { // 5 minutes inactive
+                    isUserActive = false;
+                    if (notificationInterval) clearInterval(notificationInterval);
+                }
+            }
+
+            // Show new notification
+            function showNotification() {
+                // Remove previous notification if exists
+                if (activeNotification) {
+                    activeNotification.remove();
+                }
+
+                // Get current notification and increment index
+                const notificationText = notifications[currentNotificationIndex];
+                currentNotificationIndex = (currentNotificationIndex + 1) % notifications.length;
+
+                // Change button color to indicate new notification
+                whatsappBtn.style.backgroundColor = '#128C7E';
+                setTimeout(() => {
+                    whatsappBtn.style.backgroundColor = '#25D366';
+                }, 1000);
+
+                // Create and show persistent popup notification
+                activeNotification = document.createElement('div');
+                activeNotification.className = 'notification-popup';
+                activeNotification.innerHTML = `
+                    <div class="notification-content">
+                        <i class="fas fa-bell"></i>
+                        ${notificationText}
+                    </div>
+                `;
+                document.body.appendChild(activeNotification);
+
+                // Auto-remove notification after 2 minutes
+                setTimeout(() => {
+                    if (activeNotification) {
+                        activeNotification.remove();
+                        activeNotification = null;
+                    }
+                }, 120000); // 2 minutes
+            }
+
+            // Set up activity listeners
+            ['mousemove', 'keydown', 'click', 'scroll'].forEach(event => {
+                window.addEventListener(event, trackActivity);
+            });
+
+            // Check for inactivity every minute
+            setInterval(checkInactivity, 60000);
 
             // Toggle popup
             whatsappBtn.addEventListener('click', function() {
                 whatsappBot.classList.toggle('active');
+                // Stop notifications when clicked
+                if (notificationInterval) clearInterval(notificationInterval);
+                if (activeNotification) {
+                    activeNotification.remove();
+                    activeNotification = null;
+                }
+                trackActivity(); // Count as activity
             });
 
             // Close popup
             whatsappClose.addEventListener('click', function() {
                 whatsappBot.classList.remove('active');
+                trackActivity(); // Count as activity
             });
 
             // Option click handler
             whatsappOptions.forEach(option => {
                 option.addEventListener('click', function() {
+                    selectedOption = this;
                     const message = this.getAttribute('data-message');
                     const phone = '19548328649';
                     const encodedMessage = encodeURIComponent(message);
                     whatsappChatBtn.href = `https://api.whatsapp.com/send/?phone=%2B${phone}&text=${encodedMessage}&type=phone_number&app_absent=0`;
 
-                    // Show confirmation
-                    const body = document.querySelector('.whatsapp-bot-body');
-                    body.innerHTML = `
-                        <div class="text-center p-3">
-                            <i class="fas fa-check-circle text-success mb-3" style="font-size: 2.5rem;"></i>
-                            <h6>Ready to Chat!</h6>
-                            <p>Click below to start chatting about:<br><strong>${message}</strong></p>
+                    // Hide all options except selected one
+                    whatsappOptions.forEach(opt => {
+                        if (opt !== selectedOption) {
+                            opt.style.display = 'none';
+                        }
+                    });
+
+                    // Show confirmation message
+                    whatsappBody.innerHTML = `
+                        <div class="text-center p-2 mb-2" style="background: #075E54; border-radius: 8px;">
+                            <i class="fas fa-check-circle text-white me-2"></i>
+                            <span class="text-white">Selected: <strong>${message}</strong></span>
                         </div>
+                        <p class="text-dark">Click below to start chatting about this topic:</p>
                     `;
+
+                    // Move chat button to body
+                    whatsappBody.appendChild(whatsappChatBtn);
+                    whatsappFooter.style.display = 'none';
+                    trackActivity(); // Count as activity
                 });
             });
 
@@ -1339,7 +1527,11 @@
                 if (!whatsappBot.contains(e.target) && e.target !== whatsappBtn) {
                     whatsappBot.classList.remove('active');
                 }
+                trackActivity(); // Count as activity
             });
+
+            // Start notification system immediately
+            startNotificationSystem();
         });
     </script>
 
@@ -1458,7 +1650,7 @@
         });
 
         // Show initial modal after 1 second
-        setTimeout(showInitialModal, 1000);
+        setTimeout(showInitialModal, 15000);
     </script>
 
 </body>
