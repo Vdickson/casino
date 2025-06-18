@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-7qp1oas%6r_wo%xl+ihcy8i+$1a4a0ql@56awh4)4o#2rx@=c#
 DEBUG = True
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['casino-m6q2.onrender.com','firekirin.up.railway.app','https://firekirin.pythonanywhere.com/', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['casino-m6q2.onrender.com', 'exoticfishgame.com','www.exoticfishgame.com','firekirin.up.railway.app','https://firekirin.pythonanywhere.com/', 'localhost', '127.0.0.1']
 
 
 
