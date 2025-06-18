@@ -4,60 +4,183 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Access Restricted</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #4361ee;
+            --error: #ef233c;
+            --text: #2b2d42;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --border: #e9ecef;
+        }
+
+        [data-theme="dark"] {
+            --primary: #4895ef;
+            --error: #f72585;
+            --text: #f8f9fa;
+            --bg: #121212;
+            --card: #1e1e1e;
+            --border: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background 0.3s, color 0.2s;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
+            min-height: 100vh;
+            line-height: 1.6;
         }
 
         .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 4px;
-            max-width: 400px;
+            background: var(--card);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             width: 90%;
+            max-width: 500px;
+            text-align: center;
+            border: 1px solid var(--border);
+            animation: fadeIn 0.8s ease-out;
         }
 
-        img {
-            width: 80px;
-            margin-bottom: 1rem;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .geo-icon {
+            width: 120px;
+            margin: 0 auto 1.5rem;
         }
 
         h1 {
-            color: #d32f2f;
-            font-size: 1.5rem;
+            color: var(--error);
+            font-size: 1.8rem;
             margin-bottom: 1rem;
+            font-weight: 700;
         }
 
         p {
-            color: #555;
-            margin-bottom: 1rem;
+            color: var(--text);
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 0.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
         }
 
         .contact {
+            margin-top: 2rem;
             font-size: 0.9rem;
-            color: #777;
-            margin-top: 1.5rem;
+            color: var(--text);
+            opacity: 0.7;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* SVG Geo-Block Icon */
+        .geo-icon svg {
+            fill: var(--error);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
     <div class="container">
-        <img src="https://cdn-icons-png.flaticon.com/512/564/564619.png" alt="Error icon">
+        <div class="geo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-5-9h10v2H7z"/>
+            </svg>
+        </div>
+
         <h1>Access Restricted</h1>
-        <p>This website is not available in your country.</p>
-        <p>Contact support if this is an error.</p>
+        <p>This service is not available in your region due to licensing restrictions.</p>
+
+        <div style="margin: 1.5rem 0;">
+            <a href="/" class="btn">Return Home</a>
+            <a href="mailto:support@exoticfishgame.com" class="btn btn-outline">Contact Support</a>
+        </div>
 
         <div class="contact">
-            <div>Email: Casinofishgames@gmail.com</div>
-            <div>Phone: +1 (786) 519-3818</div>
+            <div><i class="fas fa-envelope"></i> support@exoticfishgame.com</div>
+            <div><i class="fas fa-phone"></i> +1 (786) 519-3818</div>
         </div>
     </div>
+
+    <script>
+        // Dark/Light Mode Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const icon = themeToggle.querySelector('i');
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            icon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                icon.classList.replace('fa-sun', 'fa-moon');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                icon.classList.replace('fa-moon', 'fa-sun');
+            }
+        });
+    </script>
 </body>
 </html>
