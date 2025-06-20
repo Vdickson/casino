@@ -285,8 +285,8 @@ class CustomAdminSite(admin.AdminSite):
         return super().index(request, extra_context)
 
     # NEW: Add this method to customize the app list
-    def get_app_list(self, request):
-        app_list = super().get_app_list(request)
+    def get_app_list(self, request, app_label=None):
+        app_list = super().get_app_list(request, app_label)
 
         # Add custom analytics link to the app list
         analytics_link = {
@@ -302,10 +302,11 @@ class CustomAdminSite(admin.AdminSite):
             ]
         }
 
-        # Insert at the top of the app list
         app_list.insert(0, analytics_link)
 
         return app_list
+
+
 @admin.register(Testimonial)
 class TestimonialAdmin(BaseModelAdmin):
     list_display = ['name', 'content_preview', 'created_at', 'is_approved', 'action_buttons']
