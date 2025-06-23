@@ -11,8 +11,9 @@ from django.db.models import Count, F, Q
 from django.db.models.functions import TruncDay
 from django.views.decorators.cache import cache_page
 
+from . import views
 from .models import LiveWin, Offer, PaymentMethod, SocialLink, ContactMessage, PageVisit, UserInteraction, Testimonial, \
-    CookieConsent, AnalyticsEvent
+    CookieConsent, AnalyticsEvent, RechargeRequest
 
 
 class BaseModelAdmin(admin.ModelAdmin):
@@ -89,27 +90,48 @@ class OfferAdmin(BaseModelAdmin):
     action_buttons.short_description = 'Actions'
 
 
-@admin.register(PaymentMethod)
-class PaymentMethodAdmin(BaseModelAdmin):
-    list_display = ['name', 'is_active', 'order', 'status_indicator', 'action_buttons']
-    list_editable = ['is_active', 'order']
-    ordering = ['order']
-    search_fields = ['name']
-    list_per_page = 5
-
-    def status_indicator(self, obj):
-        color = 'green' if obj.is_active else 'gray'
-        text = 'Active' if obj.is_active else 'Inactive'
-        return format_html(f'<span class="status-indicator" style="background-color: {color}"></span> {text}')
-
-    status_indicator.short_description = 'Status'
-
-    def action_buttons(self, obj):
-        return format_html(
-            '<div class="action-buttons">{}</div>',
-            self.edit_button(obj) + self.delete_button(obj))
-
-    action_buttons.short_description = 'Actions'
+# models.py - Keep this version and remove the simpler one
+# class PaymentMethod(models.Model):
+#     PAYMENT_TYPES = (
+#         ('cashapp', 'CashApp'),
+#         ('bitcoin', 'Bitcoin'),
+#         ('venmo', 'Venmo'),
+#         ('paypal', 'PayPal'),
+#         ('chime', 'Chime'),
+#         ('other', 'Other'),
+#     )
+#
+#     class PaymentMethod(models.Model):
+#         PAYMENT_TYPES = (
+#             ('cashapp', 'CashApp'),
+#             ('bitcoin', 'Bitcoin'),
+#             ('venmo', 'Venmo'),
+#             ('paypal', 'PayPal'),
+#             ('chime', 'Chime'),
+#             ('other', 'Other'),
+#         )
+#
+#         # Add default='other' to handle existing records
+#         type = models.CharField(max_length=20, choices=PAYMENT_TYPES, default='other')
+#         # ... rest of your fields ...
+#
+#     name = models.CharField(max_length=50)
+#     type = models.CharField(max_length=20, choices=PAYMENT_TYPES)
+#     logo = models.ImageField(upload_to='payments/')
+#     is_active = models.BooleanField(default=True)
+#     order = models.PositiveIntegerField(default=0)
+#     account_id = models.CharField(max_length=100, blank=True,
+#                                 help_text="Your account ID/address for this payment method")
+#     qr_code = models.ImageField(upload_to='payments/qr_codes/', blank=True, null=True)
+#     instructions = models.TextField(blank=True, help_text="Special instructions for this payment method")
+#     min_amount = models.DecimalField(max_digits=10, decimal_places=2, default=10.00)
+#     max_amount = models.DecimalField(max_digits=10, decimal_places=2, default=500.00)
+#
+#     def __str__(self):
+#         return f"{self.get_type_display()} - {self.name}"
+#
+#     class Meta:
+#         ordering = ['order']
 
 
 @admin.register(SocialLink)
@@ -212,51 +234,6 @@ class UserInteractionAdmin(admin.ModelAdmin):
 
 
 # Analytics Dashboard
-@staff_member_required
-def analytics_dashboard(request):
-    now = timezone.now()
-    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    yesterday_start = today_start - timezone.timedelta(days=1)
-
-    visits_today = PageVisit.objects.filter(timestamp__gte=today_start).count()
-    visits_yesterday = PageVisit.objects.filter(timestamp__gte=yesterday_start, timestamp__lt=today_start).count()
-    total_visits = PageVisit.objects.count()
-
-    interactions_today = UserInteraction.objects.filter(timestamp__gte=today_start).count()
-    popular_interactions = UserInteraction.objects.values('type').annotate(count=Count('id')).order_by('-count')[:5]
-
-    offer_interests = UserInteraction.objects.filter(type='offer_interest').values(
-        'additional_data__offer_id'
-    ).annotate(count=Count('id')).order_by('-count')[:10]
-
-    offer_ids = []
-    for item in offer_interests:
-        offer_id = item['additional_data__offer_id']
-        if offer_id and str(offer_id).isdigit():
-            offer_ids.append(int(offer_id))
-
-    offers = Offer.objects.filter(id__in=offer_ids).in_bulk()
-
-    for interest in offer_interests:
-        offer_id = interest['additional_data__offer_id']
-        try:
-            interest['title'] = offers.get(int(offer_id)).title if int(offer_id) in offers else 'Unknown Offer'
-        except (TypeError, ValueError, KeyError):
-            interest['title'] = 'Unknown Offer'
-
-    popular_pages = PageVisit.objects.values('path').annotate(visits=Count('id')).order_by('-visits')[:10]
-
-    context = {
-        'visits_today': visits_today,
-        'visits_yesterday': visits_yesterday,
-        'visit_change': ((visits_today - visits_yesterday) / visits_yesterday * 100) if visits_yesterday else 0,
-        'total_visits': total_visits,
-        'interactions_today': interactions_today,
-        'popular_interactions': popular_interactions,
-        'offer_interests': offer_interests,
-        'popular_pages': popular_pages,
-    }
-    return render(request, 'admin/analytics_dashboard.html', context)
 
 
 # Custom Admin Site
@@ -273,7 +250,8 @@ class CustomAdminSite(admin.AdminSite):
 
         # Add analytics route before the catch-all pattern
         urls += [
-            path('analytics/', self.admin_view(analytics_dashboard), name='analytics_dashboard'),
+            # path('analytics/', self.admin_view(analytics_dashboard), name='analytics_dashboard'),
+            path('analytics/', self.admin_view(views.analytics_dashboard), name='analytics_dashboard'),
             catch_all_pattern  # Re-add the catch-all pattern last
         ]
 
@@ -356,6 +334,31 @@ class CookieConsentAdmin(BaseModelAdmin):
     action_buttons.short_description = 'Actions'
 
 
+@admin.register(RechargeRequest)
+class RechargeRequestAdmin(BaseModelAdmin):
+    list_display = ['id', 'player', 'payment_method', 'amount', 'status', 'created_at', 'action_buttons']
+    list_filter = ['status', 'payment_method', 'created_at']
+    search_fields = ['player__username', 'transaction_id']
+    readonly_fields = ['player', 'payment_method', 'amount', 'transaction_id', 'screenshot', 'created_at']
+    list_editable = ['status']
+
+    def process_recharge(self, request, queryset):
+        queryset.update(status='completed', processed_at=timezone.now())
+        self.message_user(request, f"Marked {queryset.count()} recharges as completed")
+
+    process_recharge.short_description = "Mark selected as completed"
+
+    actions = [process_recharge]
+
+    def action_buttons(self, obj):
+        return format_html(
+            '<div class="action-buttons">{}</div>',
+            self.edit_button(obj) + self.delete_button(obj))
+
+    action_buttons.short_description = 'Actions'
+
+
+
 @admin.register(AnalyticsEvent)
 class AnalyticsEventAdmin(admin.ModelAdmin):
     list_display = ['event_summary', 'session_key', 'path', 'timestamp', 'user_insights']
@@ -414,7 +417,6 @@ class AnalyticsEventAdmin(admin.ModelAdmin):
 
         return super().changelist_view(request, extra_context=extra_context)
 
-
     @admin.display(description='User Insights')
     def user_insights(self, obj):
         try:
@@ -437,7 +439,8 @@ custom_admin_site.register(AnalyticsEvent, AnalyticsEventAdmin)
 from django.contrib.admin.sites import AlreadyRegistered
 
 # Re-register all models with custom admin site
-models = [LiveWin, Offer, PaymentMethod, SocialLink, ContactMessage, PageVisit, AnalyticsEvent,Testimonial, CookieConsent, UserInteraction]
+models = [LiveWin, Offer, PaymentMethod, SocialLink, ContactMessage, PageVisit, AnalyticsEvent, Testimonial,
+          CookieConsent, UserInteraction, RechargeRequest, ]
 
 for model in models:
     try:
@@ -450,4 +453,3 @@ for model in models:
             custom_admin_site.register(model)
         except AlreadyRegistered:
             pass
-

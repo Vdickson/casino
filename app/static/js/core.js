@@ -6,28 +6,34 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 // Add this function to track analytics events
+// In core.js - Update trackAnalyticsEvent
+// In core.js, update trackAnalyticsEvent:
 function trackAnalyticsEvent(category, action, label, value = 0) {
     const consent = getCookieConsent();
     if (!consent || !consent.analytics) return;
 
-    const data = {
-        category: category,
-        action: action,
-        label: label,
-        value: value,
-        path: window.location.pathname
-    };
+    const csrfToken = getCookie('csrftoken') || '';
+    if (!csrfToken) {
+        console.warn('CSRF token missing, skipping tracking');
+        return;
+    }
 
     fetch(window.CONFIG.urls.trackEvent, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken') || ''
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest' // Helps Django identify AJAX
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify({
+            category,
+            action,
+            label,
+            value,
+            path: window.location.pathname
+        })
     }).catch(error => console.error('Analytics tracking error:', error));
 }
-
 // ======================
 // Contact Modal Functionality
 // ======================
@@ -260,27 +266,69 @@ function setupNavigation() {
 let detectedCountry = null;
 let lastPingTime = Date.now();
 
-function trackInteraction(data) {
-    // const consent = getCookieConsent();
-    // Get consent from localStorage instead of function
-    const consent = JSON.parse(localStorage.getItem('cookie_consent') || {});
-    if (data.type === 'analytics_event' && !(consent && consent.analytics)) return;
-    if (!window.CONFIG.trackingEnabled) return;
+// In core.js - Enhanced tracking function
+function trackInteraction(type, element, data = {}) {
+    const consent = getCookieConsent();
+    if (!consent || !consent.analytics) return;
 
-    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+    // Get or create user ID from cookie
+    let userId = getCookie('user_id');
+    if (!userId) {
+        userId = generateUniqueId();
+        setCookie('user_id', userId, 30); // Store for 30 days
+    }
 
-    fetch(window.CONFIG.urls.trackInteraction, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken
-        },
-        body: JSON.stringify(data)
-    }).catch(error => console.error('Tracking error:', error));
+    // Track in localStorage for immediate access
+    const interactions = JSON.parse(localStorage.getItem('user_interactions') || '[]');
+    interactions.push({
+        type,
+        element,
+        timestamp: new Date().toISOString(),
+        ...data
+    });
+    localStorage.setItem('user_interactions', JSON.stringify(interactions.slice(-100))); // Keep last 100
+
+    // Send to server if marketing consent exists
+    if (consent.marketing) {
+        fetch('/api/track-interaction', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                userId,
+                type,
+                element,
+                data
+            })
+        });
+    }
+}
+// Add to core.js
+function getSessionKey() {
+    // Try to get from localStorage first
+    let sessionKey = localStorage.getItem('session_key');
+
+    if (!sessionKey) {
+        // Generate a new one if doesn't exist
+        sessionKey = 'session_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('session_key', sessionKey);
+    }
+
+    return sessionKey;
 }
 
+// In core.js - Update sendVisitData
 function sendVisitData(country, useBeacon = false) {
-    const data = { country: country || 'Unknown' };
+    const data = {
+        country: country || 'Unknown',
+        path: window.location.pathname,
+        referrer: document.referrer || '',
+        // Add session key if available
+        session_key: getSessionKey() // You'll need to implement this
+    };
+
 
     if (useBeacon && navigator.sendBeacon) {
         const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
@@ -290,10 +338,10 @@ function sendVisitData(country, useBeacon = false) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': window.CONFIG.csrfToken
+                'X-CSRFToken': getCookie('csrftoken') || ''
             },
             body: JSON.stringify(data)
-        }).catch(error => console.error('Tracking error:', error));
+        }).catch(error => console.error('Visit tracking error:', error));
     }
 }
 
@@ -375,6 +423,7 @@ function getCookieConsent() {
     const consent = localStorage.getItem('cookie_consent');
     return consent ? JSON.parse(consent) : null;
 }
+// Ensure saveCookieConsent is properly updating the backend
 function saveCookieConsent(analytics = false, preferences = false, marketing = false) {
     const consent = {
         analytics,
@@ -395,13 +444,14 @@ function saveCookieConsent(analytics = false, preferences = false, marketing = f
         },
         body: JSON.stringify({ analytics, preferences, marketing })
     }).catch(error => console.error('Error saving consent:', error));
+}
 
     // UI handling remains the same
     const banner = document.getElementById('cookie-consent-banner');
     const modal = document.getElementById('cookie-modal');
     if (banner) banner.style.display = 'none';
     if (modal) modal.style.display = 'none';
-}
+
 function setupCookieConsent() {
     // Accept all
     const cookieAccept = document.getElementById('cookie-accept');
@@ -424,7 +474,7 @@ function setupCookieConsent() {
             const preferencesToggle = document.getElementById('preferences-toggle');
             const marketingToggle = document.getElementById('marketing-toggle');
             const modal = document.getElementById('cookie-modal');
-            
+
             if (analyticsToggle) analyticsToggle.checked = consent.analytics || false;
             if (preferencesToggle) preferencesToggle.checked = consent.preferences || false;
             if (marketingToggle) marketingToggle.checked = consent.marketing || false;
@@ -476,7 +526,7 @@ function setupFlashModal() {
     setTimeout(() => {
       flashModal.style.display = 'none';
     }, 300);
-    localStorage.setItem('flashClosed', Date.now());
+    // localStorage.setItem('flashClosed', Date.now());
     trackAnalyticsEvent('Offer', 'dismiss', 'Flash Offer');
   });
 
@@ -562,12 +612,21 @@ function initAds() {
   let currentAdIndex = 0;
   let adTimeout;
 
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
   function showAd() {
     // Clear any pending ad timeout
     clearTimeout(adTimeout);
 
-    // Check which ad to show next
-    const adType = adTypes[currentAdIndex];
+     // Shuffle the ad types each cycle
+  const shuffledTypes = shuffleArray([...adTypes]);
+  const adType = shuffledTypes[0];
 
     if (adType === 'flash') {
       showFlashOffer();
@@ -585,7 +644,7 @@ function initAds() {
   }
   function showFlashOffer() {
     const lastClose = localStorage.getItem('flashClosed');
-    if (lastClose && (Date.now() - lastClose < 86400000)) return;
+    // if (lastClose && (Date.now() - lastClose < 86400000)) return;
 
     const flashModal = document.getElementById('flashModal');
     if (!flashModal) return;
@@ -619,53 +678,103 @@ function initAds() {
       }
     }, 30000);
   }
+// In initAds() function
+// Define default recommendations (outside functions so it's only created once)
+const DEFAULT_RECOMMENDATIONS = [
+  {
+    id: 'default-1',
+    title: "Double Your First Deposit!",
+    description: "Get 100% bonus on your first deposit",
+    tags: ['deposit', 'welcome']
+  },
+  {
+    id: 'default-2',
+    title: "Weekend Special",
+    description: "30% bonus on all weekend deposits",
+    tags: ['deposit', 'weekend']
+  },
+  {
+    id: 'default-3',
+    title: "15% Cashback",
+    description: "Get 15% cashback bonus when you lose 3 games in a row",
+    tags: ['cashback', 'insurance']
+  },
+  {
+    id: 'default-4',
+    title: "50% Referral Bonus",
+    description: "Get 50% bonus when you refer your friends",
+    tags: ['referral', 'social']
+  }
+];
 
-  function showRecommendation() {
-    const lastClose = localStorage.getItem('recClosed');
-    if (lastClose && (Date.now() - lastClose < 86400000)) return;
+// Safe way to get recommendations
+// In core.js, modify getRecommendations() to:
+function getRecommendations() {
+  try {
+    // 1. Fallback to CONFIG recommendations if available
+    if (window.CONFIG?.recommendedOffers?.length > 0) {
+      return window.CONFIG.recommendedOffers;
+    }
 
-    const recommendationModal = document.getElementById('recommendationModal');
-    if (!recommendationModal) return;
+    // 2. Final fallback to defaults
+    return DEFAULT_RECOMMENDATIONS;
+  } catch (e) {
+    console.error('Error getting recommendations:', e);
+    return DEFAULT_RECOMMENDATIONS;
+  }
+}
 
-    // Get random recommendation
-    const recommendations = window.CONFIG.recommendedOffers || [
-      {title: "Double Your First Deposit!", description: "Get 100% bonus on your first deposit"},
-      {title: "Special", description: "30% bonus on all weekend deposits"},
-      {title: "Get 15% Cashback", description: "Get 15% cashback bonus when you loose 3 games in rot"},
-      {title: "Get 50% Refferral", description: "Get 50% bonus when you refer your friends"}
+// Updated showRecommendation() using the new system
+function showRecommendation() {
+  try {
+    const recommendations = getRecommendations();
 
-    ];
+    if (!recommendations || recommendations.length === 0) {
+      console.error('No recommendations available');
+      return;
+    }
 
+    // Get a random recommendation safely
     const randomOffer = recommendations[Math.floor(Math.random() * recommendations.length)];
 
-    // Set offer data
-    recommendationModal.setAttribute('data-offer-title', randomOffer.title);
-    recommendationModal.setAttribute('data-offer-desc', randomOffer.description);
-    document.getElementById('recTitle').textContent = randomOffer.title;
-    document.getElementById('recDesc').textContent = randomOffer.description;
+    // Validate the offer
+    if (!randomOffer || !randomOffer.title) {
+      console.error('Invalid offer structure:', randomOffer);
+      return;
+    }
+
+    // Update modal - with null checks
+    const modal = document.getElementById('recommendationModal');
+    if (!modal) return;
+
+    modal.setAttribute('data-offer-title', randomOffer.title);
+    modal.setAttribute('data-offer-desc', randomOffer.description || 'Special limited time offer!');
+
+    const titleEl = document.getElementById('recTitle');
+    const descEl = document.getElementById('recDesc');
+    if (titleEl) titleEl.textContent = randomOffer.title;
+    if (descEl) descEl.textContent = randomOffer.description || 'Special limited time offer!';
 
     // Show modal
-    recommendationModal.style.display = 'flex';
-    setTimeout(() => {
-      recommendationModal.style.opacity = '1';
-    }, 50);
+    modal.style.display = 'flex';
+    setTimeout(() => { modal.style.opacity = '1'; }, 50);
 
-    trackAnalyticsEvent('Offer', 'impression', 'Recommendation Shown');
-
-    // Auto-hide after 30 seconds
+    // Auto-close after 30 seconds
     setTimeout(() => {
-      if (recommendationModal.style.opacity === '1') {
-        recommendationModal.style.opacity = '0';
-        setTimeout(() => {
-          recommendationModal.style.display = 'none';
-        }, 500);
+      if (modal.style.opacity === '1') {
+        modal.style.opacity = '0';
+        setTimeout(() => { modal.style.display = 'none'; }, 500);
       }
     }, 30000);
+
+  } catch (e) {
+    console.error('Error in showRecommendation:', e);
   }
+}
    // NEW: Show limited offer ad
   function showLimitedOffer() {
     const lastClose = localStorage.getItem('limitedClosed');
-    if (lastClose && (Date.now() - lastClose < 86400000)) return;
+    // if (lastClose && (Date.now() - lastClose < 86400000)) return;
 
     const flashModal = document.getElementById('flashModal');
     if (!flashModal) return;
@@ -698,7 +807,7 @@ function initAds() {
           flashModal.style.display = 'none';
         }, 300);
       }
-    }, 30000);
+    }, 60000);
   }
 
   // NEW: Add close handler for limited offer
@@ -732,8 +841,30 @@ function initAds() {
 
   // Show first ad after 10 seconds
   setTimeout(showAd, 10000);
+
+}
+// Track offer views in a cookie
+function trackOfferInterest(offerId) {
+    const viewedOffers = JSON.parse(getCookie('viewed_offers') || '[]');
+    if (!viewedOffers.includes(offerId)) {
+        viewedOffers.push(offerId);
+        setCookie('viewed_offers', JSON.stringify(viewedOffers), 7); // Store for 7 days
+    }
 }
 
+// Get recommended offers based on viewed offers
+function getRecommendedOffers() {
+    const viewedOffers = JSON.parse(getCookie('viewed_offers') || []);
+    if (viewedOffers.length === 0) return window.CONFIG.recommendedOffers;
+
+    // Find similar offers (simple tag matching)
+    return window.CONFIG.offers.filter(offer => {
+        return viewedOffers.some(viewedId => {
+            const viewedOffer = window.CONFIG.offers.find(o => o.id === viewedId);
+            return viewedOffer && offer.tags.some(tag => viewedOffer.tags.includes(tag));
+        });
+    });
+}
 // ======================
 // Main Initialization
 // ======================

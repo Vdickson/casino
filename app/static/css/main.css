@@ -21,12 +21,18 @@
         --border: #3B185F;    /* deep-purple */
     }
 
-    body {
+       body {
         background: linear-gradient(180deg, var(--dark-bg), var(--ocean-blue));
         color: var(--text-dark);
         font-family: 'Poppins', sans-serif;
         line-height: 1.6;
+        overflow-x: hidden;
     }
+    /* Add this to prevent horizontal scrolling */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+}
 
     /* Modern Navigation */
     .navbar {
@@ -540,15 +546,15 @@
     }
 
     .contact-option.facebook i {
-        color: #1877f2;
+        color: #1877f2 !important;
     }
 
     .contact-option.whatsapp i {
-        color: #25d366;
+        color: #25d366 !important;
     }
 
     .contact-option.telegram i {
-        color: #0088cc;
+        color: #0088cc !important;
     }
 
     /* Responsive Design */
@@ -1285,4 +1291,73 @@
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-5px); }
+}
+
+/* Payment Methods */
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.payment-method input[type="radio"] {
+    display: none;
+}
+
+.payment-method .method-card {
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.payment-method input[type="radio"]:checked + label .method-card {
+    border-color: var(--primary);
+    background-color: rgba(var(--primary-rgb), 0.1);
+    box-shadow: 0 0 0 2px var(--primary);
+}
+
+.method-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+.method-info {
+    flex: 1;
+}
+
+.method-info h6 {
+    margin-bottom: 5px;
+    color: var(--text-dark);
+}
+
+.method-info small {
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 5px;
+    word-break: break-all;
+}
+
+.method-limits {
+    color: var(--success);
+    font-weight: 500;
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+.qr-code-container {
+    margin: 10px 0;
+    text-align: center;
+}
+
+.qr-code {
+    max-width: 150px;
+    height: auto;
+    border: 1px solid var(--border);
+    border-radius: 5px;
 }

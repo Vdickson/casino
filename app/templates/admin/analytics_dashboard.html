@@ -1,73 +1,409 @@
 {% extends "admin/base_site.html" %}
 {% load humanize %}
 
+{% block extrastyle %}
+{{ block.super }}
+<style>
+:root {
+    --primary: #6c5ce7;
+    --success: #00b894;
+    --info: #0984e3;
+    --warning: #fdcb6e;
+    --danger: #d63031;
+    --secondary: #636e72;
+    --light: #f8f9fc;
+    --dark: #2d3436;
+    --exotic: linear-gradient(45deg, #6c5ce7, #00cec9, #00b894, #0984e3);
+}
+
+.header {
+    background: var(--exotic);
+    color: white;
+    padding: 0.75rem;
+    margin: -0.75rem -0.75rem 1rem -0.75rem;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    animation: colorChange 8s infinite alternate;
+}
+
+@keyframes colorChange {
+    0% {color: #6c5ce7;}
+    25% {color: #00cec9;}
+    50% {color: #00b894;}
+    75% {color: #0984e3;}
+    100% {color: #d63031;}
+}
+
+.analytics-dashboard {
+    padding: 0.75rem;
+    background-color: #f8f9fc;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    margin-bottom: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+}
+
+.card-header {
+    background: white;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 1.25rem 1.5rem;
+    font-weight: 700;
+    color: var(--dark);
+    font-size: 1.1rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    color: #4e73df;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.metric-card {
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+    z-index: 1;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.metric-card .card-body {
+    position: relative;
+    z-index: 2;
+}
+
+.metric-card .card-title {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--secondary);
+    letter-spacing: 0.3px;
+    margin-bottom: 0.1rem;
+}
+
+.metric-card .card-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0.1rem 0;
+    color: var(--dark);
+}
+
+.metric-card .card-icon {
+    font-size: 1.25rem;
+    opacity: 0.8;
+}
+
+.metric-card .card-body {
+    padding: 1rem;
+}
+
+.metric-card-primary {
+    border-left-color: var(--primary);
+}
+
+.metric-card-success {
+    border-left-color: var(--success);
+}
+
+.metric-card-info {
+    border-left-color: var(--info);
+}
+
+.metric-card-warning {
+    border-left-color: var(--warning);
+}
+
+.metric-card-danger {
+    border-left-color: var(--danger);
+}
+
+.metric-card-secondary {
+    border-left-color: var(--secondary);
+}
+
+.badge-change {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table-sm td, .table-sm th {
+    padding: 0.5rem;
+}
+
+.funnel-step {
+    position: relative;
+    z-index: 1;
+    padding: 1rem;
+    background-color: #f8f9fc;
+    border-radius: 0.35rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.progress {
+    height: 30px;
+    border-radius: 0.35rem;
+    margin-bottom: 1.5rem;
+}
+
+.progress-bar span {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #000;
+    font-weight: bold;
+    text-shadow: 0 0 2px #fff;
+}
+
+.chart-container {
+    position: relative;
+    height: 250px;
+    margin: 0.5rem 0;
+}
+
+.table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead th {
+    background-color: var(--light);
+    border: none;
+    padding: 1rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.table tbody tr {
+    transition: all 0.2s;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(0,0,0,0.02);
+    transform: translateX(2px);
+}
+
+.table tbody td {
+    padding: 1rem;
+    border-top: 1px solid rgba(0,0,0,0.03);
+    vertical-align: middle;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    background-color: rgba(0,0,0,0.05);
+}
+
+.progress-bar {
+    border-radius: 4px;
+}
+
+.no-data {
+    padding: 2rem;
+    text-align: center;
+    color: var(--secondary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .card-body {
+        padding: 1.25rem;
+    }
+
+    .metric-card .card-value {
+        font-size: 1.5rem;
+    }
+
+    .chart-container {
+        height: 250px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Animation for metric cards */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.metric-card {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Delay animations for each card */
+.metric-card:nth-child(1) { animation-delay: 0.1s; }
+.metric-card:nth-child(2) { animation-delay: 0.2s; }
+.metric-card:nth-child(3) { animation-delay: 0.3s; }
+.metric-card:nth-child(4) { animation-delay: 0.4s; }
+.metric-card:nth-child(5) { animation-delay: 0.5s; }
+.metric-card:nth-child(6) { animation-delay: 0.6s; }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="analytics-dashboard">
-    <h1 class="mb-4">Analytics Dashboard</h1>
+    <div class="header">
+        <h1>ExoticGames Analytics Dashboard</h1>
+        <p class="mb-0">Real-time insights and performance metrics</p>
+    </div>
 
     <!-- Key Metrics Cards -->
-    <div class="row mb-4">
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card border-start border-primary h-100">
+    <div class="row metric-row">
+        <div class="col-md-4 col-6 mb-3">
+            <div class="card metric-card metric-card-primary h-100">
                 <div class="card-body">
-                    <h6 class="card-title text-muted">Today's Visits</h6>
-                    <div class="d-flex align-items-center">
-                        <h3 class="mb-0">{{ visits_today }}</h3>
-                        <span class="badge ms-2 bg-{% if visit_change >= 0 %}success{% else %}danger{% endif %}">
-                            {{ visit_change|floatformat:1 }}%
-                        </span>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="card-title text-uppercase mb-0">Today's Visits</h6>
+                        <i class="fas fa-users text-primary"></i>
                     </div>
-                    <small class="text-muted">Yesterday: {{ visits_yesterday }}</small>
+                    <div class="mt-2">
+                        <h3 class="card-value mb-0">{{ visits_today|intcomma }}</h3>
+                        <div class="d-flex align-items-center mt-2">
+                            <span class="badge-change bg-{% if visit_change >= 0 %}success{% else %}danger{% endif %}">
+                                {{ visit_change|floatformat:1 }}%
+                            </span>
+                            <small class="text-muted ms-2">vs yesterday</small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card border-start border-success h-100">
+        <div class="col-md-4 col-6 mb-3">
+            <div class="card metric-card metric-card-success h-100">
                 <div class="card-body">
-                    <h6 class="card-title text-muted">Consent Rate</h6>
-                    <h3 class="mb-0">{{ consent_rate|floatformat:1 }}%</h3>
-                    <small class="text-muted">{{ analytics_consent }}/{{ total_consent }} users</small>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="card-title text-uppercase mb-0">Consent Rate</h6>
+                        <i class="fas fa-check-circle text-success"></i>
+                    </div>
+                    <div class="mt-2">
+                        <h3 class="card-value mb-0">{{ consent_rate|floatformat:1 }}%</h3>
+                        <small class="text-muted">{{ analytics_consent|intcomma }}/{{ total_consent|intcomma }} users</small>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card border-start border-info h-100">
+        <div class="col-md-4 col-6 mb-3">
+            <div class="card metric-card metric-card-info h-100">
                 <div class="card-body">
-                    <h6 class="card-title text-muted">Avg. Engagement</h6>
-                    <h3 class="mb-0">{{ avg_duration|floatformat:0 }}s</h3>
-                    <small class="text-muted">Per session</small>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="card-title text-uppercase mb-0">Avg. Engagement</h6>
+                        <i class="fas fa-clock text-info"></i>
+                    </div>
+                    <div class="mt-2">
+                        <h3 class="card-value mb-0">{{ avg_duration|floatformat:0 }}s</h3>
+                        <small class="text-muted">Per session</small>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card border-start border-warning h-100">
+    </div>
+    <div class="row metric-row">
+        <div class="col-md-4 col-6 mb-3">
+            <div class="card metric-card metric-card-warning h-100">
                 <div class="card-body">
-                    <h6 class="card-title text-muted">Bounce Rate</h6>
-                    <h3 class="mb-0">{{ bounce_rate|floatformat:1 }}%</h3>
-                    <small class="text-muted">{{ bounce_count }} sessions</small>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="card-title text-uppercase mb-0">Bounce Rate</h6>
+                        <i class="fas fa-sign-out-alt text-warning"></i>
+                    </div>
+                    <div class="mt-2">
+                        <h3 class="card-value mb-0">{{ bounce_rate|floatformat:1 }}%</h3>
+                        <small class="text-muted">{{ bounce_count|intcomma }} sessions</small>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card border-start border-danger h-100">
+        <div class="col-md-4 col-6 mb-3">
+            <div class="card metric-card metric-card-danger h-100">
                 <div class="card-body">
-                    <h6 class="card-title text-muted">Conversion Rate</h6>
-                    <h3 class="mb-0">{{ conversion_rate|floatformat:1 }}%</h3>
-                    <small class="text-muted">{{ conversions }} submissions</small>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="card-title text-uppercase mb-0">Conversion Rate</h6>
+                        <i class="fas fa-exchange-alt text-danger"></i>
+                    </div>
+                    <div class="mt-2">
+                        <h3 class="card-value mb-0">{{ conversion_rate|floatformat:1 }}%</h3>
+                        <small class="text-muted">{{ conversions|intcomma }} submissions</small>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card border-start border-secondary h-100">
+        <div class="col-md-4 col-6 mb-3">
+            <div class="card metric-card metric-card-secondary h-100">
                 <div class="card-body">
-                    <h6 class="card-title text-muted">Total Visits</h6>
-                    <h3 class="mb-0">{{ total_visits|intcomma }}</h3>
-                    <small class="text-muted">All time</small>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="card-title text-uppercase mb-0">Total Visits</h6>
+                        <i class="fas fa-chart-line text-secondary"></i>
+                    </div>
+                    <div class="mt-2">
+                        <h3 class="card-value mb-0">{{ total_visits|intcomma }}</h3>
+                        <small class="text-muted">All time</small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -75,11 +411,13 @@
 
     <!-- Traffic Chart -->
     <div class="card mb-4">
-        <div class="card-header bg-light">
+        <div class="card-header">
             <h5 class="mb-0">Traffic Overview (Last 7 Days)</h5>
         </div>
         <div class="card-body">
-            <canvas id="trafficChart" height="250"></canvas>
+            <div class="chart-container">
+                <canvas id="trafficChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -88,13 +426,14 @@
         <!-- Popular Pages -->
         <div class="col-lg-6 mb-4">
             <div class="card h-100">
-                <div class="card-header bg-light">
+                <div class="card-header">
                     <h5 class="mb-0">Popular Pages</h5>
                 </div>
                 <div class="card-body">
+                    {% if popular_pages %}
                     <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-light">
                                 <tr>
                                     <th>Page</th>
                                     <th>Visits</th>
@@ -106,23 +445,27 @@
                                 {% for page in popular_pages %}
                                 <tr>
                                     <td>{{ page.path|truncatechars:30 }}</td>
-                                    <td>{{ page.visits }}</td>
+                                    <td>{{ page.visits|intcomma }}</td>
                                     <td>{{ page.avg_duration|floatformat:0 }}s</td>
                                     <td>
-                                        <div class="progress" style="height: 5px;">
-                                            <div class="progress-bar bg-warning" style="width: {{ page.bounce_rate }}%"></div>
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1" style="height: 5px;">
+                                                <div class="progress-bar bg-warning" style="width: {{ page.bounce_rate }}%"></div>
+                                            </div>
+                                            <small class="ms-2">{{ page.bounce_rate|floatformat:1 }}%</small>
                                         </div>
-                                        <small>{{ page.bounce_rate|floatformat:1 }}%</small>
                                     </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="4" class="text-center">No data available</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
+                    {% else %}
+                    <div class="no-data">
+                        <i class="fas fa-exclamation-circle fa-2x mb-2"></i>
+                        <p>No page visit data available</p>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -130,13 +473,14 @@
         <!-- Top Events -->
         <div class="col-lg-6 mb-4">
             <div class="card h-100">
-                <div class="card-header bg-light">
+                <div class="card-header">
                     <h5 class="mb-0">Top User Events</h5>
                 </div>
                 <div class="card-body">
+                    {% if top_events %}
                     <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-light">
                                 <tr>
                                     <th>Category</th>
                                     <th>Action</th>
@@ -149,17 +493,19 @@
                                 <tr>
                                     <td>{{ event.category }}</td>
                                     <td>{{ event.action }}</td>
-                                    <td>{{ event.count }}</td>
+                                    <td>{{ event.count|intcomma }}</td>
                                     <td>{{ event.avg_value|floatformat:2 }}</td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="4" class="text-center">No data available</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
+                    {% else %}
+                    <div class="no-data">
+                        <i class="fas fa-exclamation-circle fa-2x mb-2"></i>
+                        <p>No event data available</p>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -170,13 +516,14 @@
         <!-- Offer Performance -->
         <div class="col-lg-6 mb-4">
             <div class="card h-100">
-                <div class="card-header bg-light">
+                <div class="card-header">
                     <h5 class="mb-0">Offer Performance</h5>
                 </div>
                 <div class="card-body">
+                    {% if offer_performance %}
                     <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-light">
                                 <tr>
                                     <th>Offer</th>
                                     <th>Views</th>
@@ -188,23 +535,27 @@
                                 {% for offer in offer_performance %}
                                 <tr>
                                     <td>{{ offer.title|truncatechars:30 }}</td>
-                                    <td>{{ offer.views }}</td>
-                                    <td>{{ offer.conversions }}</td>
+                                    <td>{{ offer.views|intcomma }}</td>
+                                    <td>{{ offer.conversions|intcomma }}</td>
                                     <td>
-                                        <div class="progress" style="height: 5px;">
-                                            <div class="progress-bar bg-success" style="width: {{ offer.conversion_rate }}%"></div>
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1" style="height: 5px;">
+                                                <div class="progress-bar bg-success" style="width: {{ offer.conversion_rate }}%"></div>
+                                            </div>
+                                            <small class="ms-2">{{ offer.conversion_rate|floatformat:1 }}%</small>
                                         </div>
-                                        <small>{{ offer.conversion_rate|floatformat:1 }}%</small>
                                     </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="4" class="text-center">No data available</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
+                    {% else %}
+                    <div class="no-data">
+                        <i class="fas fa-exclamation-circle fa-2x mb-2"></i>
+                        <p>No offer performance data available</p>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -212,13 +563,14 @@
         <!-- User Interests -->
         <div class="col-lg-6 mb-4">
             <div class="card h-100">
-                <div class="card-header bg-light">
+                <div class="card-header">
                     <h5 class="mb-0">User Interests</h5>
                 </div>
                 <div class="card-body">
+                    {% if user_interests %}
                     <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-light">
                                 <tr>
                                     <th>Category</th>
                                     <th>Interactions</th>
@@ -229,17 +581,19 @@
                                 {% for interest in user_interests %}
                                 <tr>
                                     <td>{{ interest.category }}</td>
-                                    <td>{{ interest.count }}</td>
-                                    <td>{{ interest.unique_users }}</td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="3" class="text-center">No data available</td>
+                                    <td>{{ interest.count|intcomma }}</td>
+                                    <td>{{ interest.unique_users|intcomma }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
+                    {% else %}
+                    <div class="no-data">
+                        <i class="fas fa-exclamation-circle fa-2x mb-2"></i>
+                        <p>No user interest data available</p>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -247,14 +601,15 @@
 
     <!-- Funnel Visualization -->
     <div class="card mb-4">
-        <div class="card-header bg-light">
+        <div class="card-header">
             <h5 class="mb-0">Conversion Funnel</h5>
         </div>
         <div class="card-body">
+            {% if conversion_funnel %}
             <div class="row text-center">
                 {% for step in conversion_funnel %}
                 <div class="col mb-4">
-                    <div class="funnel-step p-3 bg-light rounded">
+                    <div class="funnel-step">
                         <h6 class="mb-1">{{ step.name }}</h6>
                         <h4 class="mb-0">{{ step.count|intcomma }}</h4>
                         <small class="text-muted">{{ step.percent|floatformat:1 }}%</small>
@@ -271,18 +626,25 @@
                 </div>
                 {% endfor %}
             </div>
+            {% else %}
+            <div class="no-data">
+                <i class="fas fa-exclamation-circle fa-2x mb-2"></i>
+                <p>No conversion funnel data available</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 
     <!-- Recent Activity -->
     <div class="card">
-        <div class="card-header bg-light">
+        <div class="card-header">
             <h5 class="mb-0">Recent Activity (Last 30 minutes)</h5>
         </div>
         <div class="card-body">
+            {% if recent_activity %}
             <div class="table-responsive">
-                <table class="table table-sm">
-                    <thead>
+                <table class="table table-sm table-hover">
+                    <thead class="thead-light">
                         <tr>
                             <th>Time</th>
                             <th>Session</th>
@@ -302,50 +664,28 @@
                             <td>{{ activity.label|truncatechars:20 }}</td>
                             <td>{{ activity.value }}</td>
                         </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="6" class="text-center">No recent activity</td>
-                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+            {% else %}
+            <div class="no-data">
+                <i class="fas fa-exclamation-circle fa-2x mb-2"></i>
+                <p>No recent activity detected</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
-
-<style>
-.analytics-dashboard {
-    padding: 20px;
-    background-color: #f8f9fc;
-}
-.card {
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-}
-.card-header {
-    padding: 0.75rem 1.25rem;
-}
-.funnel-step {
-    position: relative;
-    z-index: 1;
-}
-.progress-bar span {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #000;
-    font-weight: bold;
-    text-shadow: 0 0 2px #fff;
-}
-</style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Traffic Chart
     const trafficCtx = document.getElementById('trafficChart').getContext('2d');
+
+    // Check if we have data to display
+    {% if daily_visits %}
     const trafficChart = new Chart(trafficCtx, {
         type: 'line',
         data: {
@@ -353,19 +693,29 @@ document.addEventListener('DOMContentLoaded', function() {
             datasets: [{
                 label: 'Visits',
                 data: [{% for day in daily_visits %}{{ day.count }},{% endfor %}],
-                backgroundColor: 'rgba(78, 115, 223, 0.05)',
-                borderColor: 'rgba(78, 115, 223, 1)',
+                backgroundColor: 'rgba(108, 92, 231, 0.1)',
+                borderColor: 'rgba(108, 92, 231, 1)',
                 borderWidth: 2,
                 pointRadius: 3,
                 pointBackgroundColor: 'rgba(78, 115, 223, 1)',
                 pointBorderColor: 'rgba(78, 115, 223, 1)',
                 pointHoverRadius: 5,
-                tension: 0.3
+                tension: 0.3,
+                fill: true
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
             scales: {
                 y: {
                     beginAtZero: true,
@@ -381,9 +731,24 @@ document.addEventListener('DOMContentLoaded', function() {
                         display: false
                     }
                 }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'nearest'
             }
         }
     });
+    {% else %}
+    // Display message if no data
+    trafficCtx.canvas.parentNode.innerHTML = `
+        <div class="no-data">
+            <i class="fas fa-exclamation-circle fa-2x mb-2"></i>
+            <p>No traffic data available for the selected period</p>
+        </div>
+    `;
+    {% endif %}
 });
 </script>
 {% endblock %}
+
+

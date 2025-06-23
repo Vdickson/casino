@@ -2,6 +2,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.cache import cache
+from django.contrib.auth.models import User
 
 from django.core.exceptions import ValidationError
 
@@ -118,7 +119,6 @@ class PageVisit(models.Model):
     session_key = models.CharField(max_length=40, unique=True)
     path = models.CharField(max_length=255, default='/')  # Add this new field
 
-
     def __str__(self):
         return f"{self.ip_address} ({self.country}) - {self.duration}s - {self.path}"
 
@@ -137,7 +137,8 @@ class UserInteraction(models.Model):
         ('offer_interest', 'Offer Interest'),
         ('payment_click', 'Payment Method Click'),
     )
-    page_visit = models.ForeignKey('PageVisit', on_delete=models.SET_NULL, null=True, blank=True, related_name='interactions')
+    page_visit = models.ForeignKey('PageVisit', on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='interactions')
     type = models.CharField(max_length=50, choices=INTERACTION_TYPES)
     element_id = models.CharField(max_length=100, blank=True, null=True)
     page_path = models.CharField(max_length=255)
@@ -214,3 +215,56 @@ class AnalyticsEvent(models.Model):
 
     def __str__(self):
         return f"{self.category} - {self.action}"
+
+
+class PaymentMethod(models.Model):
+    PAYMENT_TYPES = (
+        ('cashapp', 'CashApp'),
+        ('bitcoin', 'Bitcoin'),
+        ('venmo', 'Venmo'),
+        ('paypal', 'PayPal'),
+        ('chime', 'Chime'),
+        ('other', 'Other'),
+    )
+
+    name = models.CharField(max_length=50)
+    type = models.CharField(max_length=20, choices=PAYMENT_TYPES, default='other')
+    logo = models.ImageField(upload_to='payments/')
+    is_active = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
+    account_id = models.CharField(max_length=100, blank=True,
+                                  help_text="Your account ID/address for this payment method")
+    qr_code = models.ImageField(upload_to='payments/qr_codes/', blank=True, null=True)
+    instructions = models.TextField(blank=True, help_text="Special instructions for this payment method")
+    min_amount = models.DecimalField(max_digits=10, decimal_places=2, default=10.00)
+    max_amount = models.DecimalField(max_digits=10, decimal_places=2, default=500.00)
+
+    def __str__(self):
+        return f"{self.get_type_display()} - {self.name}"
+
+    class Meta:
+        ordering = ['order']
+
+
+class RechargeRequest(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('rejected', 'Rejected'),
+    )
+
+    player = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recharges')
+    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.PROTECT)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    transaction_id = models.CharField(max_length=100, blank=True)
+    screenshot = models.ImageField(upload_to='recharges/', blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    processed_at = models.DateTimeField(blank=True, null=True)
+    notes = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"Recharge #{self.id} - {self.player.username} - ${self.amount}"
+
+    class Meta:
+        ordering = ['-created_at']

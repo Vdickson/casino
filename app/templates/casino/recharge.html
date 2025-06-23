@@ -1,0 +1,79 @@
+{% extends 'casino/index.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card-modern">
+                <div class="card-header-modern text-center">💰 Recharge Your Account</div>
+                <div class="card-body-modern">
+                    {% if messages %}
+                    <div class="alert-messages">
+                        {% for message in messages %}
+                        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <h5 class="mb-3">Select Payment Method:</h5>
+                            <div class="payment-methods">
+                                {% for method in form.payment_method %}
+                                <div class="payment-method">
+                                    {{ method.tag }}
+                                    <label for="{{ method.id_for_label }}">
+                                        <div class="method-card">
+                                            <img src="{{ method.choice_value.logo.url }}" alt="{{ method.choice_label }}" class="method-logo">
+                                            <div class="method-info">
+                                                <h6>{{ method.choice_label }}</h6>
+                                                <small>Send to: {{ method.choice_value.account_id }}</small>
+                                                {% if method.choice_value.qr_code %}
+                                                <div class="qr-code-container">
+                                                    <img src="{{ method.choice_value.qr_code.url }}" alt="QR Code" class="qr-code">
+                                                </div>
+                                                {% endif %}
+                                                <p class="method-limits">Limit: ${{ method.choice_value.min_amount }} - ${{ method.choice_value.max_amount }}</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Amount ($)</label>
+                            {{ form.amount }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Transaction ID (if available)</label>
+                            {{ form.transaction_id }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Payment Screenshot (required)</label>
+                            {{ form.screenshot }}
+                            <small class="text-muted">Upload proof of payment</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Notes (optional)</label>
+                            {{ form.notes }}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold">
+                            <i class="fas fa-paper-plane me-2"></i> Submit Recharge Request
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

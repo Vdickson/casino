@@ -26,6 +26,9 @@ from datetime import timedelta
 from django.utils import timezone
 import json
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
+from .forms import RechargeForm
 from .models import LiveWin, Offer, PaymentMethod, SocialLink, UserInteraction, PageVisit, Testimonial, CookieConsent, \
     AnalyticsEvent
 from django.contrib.admin.views.decorators import staff_member_required
@@ -179,46 +182,41 @@ def contact_submit(request):
 #     )
 
 @require_GET
-@cache_page(15)  # Cache results for 15 seconds
+@cache_page(15)
 def updates(request):
     now = timezone.now()
-
-    # Get last_win_id from request parameter
     last_win_id = int(request.GET.get('last_win_id', 0))
 
-    # Fetch new wins since last_win_id
-    new_wins = LiveWin.objects.filter(
-        id__gt=last_win_id,
-        visible=True
-    ).order_by('id').values('id', 'username', 'amount')[:100]  # Limit to 100 wins
+    try:
+        new_wins = LiveWin.objects.filter(
+            id__gt=last_win_id,
+            visible=True
+        ).order_by('id').values('id', 'username', 'amount')[:100]
 
-    # Get active offers (countdown in progress)
-    active_offers = Offer.objects.filter(
-        scheduled_start__lte=now,
-        countdown_end__gt=now,
-        is_active=True
-    ).values('id', 'countdown_end')
+        active_offers = Offer.objects.filter(
+            scheduled_start__lte=now,
+            countdown_end__gt=now,
+            is_active=True
+        ).values('id', 'countdown_end')
 
-    # Calculate remaining seconds for each offer
-    offers_data = []
-    for offer in active_offers:
-        time_remaining = (offer['countdown_end'] - now).total_seconds()
-        offers_data.append({
-            'id': offer['id'],
-            'countdown': int(time_remaining)
+        offers_data = []
+        for offer in active_offers:
+            time_remaining = (offer['countdown_end'] - now).total_seconds()
+            offers_data.append({
+                'id': offer['id'],
+                'countdown': int(time_remaining)
+            })
+
+        new_wins_list = list(new_wins)
+        latest_win_id = new_wins_list[-1]['id'] if new_wins_list else last_win_id
+
+        return JsonResponse({
+            'wins': new_wins_list,
+            'offers': offers_data,
+            'last_win_id': latest_win_id
         })
-
-    # Get latest win ID for next request
-    # latest_win_id = new_wins.last()['id'] if new_wins else last_win_id
-    new_wins_list = list(new_wins)
-    latest_win_id = new_wins_list[-1]['id'] if new_wins_list else last_win_id
-
-    return JsonResponse({
-        'wins': list(new_wins),
-        'offers': offers_data,
-        'last_win_id': latest_win_id
-    })
-
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 # New view for recording interactions
 @csrf_exempt
@@ -496,6 +494,36 @@ def analytics_dashboard(request):
     return render(request, 'admin/analytics_dashboard.html', context)
 
 
+@login_required
+def recharge(request):
+    payment_methods = PaymentMethod.objects.filter(is_active=True)
+
+    if request.method == 'POST':
+        form = RechargeForm(request.POST, request.FILES)
+        if form.is_valid():
+            recharge = form.save(commit=False)
+            recharge.player = request.user
+            recharge.save()
+
+            track_interaction({
+                'type': 'recharge_request',
+                'page_path': request.path,
+                'data': {
+                    'amount': str(recharge.amount),
+                    'method': recharge.payment_method.name
+                }
+            })
+
+            messages.success(request, "Recharge request submitted! We'll process it shortly.")
+            return redirect('home')
+    else:
+        form = RechargeForm()
+
+    context = {
+        'payment_methods': payment_methods,
+        'form': form
+    }
+    return render(request, 'casino/recharge.html', context)
 def subscribe(request):
     if request.method != 'POST':
         return JsonResponse({'success': False}, status=400)
@@ -503,6 +531,43 @@ def subscribe(request):
     # Simplified subscription logic
     return JsonResponse({'success': True})
 
+
+# views.py
+def get_personalized_ads(request):
+    if not request.session.session_key:
+        return []
+
+    try:
+        # Get user's interaction history
+        interactions = UserInteraction.objects.filter(
+            session_key=request.session.session_key
+        ).order_by('-timestamp')[:100]
+
+        # Simple scoring algorithm
+        offer_scores = {}
+        for interaction in interactions:
+            if interaction.type == 'offer_click':
+                offer_id = interaction.data.get('offer_id')
+                if offer_id:
+                    offer_scores[offer_id] = offer_scores.get(offer_id, 0) + 3
+            elif interaction.type == 'game_play':
+                game = interaction.data.get('game')
+                if game:
+                    # Add score to related offers
+                    related_offers = Offer.objects.filter(
+                        Q(title__icontains=game) |
+                        Q(description__icontains=game)
+                    )
+                    for offer in related_offers:
+                        offer_scores[offer.id] = offer_scores.get(offer.id, 0) + 1
+
+        # Get top 3 offers
+        sorted_offers = sorted(offer_scores.items(), key=lambda x: x[1], reverse=True)[:3]
+        offer_ids = [offer[0] for offer in sorted_offers]
+
+        return Offer.objects.filter(id__in=offer_ids)
+    except Exception:
+        return []
 
 # views.py
 

@@ -1,0 +1,107 @@
+
+    <!--// Ad Modal Functionality-->
+    <!--const flashModal = document.getElementById('flashModal');-->
+    <!--const recModal = document.getElementById('recommendationModal');-->
+    <!--const limitedModal = document.getElementById('limitedModal');-->
+    <!--const closeFlashBtn = document.getElementById('closeFlashModal');-->
+    <!--const closeRecBtn = document.getElementById('closeRecModal');-->
+    <!--const closeLimitedBtn = document.getElementById('closeLimitedModal');-->
+    <!--const flashClaimBtn = document.getElementById('flashClaimBtn');-->
+    <!--const recClaimBtn = document.getElementById('recClaimBtn');-->
+    <!--const limitedClaimBtn = document.getElementById('limitedClaimBtn');-->
+    <!--const flashTitle = document.getElementById('flashTitle');-->
+    <!--const flashDesc = document.getElementById('flashDesc');-->
+    <!--const recTitle = document.getElementById('recTitle');-->
+    <!--const recDesc = document.getElementById('recDesc');-->
+    <!--const limitedTitle = document.getElementById('limitedTitle');-->
+    <!--const limitedDesc = document.getElementById('limitedDesc');-->
+
+    <!--let modalTimer;-->
+    <!--let hasShownInitialModal = false;-->
+    <!--const adInterval = 120000; // 2 minutes in milliseconds-->
+
+    <!--// Show modal with animation-->
+    <!--function showModal(modal) {-->
+    <!--    modal.style.display = 'block';-->
+    <!--    setTimeout(() => {-->
+    <!--        modal.style.opacity = 1;-->
+    <!--    }, 10);-->
+    <!--}-->
+
+    <!--// Hide modal with animation-->
+    <!--function hideModal(modal) {-->
+    <!--    modal.style.opacity = 0;-->
+    <!--    setTimeout(() => {-->
+    <!--        modal.style.display = 'none';-->
+    <!--    }, 300);-->
+    <!--}-->
+
+    <!--// Show initial modal on page load after 15 seconds-->
+    <!--function showInitialModal() {-->
+    <!--    if (!hasShownInitialModal) {-->
+    <!--        hasShownInitialModal = true;-->
+
+    <!--        // Set flash modal content-->
+    <!--        flashTitle.textContent = CONFIG.flashOffer.title;-->
+    <!--        flashDesc.textContent = CONFIG.flashOffer.description;-->
+
+    <!--        // Show flash modal-->
+    <!--        showModal(flashModal);-->
+
+    <!--        // Start the interval for subsequent ads-->
+    <!--        startAdInterval();-->
+    <!--    }-->
+    <!--}-->
+
+    <!--// Show random ad modal-->
+    <!--function showRandomAd() {-->
+    <!--    // Hide any currently visible modal first-->
+    <!--    [flashModal, recModal, limitedModal].forEach(modal => hideModal(modal));-->
+
+    <!--    // Randomly select which ad to show (0-2)-->
+    <!--    const adType = Math.floor(Math.random() * 3);-->
+
+    <!--    switch(adType) {-->
+    <!--        case 0: // Flash offer-->
+    <!--            flashTitle.textContent = CONFIG.flashOffer.title;-->
+    <!--            flashDesc.textContent = CONFIG.flashOffer.description;-->
+    <!--            showModal(flashModal);-->
+    <!--            break;-->
+
+    <!--        case 1: // Recommendation-->
+    <!--            const offers = CONFIG.recommendedOffers;-->
+    <!--            const randomOffer = offers[Math.floor(Math.random() * offers.length)];-->
+    <!--            recTitle.textContent = randomOffer.title;-->
+    <!--            recDesc.textContent = randomOffer.description;-->
+    <!--            showModal(recModal);-->
+    <!--            break;-->
+
+    <!--        case 2: // Limited offer-->
+    <!--            limitedTitle.textContent = "Limited Time Offer!";-->
+    <!--            limitedDesc.textContent = "Sign up now and get up to 100% in bonus credits!";-->
+    <!--            showModal(limitedModal);-->
+    <!--            break;-->
+    <!--    }-->
+    <!--}-->
+
+    <!--// Start the interval for showing ads-->
+    <!--function startAdInterval() {-->
+    <!--    // Clear any existing interval-->
+    <!--    if (modalTimer) clearInterval(modalTimer);-->
+
+    <!--    // Set interval to show ads every 2 minutes-->
+    <!--    modalTimer = setInterval(showRandomAd, adInterval);-->
+    <!--}-->
+
+    <!--// Close button event handlers-->
+    <!--closeFlashBtn.addEventListener('click', () => hideModal(flashModal));-->
+    <!--closeRecBtn.addEventListener('click', () => hideModal(recModal));-->
+    <!--closeLimitedBtn.addEventListener('click', () => hideModal(limitedModal));-->
+
+    <!--// Claim button event handlers-->
+    <!--flashClaimBtn.addEventListener('click', () => hideModal(flashModal));-->
+    <!--recClaimBtn.addEventListener('click', () => hideModal(recModal));-->
+    <!--limitedClaimBtn.addEventListener('click', () => hideModal(limitedModal));-->
+
+    <!--// Show initial modal after 15 seconds-->
+    <!--setTimeout(showInitialModal, 15000);-->

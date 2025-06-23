@@ -85,6 +85,10 @@ GEOIP_PATH = '/path/to/geolite2/database'
 # Set time zone to Florida (Eastern Time)
 TIME_ZONE = 'America/New_York'
 
+
+LOGIN_URL = 'login'  # Name of your login view
+LOGIN_REDIRECT_URL = 'home'  # Where to redirect after login
+LOGOUT_REDIRECT_URL = 'home'  # Where to redirect after logout
 # Enable timezone awareness
 USE_TZ = True
 # Optional: Expire session when browser closes
