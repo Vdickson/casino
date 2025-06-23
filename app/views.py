@@ -2,7 +2,9 @@
 import json
 import time
 from django.db.models import F
-
+import logging
+import requests
+from django.views.decorators.http import require_GET
 from django.shortcuts import render, redirect
 from django.http import StreamingHttpResponse, JsonResponse
 from django.utils import timezone
@@ -33,6 +35,7 @@ from .models import LiveWin, Offer, PaymentMethod, SocialLink, UserInteraction, 
     AnalyticsEvent
 from django.contrib.admin.views.decorators import staff_member_required
 
+logger = logging.getLogger(__name__)
 # Cache keys
 PAYMENT_METHODS_CACHE_KEY = 'payment_methods_cache'
 SOCIAL_LINK_CACHE_KEY = 'social_link_cache'
@@ -218,19 +221,39 @@ def updates(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+
 # New view for recording interactions
 @csrf_exempt
 def track_interaction(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
+
+            # Ensure session exists
+            if not request.session.session_key:
+                request.session.create()
+            session_key = request.session.session_key
+
+            # Get or create the PageVisit record
+            page_visit, created = PageVisit.objects.get_or_create(
+                session_key=session_key,
+                defaults={
+                    'ip_address': request.META.get('REMOTE_ADDR', 'Unknown'),
+                    'country': 'Unknown',  # Will be updated later
+                    'path': data.get('page_path', '/')
+                }
+            )
+
+            # Create the interaction
             interaction = UserInteraction(
+                page_visit=page_visit,
                 type=data.get('type'),
-                element_id=data.get('element_id'),
-                page_path=data.get('page_path', request.META.get('HTTP_REFERER', '/')),
-                additional_data=data.get('data', {})
+                element_id=data.get('element_id', ''),
+                page_path=data.get('page_path', '/'),
+                additional_data=data.get('additional_data', {})
             )
             interaction.save()
+
             return JsonResponse({'status': 'success'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
@@ -303,74 +326,83 @@ def track_page_visit(request):
 
 
 # views.py
-# views.py - Update the cookie_consent view
-# views.py - Update cookie_consent view
 @csrf_exempt
 def cookie_consent(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
+
             # Ensure session exists
             if not request.session.session_key:
                 request.session.create()
             session_key = request.session.session_key
 
-            # Only create consent record when user makes a choice
+            # Create or update consent record
             consent, created = CookieConsent.objects.update_or_create(
                 session_key=session_key,
                 defaults={
                     'analytics': data.get('analytics', False),
                     'preferences': data.get('preferences', False),
                     'marketing': data.get('marketing', False),
+                    'timestamp': timezone.now()
                 }
             )
+
             return JsonResponse({'status': 'success'})
+
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
         except Exception as e:
+            logger.error(f"Error saving cookie consent: {str(e)}")
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
     return JsonResponse({'status': 'invalid method'}, status=405)
 
-
-# views.py
-# views.py
-# views.py - Update track_event view
-# views.py
-# Update the track_event view
 @csrf_exempt
 def track_event(request):
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
-            # Create session if doesn't exist
+            # Get session key
             if not request.session.session_key:
                 request.session.create()
             session_key = request.session.session_key
 
-            # Check consent
+            # Parse JSON data
+            try:
+                data = json.loads(request.body)
+            except json.JSONDecodeError:
+                return JsonResponse({'status': 'invalid_json'}, status=400)
+
+            # Check consent - first try database, then fallback to localStorage
             try:
                 consent = CookieConsent.objects.get(session_key=session_key)
+                if not consent.analytics:
+                    return JsonResponse({'status': 'no_analytics_consent'}, status=403)
             except CookieConsent.DoesNotExist:
-                return JsonResponse({'status': 'no_consent'}, status=403)
+                # If no record exists, check request headers for localStorage fallback
+                localStorageConsent = request.headers.get('X-Consent-Analytics', 'false') == 'true'
+                if not localStorageConsent:
+                    return JsonResponse({'status': 'no_consent'}, status=403)
 
-            if not consent.analytics:
-                return JsonResponse({'status': 'no_consent'}, status=403)
-
-            # Save event - ONLY USE EXISTING FIELDS
+            # Save event
             event = AnalyticsEvent(
                 session_key=session_key,
                 category=data.get('category', ''),
                 action=data.get('action', ''),
                 label=data.get('label', ''),
+                value=data.get('value', 0),
                 path=data.get('path', request.path),
-                value=data.get('value', 0)
+                timestamp=timezone.now()
             )
             event.save()
 
             return JsonResponse({'status': 'success'})
+
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
-    return JsonResponse({'status': 'invalid method'}, status=405)
+            logger.error(f"Error tracking event: {str(e)}", exc_info=True)
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
-
+    return JsonResponse({'status': 'invalid_method'}, status=405)
 # views.py
 # Update the analytics_dashboard view
 @staff_member_required
@@ -524,6 +556,8 @@ def recharge(request):
         'form': form
     }
     return render(request, 'casino/recharge.html', context)
+
+
 def subscribe(request):
     if request.method != 'POST':
         return JsonResponse({'success': False}, status=400)
@@ -569,7 +603,9 @@ def get_personalized_ads(request):
     except Exception:
         return []
 
+
 # views.py
 
 def access_denied(request, exception=None):
     return render(request, 'casino/403.html', status=403)
+

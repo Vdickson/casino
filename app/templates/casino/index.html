@@ -111,6 +111,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <meta name="description" content="Play premium fish games and online casino games at ExoticFishGames! Enjoy instant cashouts, 24/7 customer support, and huge deposit bonuses. Popular games include Orion Stars, Fire Kirin, Vegas X,Vegas Sweeps, Juwa, Panda Master, Ultra Panda, Game Vault, and VBlink. Join now for thrilling gameplay and big wins!">
     <meta name="keywords" content="FireKirin, Orion Stars, Vegas X,Vegas Sweeps, Juwa, PandaMaster, UltraPanda, GameVault, VBlink, fishgames, online casino, cash games, instant withdrawal, instant cashouts, slots, gambling, Exotic Fish Games, casino bonuses, real money games, signup bonus, freeplay, 100% signup bonus, cashout rules, 15% cashback, reload bonus, deposit bonus, deposit, big wins">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
     <title>ExoticFishgames | Premium Online Fish Casino Games</title>
 
     <!-- Bootstrap 5 CSS -->
@@ -1461,9 +1463,9 @@
         urls: {
             trackInteraction: "{% url 'track_interaction' %}",
             trackPageVisit: "{% url 'track_page_visit' %}",
-            csrfToken: "{{ csrf_token }}"
 
         },
+
         social: {
             whatsapp: "{{ social.whatsapp|escapejs }}",
             facebook: "{{ social.facebook|escapejs }}",
@@ -1479,9 +1481,12 @@
         console.warn("Error setting trackEvent URL:", e);
         tempConfig.urls.trackEvent = "/track-event/"; // Fallback value
     }
+    // csrfToken: '{{ csrf_token }}'  // Add this line
+
 
     // Assign to global config
     window.CONFIG = tempConfig;
+
 </script>
 
     <script src="{% static 'js/core.js' %}"></script>

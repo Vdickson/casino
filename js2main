@@ -6,21 +6,13 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 // Add this function to track analytics events
+// In core.js - Update trackAnalyticsEvent
+// In core.js, update trackAnalyticsEvent:
 function trackAnalyticsEvent(category, action, label, value = 0) {
     const consent = getCookieConsent();
-    if (!consent || !consent.analytics) {
-        console.log('Tracking aborted - no consent');
-        return;
-    }
+    if (!consent || !consent.analytics) return;
 
-    // Get CSRF token from cookie or meta tag
-    let csrfToken = getCookie('csrftoken');
-    if (!csrfToken) {
-        // Fallback to meta tag if cookie not found
-        const meta = document.querySelector('meta[name="csrf-token"]');
-        csrfToken = meta ? meta.content : '';
-    }
-
+    const csrfToken = getCookie('csrftoken') || '';
     if (!csrfToken) {
         console.warn('CSRF token missing, skipping tracking');
         return;
@@ -31,7 +23,7 @@ function trackAnalyticsEvent(category, action, label, value = 0) {
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': csrfToken,
-            'X-Requested-With': 'XMLHttpRequest'
+            'X-Requested-With': 'XMLHttpRequest' // Helps Django identify AJAX
         },
         body: JSON.stringify({
             category,
@@ -276,12 +268,8 @@ let lastPingTime = Date.now();
 
 // In core.js - Enhanced tracking function
 function trackInteraction(type, element, data = {}) {
-     console.log('Attempting to track interaction:', type, data);
     const consent = getCookieConsent();
-    if (!consent || !consent.analytics) {
-        console.log('Tracking aborted - no consent');
-        return;
-    }
+    if (!consent || !consent.analytics) return;
 
     // Get CSRF token
     const csrfToken = getCookie('csrftoken') || '';
@@ -446,54 +434,26 @@ function saveCookieConsent(analytics = false, preferences = false, marketing = f
         version: '1.0'
     };
 
-    // Save to localStorage first
     localStorage.setItem('cookie_consent', JSON.stringify(consent));
 
-    // Hide the banner
+    // Hide the banner after saving
     const banner = document.getElementById('cookie-consent-banner');
-    if (banner) {
-        banner.style.display = 'none';
-    }
+    if (banner) banner.style.display = 'none';
 
-    // Rest of your existing code...
-    // Get CSRF token - try multiple methods
-    let csrfToken = getCookie('csrftoken');
-    if (!csrfToken) {
-        const meta = document.querySelector('meta[name="csrf-token"]');
-        csrfToken = meta ? meta.content : '';
-    }
-
-    if (!csrfToken) {
-        console.warn('CSRF token missing for cookie consent');
-        return;
-    }
+    // Show confirmation
+    showNotification('Cookie preferences saved!');
 
     // Send to backend
     fetch('/cookie-consent/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-            'X-Requested-With': 'XMLHttpRequest'
+            'X-CSRFToken': getCookie('csrftoken') || ''
         },
-        body: JSON.stringify({
-            analytics: Boolean(analytics),
-            preferences: Boolean(preferences),
-            marketing: Boolean(marketing)
-        })
-    }).then(response => {
-        if (!response.ok) {
-            return response.json().then(err => {
-                throw new Error(err.message || 'Failed to save consent');
-            });
-        }
-        console.log('Consent saved successfully');
-        return response.json();
-    }).catch(error => {
-        console.error('Error saving consent:', error.message || error);
-        // Still proceed since we saved to localStorage
-    });
+        body: JSON.stringify({ analytics, preferences, marketing })
+    }).catch(error => console.error('Error saving consent:', error));
 }
+
     // UI handling remains the same
     const banner = document.getElementById('cookie-consent-banner');
     const modal = document.getElementById('cookie-modal');
@@ -504,13 +464,20 @@ function setupCookieConsent() {
     // Accept all
     document.getElementById('cookie-accept')?.addEventListener('click', () => {
         saveCookieConsent(true, true, true);
-        document.getElementById('cookie-consent-banner').style.display = 'none';
     });
 
     // Reject all
     document.getElementById('cookie-reject')?.addEventListener('click', () => {
         saveCookieConsent(false, false, false);
-        document.getElementById('cookie-consent-banner').style.display = 'none';
+    });
+
+    // Open settings
+    document.getElementById('cookie-settings')?.addEventListener('click', () => {
+        const consent = getCookieConsent() || {};
+        document.getElementById('analytics-toggle').checked = consent.analytics || false;
+        document.getElementById('preferences-toggle').checked = consent.preferences || false;
+        document.getElementById('marketing-toggle').checked = consent.marketing || false;
+        document.getElementById('cookie-modal').style.display = 'flex';
     });
 
     // Save preferences
@@ -520,9 +487,7 @@ function setupCookieConsent() {
         const marketing = document.getElementById('marketing-toggle').checked;
         saveCookieConsent(analytics, preferences, marketing);
         document.getElementById('cookie-modal').style.display = 'none';
-        document.getElementById('cookie-consent-banner').style.display = 'none';
     });
-
 
     // Close modal
     document.getElementById('cookie-modal-close')?.addEventListener('click', () => {

@@ -307,12 +307,12 @@ class TestimonialAdmin(BaseModelAdmin):
 # ===== NEW MODELS FOR COOKIES & ANALYTICS =====
 @admin.register(CookieConsent)
 class CookieConsentAdmin(BaseModelAdmin):
-    list_display = ['session_key', 'analytics_status', 'marketing_status', 'consent_date', 'action_buttons']
-    list_filter = ['analytics', 'marketing', 'consent_date']
+    list_display = ['session_key', 'analytics_status', 'marketing_status', 'timestamp', 'action_buttons']
+    list_filter = ['analytics', 'marketing', 'timestamp']
     search_fields = ['session_key']
-    ordering = ['-consent_date']
+    ordering = ['-timestamp']
     list_per_page = 20
-    readonly_fields = ['session_key', 'consent_date']
+    readonly_fields = ['session_key', 'timestamp']
 
     @admin.display(description='Analytics')
     def analytics_status(self, obj):

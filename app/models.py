@@ -188,7 +188,8 @@ class CookieConsent(models.Model):
     analytics = models.BooleanField(default=False)
     preferences = models.BooleanField(default=False)
     marketing = models.BooleanField(default=False)
-    consent_date = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)  # Changed from consent_date to timestamp
+    version = models.CharField(max_length=10, default='1.0')
 
     def __str__(self):
         return f"Cookie Consent ({self.session_key})"

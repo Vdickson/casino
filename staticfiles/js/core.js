@@ -7,27 +7,54 @@ function getCookie(name) {
 }
 // Add this function to track analytics events
 function trackAnalyticsEvent(category, action, label, value = 0) {
+    // Check consent from localStorage first
     const consent = getCookieConsent();
-    if (!consent || !consent.analytics) return;
+    if (!consent || !consent.analytics) {
+        console.log('Tracking aborted - no analytics consent');
+        return;
+    }
 
-    const data = {
-        category: category,
-        action: action,
-        label: label,
-        value: value,
+    // Get CSRF token
+    let csrfToken = getCookie('csrftoken');
+    if (!csrfToken) {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        csrfToken = meta ? meta.content : '';
+    }
+
+    if (!csrfToken) {
+        console.warn('CSRF token missing, skipping tracking');
+        return;
+    }
+
+    // Prepare payload
+    const payload = {
+        category,
+        action,
+        label,
+        value: Number(value) || 0,
         path: window.location.pathname
     };
 
+    // Send request
     fetch(window.CONFIG.urls.trackEvent, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken') || ''
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest'
         },
-        body: JSON.stringify(data)
-    }).catch(error => console.error('Analytics tracking error:', error));
+        body: JSON.stringify(payload)
+    }).then(response => {
+        if (!response.ok) {
+            return response.json().then(err => {
+                console.error('Tracking error:', err.message || 'Server error');
+            });
+        }
+        return response.json();
+    }).catch(error => {
+        console.error('Network error during tracking:', error);
+    });
 }
-
 // ======================
 // Contact Modal Functionality
 // ======================
@@ -260,27 +287,61 @@ function setupNavigation() {
 let detectedCountry = null;
 let lastPingTime = Date.now();
 
-function trackInteraction(data) {
-    // const consent = getCookieConsent();
-    // Get consent from localStorage instead of function
-    const consent = JSON.parse(localStorage.getItem('cookie_consent') || {});
-    if (data.type === 'analytics_event' && !(consent && consent.analytics)) return;
-    if (!window.CONFIG.trackingEnabled) return;
+// In core.js - Enhanced tracking function
+function trackInteraction(type, element, data = {}) {
+     console.log('Attempting to track interaction:', type, data);
+    const consent = getCookieConsent();
+    if (!consent || !consent.analytics) {
+        console.log('Tracking aborted - no consent');
+        return;
+    }
 
-    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+    // Get CSRF token
+    const csrfToken = getCookie('csrftoken') || '';
 
+    // Prepare the interaction data - match backend expectations
+    const interactionData = {
+        type: type,
+        element_id: element?.id || '',
+        page_path: window.location.pathname,
+        additional_data: data
+    };
+
+    // Send to server
     fetch(window.CONFIG.urls.trackInteraction, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest'
         },
-        body: JSON.stringify(data)
-    }).catch(error => console.error('Tracking error:', error));
+        body: JSON.stringify(interactionData)
+    }).catch(error => console.error('Interaction tracking error:', error));
+}
+// Add to core.js
+function getSessionKey() {
+    // Try to get from localStorage first
+    let sessionKey = localStorage.getItem('session_key');
+
+    if (!sessionKey) {
+        // Generate a new one if doesn't exist
+        sessionKey = 'session_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('session_key', sessionKey);
+    }
+
+    return sessionKey;
 }
 
+// In core.js - Update sendVisitData
 function sendVisitData(country, useBeacon = false) {
-    const data = { country: country || 'Unknown' };
+    const data = {
+        country: country || 'Unknown',
+        path: window.location.pathname,
+        referrer: document.referrer || '',
+        // Add session key if available
+        session_key: getSessionKey() // You'll need to implement this
+    };
+
 
     if (useBeacon && navigator.sendBeacon) {
         const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
@@ -290,10 +351,10 @@ function sendVisitData(country, useBeacon = false) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': window.CONFIG.csrfToken
+                'X-CSRFToken': getCookie('csrftoken') || ''
             },
             body: JSON.stringify(data)
-        }).catch(error => console.error('Tracking error:', error));
+        }).catch(error => console.error('Visit tracking error:', error));
     }
 }
 
@@ -333,134 +394,274 @@ function setupTracking() {
             const type = target.tagName === 'A' ? 'link_click' : 'button_click';
             const text = (target.innerText || target.textContent).substring(0, 100).trim();
 
-            trackInteraction({
-                type: type,
-                element_id: target.id || '',
-                page_path: window.location.pathname,
-                data: { text, classes: target.className }
+            trackInteraction(type, target, {
+                text: text,
+                classes: target.className,
+                href: target.href || ''
             });
         }
     });
 
     // Offer interest tracking
-    document.querySelectorAll('.offer-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const titleElement = card.querySelector('h5, h6');
-            const title = titleElement ? titleElement.innerText : 'Unknown Offer';
-            trackInteraction({
-                type: 'offer_interest',
-                page_path: window.location.pathname,
-                data: { offer_title: title.substring(0, 100) }
+    document.querySelectorAll('.offer-card, .claim-offer-btn').forEach(element => {
+        element.addEventListener('click', function() {
+            const title = this.getAttribute('data-offer-title') ||
+                         this.closest('.offer-card')?.querySelector('h5')?.innerText ||
+                         'Unknown Offer';
+
+            trackInteraction('offer_interest', this, {
+                offer_id: this.getAttribute('data-offer-id') || '',
+                offer_title: title.substring(0, 100)
             });
         });
     });
 
-    // Country detection and periodic tracking
+    // Game interest tracking
+    document.querySelectorAll('.contact-for-game').forEach(button => {
+        button.addEventListener('click', function() {
+            const gameName = this.getAttribute('data-game-name') || 'Unknown Game';
+            trackInteraction('game_interest', this, {
+                game_name: gameName
+            });
+        });
+    });
+}
+
+    // Initialize other tracking
     detectCountry();
     setInterval(() => trackPageVisit(), 30000);
-}
 
 // ======================
 // Cookie Consent
 // ======================
 function showCookieBanner() {
     const consent = getCookieConsent();
-    if (!consent) {
-        const banner = document.getElementById('cookie-consent-banner');
-        if (banner) banner.style.display = 'block';
+    const banner = document.getElementById('cookie-consent-banner');
+
+    if (!consent && banner) {
+        banner.style.display = 'block'; // Only show if no consent exists
+    } else if (banner) {
+        banner.style.display = 'none'; // Hide if consent exists
     }
 }
 
+// Enhanced getCookieConsent function
 function getCookieConsent() {
-    const consent = localStorage.getItem('cookie_consent');
-    return consent ? JSON.parse(consent) : null;
+    // First try localStorage
+    const localStorageConsent = localStorage.getItem('cookie_consent');
+    if (localStorageConsent) {
+        try {
+            return JSON.parse(localStorageConsent);
+        } catch (e) {
+            console.error('Error parsing localStorage consent', e);
+        }
+    }
+
+    // Fallback to default
+    return {
+        analytics: false,
+        preferences: false,
+        marketing: false,
+        timestamp: new Date().toISOString(),
+        version: '1.0'
+    };
 }
+
+// Fixed saveCookieConsent function
 function saveCookieConsent(analytics = false, preferences = false, marketing = false) {
     const consent = {
-        analytics,
-        preferences,
-        marketing,
+        analytics: Boolean(analytics),
+        preferences: Boolean(preferences),
+        marketing: Boolean(marketing),
         timestamp: new Date().toISOString(),
         version: '1.0'
     };
 
+    // Save to localStorage immediately
     localStorage.setItem('cookie_consent', JSON.stringify(consent));
+
+    // Get CSRF token
+    let csrfToken = getCookie('csrftoken');
+    if (!csrfToken) {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        csrfToken = meta ? meta.content : '';
+    }
+
+    if (!csrfToken) {
+        console.warn('CSRF token missing for cookie consent');
+        return;
+    }
 
     // Send to backend
     fetch('/cookie-consent/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken') || ''
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-Consent-Analytics': String(analytics) // For fallback checking
         },
-        body: JSON.stringify({ analytics, preferences, marketing })
-    }).catch(error => console.error('Error saving consent:', error));
+        body: JSON.stringify({
+            analytics: Boolean(analytics),
+            preferences: Boolean(preferences),
+            marketing: Boolean(marketing)
+        })
+    }).then(response => {
+        if (!response.ok) {
+            return response.json().then(err => {
+                throw new Error(err.message || 'Failed to save consent');
+            });
+        }
+        return response.json();
+    }).catch(error => {
+        console.error('Error saving consent to server:', error);
+        // Still proceed since we saved to localStorage
+    });
+}
 
+// Enhanced trackAnalyticsEvent function
+function trackAnalyticsEvent(category, action, label, value = 0) {
+    const consent = getCookieConsent();
+    if (!consent || !consent.analytics) {
+        console.log('Tracking aborted - no analytics consent');
+        return;
+    }
+
+    // Get CSRF token
+    let csrfToken = getCookie('csrftoken');
+    if (!csrfToken) {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        csrfToken = meta ? meta.content : '';
+    }
+
+    if (!csrfToken) {
+        console.warn('CSRF token missing, skipping tracking');
+        return;
+    }
+
+    // Prepare payload
+    const payload = {
+        category,
+        action,
+        label,
+        value: Number(value) || 0,
+        path: window.location.pathname
+    };
+
+    // Include localStorage consent as fallback
+    const headers = {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-Consent-Analytics': String(consent.analytics)
+    };
+
+    fetch(window.CONFIG.urls.trackEvent, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+    }).then(response => {
+        if (!response.ok) {
+            return response.json().then(err => {
+                console.error('Tracking server error:', err.message || 'Server error');
+            });
+        }
+        return response.json();
+    }).catch(error => {
+        console.error('Network error during tracking:', error);
+    });
+}
+
+// Alternative country detection that won't trigger CORS errors
+function detectCountry() {
+    // First try from existing page visit data if available
+    if (window.CONFIG && window.CONFIG.country) {
+        detectedCountry = window.CONFIG.country;
+        trackPageVisit();
+        return;
+    }
+
+    // Fallback method that won't trigger CORS
+    fetch('https://ipapi.co/json/')
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            detectedCountry = data.country_name || 'Unknown';
+            trackPageVisit();
+        })
+        .catch(() => {
+            // Final fallback - use server-side detected country if available
+            fetch('/get-country/')
+                .then(res => res.json())
+                .then(data => {
+                    detectedCountry = data.country || 'Unknown';
+                    trackPageVisit();
+                })
+                .catch(() => {
+                    detectedCountry = 'Unknown';
+                    trackPageVisit();
+                });
+        });
+}
     // UI handling remains the same
     const banner = document.getElementById('cookie-consent-banner');
     const modal = document.getElementById('cookie-modal');
     if (banner) banner.style.display = 'none';
     if (modal) modal.style.display = 'none';
-}
+
 function setupCookieConsent() {
     // Accept all
-    const cookieAccept = document.getElementById('cookie-accept');
-    if (cookieAccept) {
-        cookieAccept.addEventListener('click', () => saveCookieConsent(true, true, true));
-    }
+    document.getElementById('cookie-accept')?.addEventListener('click', () => {
+        saveCookieConsent(true, true, true);
+    });
 
     // Reject all
-    const cookieReject = document.getElementById('cookie-reject');
-    if (cookieReject) {
-        cookieReject.addEventListener('click', () => saveCookieConsent(false, false, false));
-    }
+    document.getElementById('cookie-reject')?.addEventListener('click', () => {
+        saveCookieConsent(false, false, false);
+    });
 
     // Open settings
-    const cookieSettings = document.getElementById('cookie-settings');
-    if (cookieSettings) {
-        cookieSettings.addEventListener('click', () => {
-            const consent = getCookieConsent() || {};
-            const analyticsToggle = document.getElementById('analytics-toggle');
-            const preferencesToggle = document.getElementById('preferences-toggle');
-            const marketingToggle = document.getElementById('marketing-toggle');
-            const modal = document.getElementById('cookie-modal');
-            
-            if (analyticsToggle) analyticsToggle.checked = consent.analytics || false;
-            if (preferencesToggle) preferencesToggle.checked = consent.preferences || false;
-            if (marketingToggle) marketingToggle.checked = consent.marketing || false;
-            if (modal) modal.style.display = 'flex';
-        });
-    }
+    document.getElementById('cookie-settings')?.addEventListener('click', () => {
+        const consent = getCookieConsent() || {};
+        document.getElementById('analytics-toggle').checked = consent.analytics || false;
+        document.getElementById('preferences-toggle').checked = consent.preferences || false;
+        document.getElementById('marketing-toggle').checked = consent.marketing || false;
+        document.getElementById('cookie-modal').style.display = 'flex';
+    });
 
     // Save preferences
-    const savePreferences = document.getElementById('save-preferences');
-    if (savePreferences) {
-        savePreferences.addEventListener('click', () => {
-            const analytics = document.getElementById('analytics-toggle')?.checked || false;
-            const preferences = document.getElementById('preferences-toggle')?.checked || false;
-            const marketing = document.getElementById('marketing-toggle')?.checked || false;
-            saveCookieConsent(analytics, preferences, marketing);
-        });
-    }
+    document.getElementById('save-preferences')?.addEventListener('click', () => {
+        const analytics = document.getElementById('analytics-toggle').checked;
+        const preferences = document.getElementById('preferences-toggle').checked;
+        const marketing = document.getElementById('marketing-toggle').checked;
+        saveCookieConsent(analytics, preferences, marketing);
+        document.getElementById('cookie-modal').style.display = 'none';
+    });
 
     // Close modal
-    const cookieModalClose = document.getElementById('cookie-modal-close');
-    if (cookieModalClose) {
-        cookieModalClose.addEventListener('click', () => {
-            const modal = document.getElementById('cookie-modal');
-            if (modal) modal.style.display = 'none';
-        });
-    }
+    document.getElementById('cookie-modal-close')?.addEventListener('click', () => {
+        document.getElementById('cookie-modal').style.display = 'none';
+    });
 
     // Close modal when clicking outside
-    const modal = document.getElementById('cookie-modal');
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-    }
+    document.getElementById('cookie-modal')?.addEventListener('click', (e) => {
+        if (e.target === document.getElementById('cookie-modal')) {
+            document.getElementById('cookie-modal').style.display = 'none';
+        }
+    });
+}
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'cookie-notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
 }
 
 // ======================
@@ -476,7 +677,7 @@ function setupFlashModal() {
     setTimeout(() => {
       flashModal.style.display = 'none';
     }, 300);
-    localStorage.setItem('flashClosed', Date.now());
+    // localStorage.setItem('flashClosed', Date.now());
     trackAnalyticsEvent('Offer', 'dismiss', 'Flash Offer');
   });
 
@@ -562,12 +763,21 @@ function initAds() {
   let currentAdIndex = 0;
   let adTimeout;
 
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
   function showAd() {
     // Clear any pending ad timeout
     clearTimeout(adTimeout);
 
-    // Check which ad to show next
-    const adType = adTypes[currentAdIndex];
+     // Shuffle the ad types each cycle
+  const shuffledTypes = shuffleArray([...adTypes]);
+  const adType = shuffledTypes[0];
 
     if (adType === 'flash') {
       showFlashOffer();
@@ -585,7 +795,7 @@ function initAds() {
   }
   function showFlashOffer() {
     const lastClose = localStorage.getItem('flashClosed');
-    if (lastClose && (Date.now() - lastClose < 86400000)) return;
+    // if (lastClose && (Date.now() - lastClose < 86400000)) return;
 
     const flashModal = document.getElementById('flashModal');
     if (!flashModal) return;
@@ -619,53 +829,103 @@ function initAds() {
       }
     }, 30000);
   }
+// In initAds() function
+// Define default recommendations (outside functions so it's only created once)
+const DEFAULT_RECOMMENDATIONS = [
+  {
+    id: 'default-1',
+    title: "Double Your First Deposit!",
+    description: "Get 100% bonus on your first deposit",
+    tags: ['deposit', 'welcome']
+  },
+  {
+    id: 'default-2',
+    title: "Weekend Special",
+    description: "30% bonus on all weekend deposits",
+    tags: ['deposit', 'weekend']
+  },
+  {
+    id: 'default-3',
+    title: "15% Cashback",
+    description: "Get 15% cashback bonus when you lose 3 games in a row",
+    tags: ['cashback', 'insurance']
+  },
+  {
+    id: 'default-4',
+    title: "50% Referral Bonus",
+    description: "Get 50% bonus when you refer your friends",
+    tags: ['referral', 'social']
+  }
+];
 
-  function showRecommendation() {
-    const lastClose = localStorage.getItem('recClosed');
-    if (lastClose && (Date.now() - lastClose < 86400000)) return;
+// Safe way to get recommendations
+// In core.js, modify getRecommendations() to:
+function getRecommendations() {
+  try {
+    // 1. Fallback to CONFIG recommendations if available
+    if (window.CONFIG?.recommendedOffers?.length > 0) {
+      return window.CONFIG.recommendedOffers;
+    }
 
-    const recommendationModal = document.getElementById('recommendationModal');
-    if (!recommendationModal) return;
+    // 2. Final fallback to defaults
+    return DEFAULT_RECOMMENDATIONS;
+  } catch (e) {
+    console.error('Error getting recommendations:', e);
+    return DEFAULT_RECOMMENDATIONS;
+  }
+}
 
-    // Get random recommendation
-    const recommendations = window.CONFIG.recommendedOffers || [
-      {title: "Double Your First Deposit!", description: "Get 100% bonus on your first deposit"},
-      {title: "Special", description: "30% bonus on all weekend deposits"},
-      {title: "Get 15% Cashback", description: "Get 15% cashback bonus when you loose 3 games in rot"},
-      {title: "Get 50% Refferral", description: "Get 50% bonus when you refer your friends"}
+// Updated showRecommendation() using the new system
+function showRecommendation() {
+  try {
+    const recommendations = getRecommendations();
 
-    ];
+    if (!recommendations || recommendations.length === 0) {
+      console.error('No recommendations available');
+      return;
+    }
 
+    // Get a random recommendation safely
     const randomOffer = recommendations[Math.floor(Math.random() * recommendations.length)];
 
-    // Set offer data
-    recommendationModal.setAttribute('data-offer-title', randomOffer.title);
-    recommendationModal.setAttribute('data-offer-desc', randomOffer.description);
-    document.getElementById('recTitle').textContent = randomOffer.title;
-    document.getElementById('recDesc').textContent = randomOffer.description;
+    // Validate the offer
+    if (!randomOffer || !randomOffer.title) {
+      console.error('Invalid offer structure:', randomOffer);
+      return;
+    }
+
+    // Update modal - with null checks
+    const modal = document.getElementById('recommendationModal');
+    if (!modal) return;
+
+    modal.setAttribute('data-offer-title', randomOffer.title);
+    modal.setAttribute('data-offer-desc', randomOffer.description || 'Special limited time offer!');
+
+    const titleEl = document.getElementById('recTitle');
+    const descEl = document.getElementById('recDesc');
+    if (titleEl) titleEl.textContent = randomOffer.title;
+    if (descEl) descEl.textContent = randomOffer.description || 'Special limited time offer!';
 
     // Show modal
-    recommendationModal.style.display = 'flex';
-    setTimeout(() => {
-      recommendationModal.style.opacity = '1';
-    }, 50);
+    modal.style.display = 'flex';
+    setTimeout(() => { modal.style.opacity = '1'; }, 50);
 
-    trackAnalyticsEvent('Offer', 'impression', 'Recommendation Shown');
-
-    // Auto-hide after 30 seconds
+    // Auto-close after 30 seconds
     setTimeout(() => {
-      if (recommendationModal.style.opacity === '1') {
-        recommendationModal.style.opacity = '0';
-        setTimeout(() => {
-          recommendationModal.style.display = 'none';
-        }, 500);
+      if (modal.style.opacity === '1') {
+        modal.style.opacity = '0';
+        setTimeout(() => { modal.style.display = 'none'; }, 500);
       }
     }, 30000);
+
+  } catch (e) {
+    console.error('Error in showRecommendation:', e);
   }
+}
    // NEW: Show limited offer ad
   function showLimitedOffer() {
     const lastClose = localStorage.getItem('limitedClosed');
-    if (lastClose && (Date.now() - lastClose < 86400000)) return;
+    // if (lastClose && (Date.now() - lastClose < 86400000)) return;
 
     const flashModal = document.getElementById('flashModal');
     if (!flashModal) return;
@@ -698,7 +958,7 @@ function initAds() {
           flashModal.style.display = 'none';
         }, 300);
       }
-    }, 30000);
+    }, 60000);
   }
 
   // NEW: Add close handler for limited offer
@@ -732,8 +992,30 @@ function initAds() {
 
   // Show first ad after 10 seconds
   setTimeout(showAd, 10000);
+
+}
+// Track offer views in a cookie
+function trackOfferInterest(offerId) {
+    const viewedOffers = JSON.parse(getCookie('viewed_offers') || '[]');
+    if (!viewedOffers.includes(offerId)) {
+        viewedOffers.push(offerId);
+        setCookie('viewed_offers', JSON.stringify(viewedOffers), 7); // Store for 7 days
+    }
 }
 
+// Get recommended offers based on viewed offers
+function getRecommendedOffers() {
+    const viewedOffers = JSON.parse(getCookie('viewed_offers') || []);
+    if (viewedOffers.length === 0) return window.CONFIG.recommendedOffers;
+
+    // Find similar offers (simple tag matching)
+    return window.CONFIG.offers.filter(offer => {
+        return viewedOffers.some(viewedId => {
+            const viewedOffer = window.CONFIG.offers.find(o => o.id === viewedId);
+            return viewedOffer && offer.tags.some(tag => viewedOffer.tags.includes(tag));
+        });
+    });
+}
 // ======================
 // Main Initialization
 // ======================

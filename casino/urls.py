@@ -17,6 +17,9 @@ urlpatterns = [
     path('track-event/', views.track_event, name='track_event'),
     path('access-denied/', views.access_denied, name='access_denied'),
     path('recharge/', views.recharge, name='recharge'),
+
+
+
 ]
 
 handler403 = 'app.views.access_denied'
