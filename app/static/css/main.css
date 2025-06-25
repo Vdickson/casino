@@ -501,61 +501,104 @@ html, body {
         animation: fadeIn 0.6s ease-out forwards;
     }
 
-    /* Contact Modal */
-    .contact-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.7);
-        z-index: 1050;
-        justify-content: center;
-        align-items: center;
-    }
+    /* Contact Modal - Functional Redesign */
+.contact-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 1050;
+    justify-content: center;
+    align-items: center;
+}
 
-    .contact-modal-content {
-        background: var(--card-bg);
-        border-radius: 12px;
-        width: 90%;
-        max-width: 500px;
-        overflow: hidden;
-        animation: fadeIn 0.3s ease-out;
-        border: 2px solid var(--neon-teal);
-    }
+.contact-modal-content {
+    background: var(--card-bg);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 320px; /* More compact size */
+    overflow: hidden;
+    animation: fadeIn 0.3s ease-out;
+    border: 2px solid var(--neon-teal);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
 
-    .contact-option {
-        display: flex;
-        align-items: center;
-        padding: 15px 20px;
-        border-bottom: 1px solid var(--border);
-        transition: all 0.3s ease;
-        cursor: pointer;
-        background: rgba(0,0,0,0.2);
-    }
+.contact-options {
+    padding: 15px;
+}
 
-    .contact-option:hover {
-        background: rgba(0,0,0,0.3);
-    }
+.contact-option {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-align: left;
+}
 
-    .contact-option i {
-        font-size: 1.5rem;
-        width: 40px;
-        margin-right: 15px;
-    }
+.contact-option:last-child {
+    margin-bottom: 0;
+}
 
-    .contact-option.facebook i {
-        color: #1877f2 !important;
-    }
+.contact-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
 
-    .contact-option.whatsapp i {
-        color: #25d366 !important;
-    }
+.contact-option i {
+    font-size: 1.3rem;
+    width: 30px;
+    margin-right: 10px;
+}
 
-    .contact-option.telegram i {
-        color: #0088cc !important;
-    }
+.contact-option.facebook {
+    background: rgba(24, 119, 242, 0.1);
+    color: #1877f2;
+}
+
+.contact-option.whatsapp {
+    background: rgba(37, 211, 102, 0.1);
+    color: #25d366;
+}
+
+.contact-option.telegram {
+    background: rgba(0, 136, 204, 0.1);
+    color: #0088cc;
+}
+
+.modal-header {
+    padding: 15px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-footer {
+    padding: 10px 15px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+}
+
+#closeModal {
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 5px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#closeModal:hover {
+    background: rgba(255,255,255,0.1);
+}
 
     /* Responsive Design */
     @media (max-width: 992px) {

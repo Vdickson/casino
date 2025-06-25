@@ -210,8 +210,8 @@ class AnalyticsEvent(models.Model):
 
     class Meta:
         indexes = [
+            models.Index(fields=['-timestamp']),
             models.Index(fields=['category', 'action']),
-            models.Index(fields=['timestamp']),
         ]
 
     def __str__(self):

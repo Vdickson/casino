@@ -389,6 +389,8 @@
                         <h3 class="card-value mb-0">{{ conversion_rate|floatformat:1 }}%</h3>
                         <small class="text-muted">{{ conversions|intcomma }} submissions</small>
                     </div>
+                    <!-- Add more context to the conversion rate display -->
+                    <small class="text-muted">{{ conversions|intcomma }} submissions / {{ visits_today|intcomma }} visits</small>
                 </div>
             </div>
         </div>

@@ -420,9 +420,12 @@ def analytics_dashboard(request):
     visit_change = ((visits_today - visits_yesterday) / visits_yesterday * 100) if visits_yesterday else 0
 
     # Consent metrics
-    total_consent = CookieConsent.objects.count()
+    # total_consent = CookieConsent.objects.count()
+    # analytics_consent = CookieConsent.objects.filter(analytics=True).count()
+    # consent_rate = (analytics_consent / total_consent * 100) if total_consent else 0
+    total_visitors = PageVisit.objects.count()
     analytics_consent = CookieConsent.objects.filter(analytics=True).count()
-    consent_rate = (analytics_consent / total_consent * 100) if total_consent else 0
+    consent_rate = (analytics_consent / total_visitors * 100) if total_visitors else 0
 
     # Engagement metrics
     avg_duration = PageVisit.objects.aggregate(avg=Avg('duration'))['avg'] or 0
@@ -503,9 +506,10 @@ def analytics_dashboard(request):
         daily_visits.append({'date': date.strftime('%a'), 'count': count})
 
     # Last 30 minutes activity
+    # Update the recent_activity query to:
     recent_activity = AnalyticsEvent.objects.filter(
         timestamp__gte=now - timedelta(minutes=30)
-    ).order_by('-timestamp')[:20]
+    ).select_related('page_visit').order_by('-timestamp')[:20]
 
     context = {
         'visits_today': visits_today,

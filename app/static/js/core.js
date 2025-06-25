@@ -390,15 +390,13 @@ function setupTracking() {
     });
 
     // Offer interest tracking
-    document.querySelectorAll('.offer-card, .claim-offer-btn').forEach(element => {
-        element.addEventListener('click', function() {
-            const title = this.getAttribute('data-offer-title') ||
-                         this.closest('.offer-card')?.querySelector('h5')?.innerText ||
-                         'Unknown Offer';
-
-            trackInteraction('offer_interest', this, {
-                offer_id: this.getAttribute('data-offer-id') || '',
-                offer_title: title.substring(0, 100)
+    // Enhance offer tracking
+    document.querySelectorAll('.offer-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const offerId = this.dataset.offerId;
+            trackInteraction('offer_view', this, {
+                offer_id: offerId,
+                offer_title: this.querySelector('h5')?.innerText || 'Unknown'
             });
         });
     });
@@ -413,7 +411,15 @@ function setupTracking() {
         });
     });
 }
-
+// Add form submission tracking
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function() {
+            trackInteraction('form_submit', this, {
+                form_id: this.id || 'unknown',
+                form_action: this.action || ''
+            });
+        });
+    });
     // Initialize other tracking
     detectCountry();
     setInterval(() => trackPageVisit(), 30000);

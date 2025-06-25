@@ -1256,40 +1256,35 @@
     </footer>
 
     <!-- Contact Modal -->
-<!-- Contact Modal -->
-  <!-- Contact Modal -->
+<!-- Contact Modal - With Preserved Functionality -->
 <div id="contactModal" class="contact-modal">
     <div class="contact-modal-content">
-        <div class="card-header-modern text-center">Get Started</div>
-        <div id="offerDetails" class="p-4 border-bottom">
-            <h5 class="mb-2" id="offerTitle"></h5>
-            <p class="mb-0" id="offerDesc"></p>
+        <div class="modal-header">Contact Us to Claim/play Via</div>
+
+        <div id="offerDetails" class="p-3 border-bottom" style="display:none;">
+            <h5 class="mb-1" id="offerTitle"></h5>
+            <p class="mb-0 small" id="offerDesc"></p>
         </div>
+
         <div class="contact-options">
             <div class="contact-option whatsapp" data-contact="whatsapp">
                 <i class="fab fa-whatsapp"></i>
-                <div>
-                    <h6 class="mb-0">Contact via WhatsApp</h6>
-                    <small>Instant messaging support</small>
-                </div>
+                <span>WhatsApp</span>
             </div>
+
             <div class="contact-option facebook" data-contact="facebook">
                 <i class="fab fa-facebook-messenger"></i>
-                <div>
-                    <h6 class="mb-0">Contact via Messenger</h6>
-                    <small>Chat with our agents</small>
-                </div>
+                <span>Facebook</span>
             </div>
+
             <div class="contact-option telegram" data-contact="telegram">
                 <i class="fab fa-telegram"></i>
-                <div>
-                    <h6 class="mb-0">Contact via Telegram</h6>
-                    <small>Fast and secure messaging</small>
-                </div>
+                <span>Telegram</span>
             </div>
         </div>
-        <div class="text-center p-3">
-            <button id="closeModal" class="btn btn-sm btn-outline-secondary">Cancel</button>
+
+        <div class="modal-footer">
+            <button id="closeModal" class="btn btn-sm btn-outline-secondary">Close</button>
         </div>
     </div>
 </div>
