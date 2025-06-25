@@ -423,6 +423,7 @@ def analytics_dashboard(request):
     # total_consent = CookieConsent.objects.count()
     # analytics_consent = CookieConsent.objects.filter(analytics=True).count()
     # consent_rate = (analytics_consent / total_consent * 100) if total_consent else 0
+
     total_visitors = PageVisit.objects.count()
     analytics_consent = CookieConsent.objects.filter(analytics=True).count()
     consent_rate = (analytics_consent / total_visitors * 100) if total_visitors else 0

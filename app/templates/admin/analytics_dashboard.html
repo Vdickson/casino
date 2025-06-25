@@ -291,6 +291,56 @@
 .metric-card {
     animation: fadeIn 0.6s ease-out forwards;
 }
+.metric-card {
+    min-width: 180px;
+    max-width: 250px;
+    height: 180px;
+}
+.metric-card .card-body {
+    padding: 0.75rem;
+}
+.metric-card .card-title {
+    font-size: 0.55rem;
+}
+.metric-card .card-value {
+    font-size: 1rem;
+}
+.metric-card .card-icon {
+    font-size: 1rem;
+}
+.funnel-step {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+}
+.funnel-step h6 {
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+}
+.funnel-step h4 {
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+}
+.progress {
+    height: 16px !important; /* was 30px */
+}
+.progress-bar span {
+    font-size: 0.7rem;
+}
+.metric-card {
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.metric-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.metric-row > div {
+    flex: 1 1 calc(33.33% - 1rem);
+    max-width: calc(33.33% - 1rem);
+}
 
 /* Delay animations for each card */
 .metric-card:nth-child(1) { animation-delay: 0.1s; }
@@ -311,8 +361,10 @@
 
     <!-- Key Metrics Cards -->
     <div class="row metric-row">
-        <div class="col-md-4 col-6 mb-3">
-            <div class="card metric-card metric-card-primary h-100">
+<div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+<!--            <div class="card metric-card metric-card-primary h-100">-->
+    <div class="card metric-card metric-card-primary">
+
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <h6 class="card-title text-uppercase mb-0">Today's Visits</h6>
@@ -331,7 +383,7 @@
             </div>
         </div>
 
-        <div class="col-md-4 col-6 mb-3">
+<div class="col-lg-4 col-md-6 col-sm-12 mb-3">
             <div class="card metric-card metric-card-success h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
@@ -346,7 +398,7 @@
             </div>
         </div>
 
-        <div class="col-md-4 col-6 mb-3">
+<div class="col-lg-4 col-md-6 col-sm-12 mb-3">
             <div class="card metric-card metric-card-info h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
@@ -363,7 +415,8 @@
 
     </div>
     <div class="row metric-row">
-        <div class="col-md-4 col-6 mb-3">
+<div class="col-lg-2 col-md-3 <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+ col-6 mb-3">
             <div class="card metric-card metric-card-warning h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
@@ -378,7 +431,7 @@
             </div>
         </div>
 
-        <div class="col-md-4 col-6 mb-3">
+<div class="col-lg-4 col-md-6 col-sm-12 mb-3">
             <div class="card metric-card metric-card-danger h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
@@ -395,7 +448,7 @@
             </div>
         </div>
 
-        <div class="col-md-4 col-6 mb-3">
+<div class="col-lg-4 col-md-6 col-sm-12 mb-3">
             <div class="card metric-card metric-card-secondary h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">

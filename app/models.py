@@ -197,6 +197,8 @@ class CookieConsent(models.Model):
 
 # models.py - Add this for analytics events
 class AnalyticsEvent(models.Model):
+    page_visit = models.ForeignKey('PageVisit', on_delete=models.CASCADE, null=True, blank=True)
+
     session_key = models.CharField(max_length=40)
     category = models.CharField(max_length=100)
     action = models.CharField(max_length=100)
@@ -213,6 +215,7 @@ class AnalyticsEvent(models.Model):
             models.Index(fields=['-timestamp']),
             models.Index(fields=['category', 'action']),
         ]
+
 
     def __str__(self):
         return f"{self.category} - {self.action}"
